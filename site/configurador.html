@@ -2401,6 +2401,16 @@ async function realismo(modo,pp={}){
     COMPOSER=new EffectComposer(renderer); COMPOSER.setPixelRatio(renderer.getPixelRatio()); COMPOSER.setSize(w,h);
     COMPOSER.addPass(new RenderPass(scene,camera));
     const ao=new GTAOPass(scene,camera,w,h); ao.updateGtaoMaterial({radius:0.45,distanceFallOff:1,thickness:1.2,samples:16}); ao.blendIntensity=0.9;
+    if(pp.semBancosNaOclusao){
+      // O passe de oclusão usa um material que ignora os recortes dos bancos.
+      // Na vista externa, esse volume invisível não deve escurecer a carroceria.
+      const bancos=MODELOS_PEND.filter(pm=>pm.arq==='banqueta');
+      const preparaOclusao=ao.overrideVisibility.bind(ao);
+      ao.overrideVisibility=()=>{
+        preparaOclusao();
+        for(const {g} of bancos) g.visible=false;
+      };
+    }
     if(pp.ao!==false) COMPOSER.addPass(ao);
     if(pp.bloom!==false) COMPOSER.addPass(new UnrealBloomPass(new THREE.Vector2(w,h),EST.noite?0.5:0.12,0.4,1.05));
     COMPOSER.addPass(new OutputPass());
@@ -2440,7 +2450,10 @@ const SHOTS={
 };
 /* mesmas cores ao anoitecer, com os LEDs internos acesos (para o botão de LEDs da seção de compra) */
 SHOTS.campo1={...SHOTS.campo, pp:{bloom:false}}; SHOTS.campo2={...SHOTS.campo, pp:{bloom:false,ao:false}};
-for(const p of ['petroleo','salvia','gelo','areia','laranja','grafite']) SHOTS[p+'_noite']={...SHOTS[p], noite:true, est:{drl:true,posicao:true,interna:true}};
+for(const p of ['petroleo','salvia','gelo','areia','laranja','grafite']){
+  SHOTS[p].pp={semBancosNaOclusao:true};
+  SHOTS[p+'_noite']={...SHOTS[p], noite:true, est:{drl:true,posicao:true,interna:true}};
+}
 async function fazShot(n){
   const S=SHOTS[n]; if(!S){ document.title='SEM CENA'; return; }
   await Promise.all([window.__MODELOS_PRONTOS, window.__PROPS_PRONTOS]);
