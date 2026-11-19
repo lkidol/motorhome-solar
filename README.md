@@ -16,15 +16,15 @@ Entrega: 02/12/2026.
 | `geo/` | Geometria da carroceria e do traçado do LED (scripts e dados) |
 | `teste/` | Scripts de teste visual e de verificação do interior (Playwright) |
 | `ferramentas/` | Patches usados nas versões do site e geração de relevos |
-| `dados/` | Dados de referência: catálogo de modelos e relevos |
+| `dados/` | Dados de referência: `malha.json`, `detalhes.json`, `relevos.json` e `ph_models.json` |
 
 ## Como rodar
 
-**Site offline:** dentro de `site/`, `npm install` e depois `python3 build.py`. Gera `motorhome_solar_3d.html` com os modelos embutidos.
+**Site offline / local:** dentro de `site/`, `npm install` e depois `python3 build.py` gera `motorhome_solar_3d.html` com os modelos embutidos. `site/index.html` também pode ser servido localmente a partir da raiz do repo (ex.: `python -m http.server`, abrindo `/site/`).
 
-**Planilha:** `python3 plan/scripts/atualiza.py` reconstrói a aba Materiais a partir de `plan/original.xlsx`.
+**Planilha:** `python3 plan/atualiza.py` reconstrói a aba Materiais a partir de `plan/original.xlsx`.
 
-**Massas:** `mec/massa.py` lê `mec/massa.json`.
+**Massas:** `mec/massa.py` gera `mec/massa.json` a partir de `mec/casca.json`.
 
 ## Créditos dos modelos 3D
 

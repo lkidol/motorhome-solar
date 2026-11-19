@@ -532,7 +532,7 @@ const shellMats = []; const oclusores = [];
 function b64(str,T){const bin=atob(str);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new T(u.buffer);}
 async function carregaMalha(){
   try{
-    const r = await fetch('malha.json'); const d = await r.json();
+    const r = await fetch('malha.json').then(x=>x.ok?x:fetch('../dados/malha.json')); const d = await r.json();
     for(const [nome,grupo,cor] of [['carcaca','carcaca',GRUPOS.carcaca.cor],['caixas','carcaca','#b8c1c8'],['vidro','vidro',GRUPOS.vidro.cor]]){
       const p=d[nome]; let g=new THREE.BufferGeometry();
       g.setAttribute('position',new THREE.BufferAttribute(b64(p.pos,Float32Array),3));
@@ -550,7 +550,7 @@ async function carregaMalha(){
       if(!vidro) shellMats.push({mat,lm});
     }
     try{
-      const [det0,rel] = await Promise.all(['detalhes.json','relevos.json'].map(async f=>{ try{ return await (await fetch(f)).json(); }catch(e){ console.error(f,e); return []; } }));
+      const [det0,rel] = await Promise.all(['detalhes.json','relevos.json'].map(async f=>{ try{ return await (await fetch(f).then(x=>x.ok?x:fetch('../dados/'+f))).json(); }catch(e){ console.error(f,e); return []; } }));
       const det=[...det0,...rel]; const tex=placaTex();
       for(const d of det){
         const [cid,porta]=d.id.split('|'); const o=compObj[cid]; if(!o) continue;
