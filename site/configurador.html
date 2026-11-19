@@ -41,14 +41,14 @@
 }
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
-body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--font);font-variant-numeric:tabular-nums;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--font);font-variant-numeric:tabular-nums;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
 button{font:inherit;color:inherit;cursor:pointer}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .skip{position:absolute;left:12px;top:-60px;z-index:50;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:var(--r-s);text-decoration:none}
 .skip:focus{top:12px}
 
 /* ---------- topo ---------- */
-.top{display:flex;align-items:center;gap:24px;height:64px;padding:0 24px;background:var(--surface);border-bottom:1px solid var(--line);position:relative;z-index:5}
+.top{box-shadow:0 3px 24px #0001;display:flex;align-items:center;gap:24px;height:64px;padding:0 24px;background:var(--surface);border-bottom:1px solid var(--line);position:relative;z-index:5}
 .marca{display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none;font-weight:700;font-stretch:112%;letter-spacing:-.01em;font-size:17px;white-space:nowrap}
 .marca i{width:26px;height:26px;border-radius:50%;background:conic-gradient(from 200deg,var(--accent),#e9b04f,var(--accent));position:relative;flex:none}
 .marca i::after{content:"";position:absolute;inset:7px;border-radius:50%;background:var(--surface)}
@@ -57,8 +57,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .passos button{display:flex;align-items:center;gap:8px;height:40px;padding:0 14px;border:0;border-radius:999px;background:transparent;color:var(--muted);font-weight:500;font-size:14px;white-space:nowrap;transition:background .2s,color .2s}
 .passos button span{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;border:1.5px solid currentColor;font-size:11px;font-weight:700}
 .passos button:hover{color:var(--ink);background:var(--soft)}
-.passos button[aria-current="step"]{color:var(--ink);background:var(--soft);font-weight:650}
-.passos button[aria-current="step"] span{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+.passos button[aria-current="step"]{color:var(--accent);background:var(--accent-soft);font-weight:650}
+.passos button[aria-current="step"] span{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .passos button.feito span{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
 .top-acoes{display:flex;gap:8px}
 
@@ -144,8 +144,8 @@ body.dentro #labels, body.dentro .ficha, body.dentro #info, body.dentro .dica-vp
 .passo{display:none}
 .passo.ativo{display:block;animation:entra .35s ease both}
 @keyframes entra{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.passo-n{margin:0 0 6px;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-.passo h2{margin:0 0 6px;font-size:28px;line-height:1.1;font-weight:700;font-stretch:108%;letter-spacing:-.02em}
+.passo-n{margin:0 0 8px;color:var(--accent);font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+.passo h2{margin:0 0 8px;font-size:clamp(27px,3vw,36px);line-height:1.1;font-weight:700;font-stretch:108%;letter-spacing:-.02em}
 .passo .lead{margin:0 0 24px;color:var(--muted)}
 .grupo{border:0;margin:0 0 28px;padding:0}
 .grupo legend, .grupo h3{padding:0;margin:0 0 12px;font-size:15px;font-weight:650;display:flex;justify-content:space-between;align-items:baseline;width:100%}
@@ -160,17 +160,17 @@ body.dentro #labels, body.dentro .ficha, body.dentro #info, body.dentro .dica-vp
 .paint .bol::after{content:"";position:absolute;inset:0;background:linear-gradient(140deg,rgba(255,255,255,.45) 0%,rgba(255,255,255,0) 40%,rgba(0,0,0,.18) 100%)}
 .paint::before{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid transparent;transition:border-color .2s}
 .paint:hover{transform:translateY(-2px)}
-.paint[aria-pressed="true"]::before{border-color:var(--ink)}
+.paint[aria-pressed="true"]::before{border-color:var(--accent)}
 
 /* cartões de opção */
 .opcoes{display:grid;gap:10px}
 .opcoes.dois{grid-template-columns:1fr 1fr}
 .opcoes.tres{grid-template-columns:repeat(3,1fr)}
-.op{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;padding:14px 16px;min-height:44px;border-radius:var(--r-m);border:1.5px solid var(--line);background:var(--surface);transition:border-color .2s,transform .2s,box-shadow .2s;position:relative}
+.op{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;padding:14px 16px;min-height:44px;border-radius:var(--r-m);border:1.5px solid var(--line);background:var(--surface);transition:border-color .2s,transform .2s,box-shadow .2s;position:relative}
 .op:hover{transform:translateY(-2px);box-shadow:var(--sh)}
-.op[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 1px var(--ink) inset}
+.op[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
 .op b{font-weight:650;font-size:14px;line-height:1.3}
-.op span{font-size:13px;color:var(--muted);line-height:1.35}
+.op span{font-size:14px;color:var(--muted);line-height:1.35}
 .op em{font-style:normal;font-size:13px;font-weight:600;margin-top:auto;padding-top:6px}
 .op .viz{width:100%;height:46px;border-radius:10px;margin-bottom:6px}
 .op.lin{flex-direction:row;align-items:center;gap:14px}
@@ -226,6 +226,9 @@ input[type=range]{width:100%;accent-color:var(--ink);min-height:28px}
 
 /* barra de preço */
 .barra{display:flex;align-items:center;gap:16px;padding:16px 28px;border-top:1px solid var(--line);background:var(--surface)}
+.progresso-etapa{height:3px;margin:-1px 0 0;border:0;background:var(--line)}
+.progresso-etapa span{display:block;width:100%;height:100%;background:var(--accent);transform:scaleX(var(--andamento,0.166667));transform-origin:left;transition:transform .25s ease}
+body.tecnico .progresso-etapa{display:none}
 .total{flex:1;display:flex;flex-direction:column;line-height:1.2}
 .total span{font-size:12px;color:var(--muted)}
 .total strong{font-size:21px;font-weight:700;font-stretch:105%;letter-spacing:-.01em}
@@ -272,15 +275,29 @@ body.shot #vp::after, body.vitrine #vp::after{content:"";position:absolute;inset
 body.shot #vp, body.vitrine #vp{position:fixed;inset:0;height:auto;min-height:0}
 body.vitrine .dica-vp{display:block;top:20px;right:24px;color:rgba(255,255,255,.6)}
 body.vitrine .carregando{color:rgba(255,255,255,.6)}
-.doca{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);display:flex;gap:10px;flex-wrap:wrap;justify-content:center;width:max-content;max-width:calc(100% - 32px)}
-.doca-g{display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(14,17,19,.72);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.12)}
+.cenas-vitrine{position:absolute;top:16px;left:16px;z-index:1;display:flex;align-items:center;flex-wrap:wrap;gap:4px;padding:4px;max-width:calc(100% - 32px);border:1px solid #ffffff30;border-radius:12px;background:#11161de6}
+.cenas-vitrine button{min-height:42px;padding:0 12px;border:0;border-radius:8px;background:transparent;color:#e5e9ee;font-size:14px}
+.cenas-vitrine button:hover{background:#ffffff22;color:#fff}
+.cenas-vitrine button[aria-pressed="true"]{background:#f3e9d8;color:#20180e;font-weight:650}
+.doca{position:absolute;z-index:1;left:50%;bottom:20px;transform:translateX(-50%);display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:max-content;max-width:calc(100% - 24px)}
+.doca-g{display:flex;gap:4px;padding:4px;border-radius:14px;background:rgba(14,17,19,.87);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.12)}
 .doca button{height:44px;padding:0 16px;border:0;border-radius:999px;background:transparent;color:rgba(255,255,255,.78);font-size:14px;font-weight:550;white-space:nowrap;transition:background .2s,color .2s,transform .15s}
-.doca button:hover{color:#fff;background:rgba(255,255,255,.1)}
+.doca button:disabled{opacity:.4;cursor:default}
+.doca button:not(:disabled):hover{color:#fff;background:rgba(255,255,255,.1)}
 .doca button:active{transform:scale(.97)}
 .doca button[aria-pressed="true"]{background:#fff;color:#111}
 .doca button.forte{background:#e9a54a;color:#1b1206}
-body.dentro .doca{display:none}
-@media (max-width:700px){ .doca{bottom:12px;gap:6px} .doca-g{overflow-x:auto;max-width:calc(100vw - 24px);scrollbar-width:none} .doca button{padding:0 12px;font-size:13px} body.vitrine .dica-vp{display:none} }
+body.dentro .doca,body.dentro .cenas-vitrine{display:none}
+@media (max-width:850px){
+  body.vitrine .dica-vp{display:none}
+}
+@media (max-width:700px){
+  .cenas-vitrine{top:10px;left:10px;max-width:calc(100% - 20px)}
+  .cenas-vitrine button{padding-inline:8px;font-size:13px}
+  .doca{bottom:10px;gap:4px;width:min(440px,calc(100% - 20px));max-width:none}
+  .doca-g{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%}
+  .doca button{height:auto;min-height:44px;padding:4px;white-space:normal;line-height:1.15;border-radius:9px;font-size:13px}
+}
 
 /* entrada da página (uma vez) */
 [data-enter]{animation:sobe .7s cubic-bezier(.2,.7,.2,1) both}
@@ -324,6 +341,17 @@ body.dentro .doca{display:none}
   .chaves{grid-template-columns:1fr}
   .top-acoes .btn-2{padding:0 12px;font-size:13px}
 }
+@media (max-width:900px) and (min-height:650px){
+  body:not(.tecnico,.vitrine,.shot) #vp{position:sticky;top:0;z-index:3;height:42svh;min-height:0}
+  body:not(.tecnico,.vitrine,.shot) .ficha h1{max-width:none;font-size:18px}
+  body:not(.tecnico,.vitrine,.shot) .ficha .stats{display:none}
+  body:not(.tecnico,.vitrine,.shot) #ui{scroll-margin-top:42svh}
+}
+@media (max-width:440px){
+  .barra{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px}
+  .barra .total{grid-column:1/-1;grid-row:1;flex-direction:row;justify-content:space-between;align-items:baseline;gap:10px}
+  .barra #seguir{min-width:0;padding-inline:12px}
+}
 #vp .veu{position:absolute;inset:0;z-index:6;background:#0b0e11;opacity:0;pointer-events:none;transition:opacity .19s ease}
 #vp .veu.on{opacity:1}
 @media (prefers-reduced-motion: reduce){
@@ -343,12 +371,12 @@ body.dentro .doca{display:none}
   <a class="marca" href="#painel"><i aria-hidden="true"></i>Motorhome Solar</a>
   <nav class="passos" aria-label="Etapas da configuração">
     <ol>
-      <li><button data-passo="0"><span>1</span><b class="rot">Exterior</b></button></li>
-      <li><button data-passo="1"><span>2</span><b class="rot">Energia</b></button></li>
-      <li><button data-passo="2"><span>3</span><b class="rot">Interior</b></button></li>
-      <li><button data-passo="3"><span>4</span><b class="rot">Acessórios</b></button></li>
-      <li><button data-passo="4"><span>5</span><b class="rot">Experimente</b></button></li>
-      <li><button data-passo="5"><span>6</span><b class="rot">Resumo</b></button></li>
+      <li><button data-passo="0" aria-label="Exterior"><span>1</span><b class="rot">Exterior</b></button></li>
+      <li><button data-passo="1" aria-label="Energia"><span>2</span><b class="rot">Energia</b></button></li>
+      <li><button data-passo="2" aria-label="Interior"><span>3</span><b class="rot">Interior</b></button></li>
+      <li><button data-passo="3" aria-label="Acessórios"><span>4</span><b class="rot">Acessórios</b></button></li>
+      <li><button data-passo="4" aria-label="Experimente"><span>5</span><b class="rot">Experimente</b></button></li>
+      <li><button data-passo="5" aria-label="Resumo"><span>6</span><b class="rot">Resumo</b></button></li>
     </ol>
   </nav>
   <div class="top-acoes"><button id="tec-btn" class="btn-2" aria-pressed="false">Modo técnico</button></div>
@@ -397,11 +425,12 @@ body.dentro .doca{display:none}
   </div>
 
   <aside class="painel" id="painel" data-enter="3">
+    <div class="progresso-etapa" aria-hidden="true"><span></span></div>
     <div class="corpo" id="ui">
 
       <section class="passo" data-p="0" aria-labelledby="h-p0">
         <p class="passo-n">Etapa 1 de 6</p>
-        <h2 id="h-p0">Exterior</h2>
+        <h2 id="h-p0" tabindex="-1">Exterior</h2>
         <p class="lead">Pintura com verniz, saia em preto texturizado e rodas aro 20″ com disco ventilado.</p>
         <fieldset class="grupo">
           <legend>Pintura <small id="pint-preco"></small></legend>
@@ -427,7 +456,7 @@ body.dentro .doca{display:none}
 
       <section class="passo" data-p="1" aria-labelledby="h-p1">
         <p class="passo-n">Etapa 2 de 6</p>
-        <h2 id="h-p1">Energia</h2>
+        <h2 id="h-p1" tabindex="-1">Energia</h2>
         <p class="lead">A bateria fica no piso duplo e o teto inteiro gera energia, inclusive em movimento.</p>
         <dl class="ficha-t">
           <div><dt>Bateria de tração</dt><dd>128 kWh LFP</dd></div>
@@ -447,7 +476,7 @@ body.dentro .doca{display:none}
 
       <section class="passo" data-p="2" aria-labelledby="h-p2">
         <p class="passo-n">Etapa 3 de 6</p>
-        <h2 id="h-p2">Interior</h2>
+        <h2 id="h-p2" tabindex="-1">Interior</h2>
         <p class="lead">Forro de ripas de madeira, paredes em feltro e piso vinílico. Escolha o ambiente.</p>
         <fieldset class="grupo">
           <legend>Ambiente</legend>
@@ -480,7 +509,7 @@ body.dentro .doca{display:none}
 
       <section class="passo" data-p="3" aria-labelledby="h-p3">
         <p class="passo-n">Etapa 4 de 6</p>
-        <h2 id="h-p3">Acessórios</h2>
+        <h2 id="h-p3" tabindex="-1">Acessórios</h2>
         <p class="lead">Retrovisores câmera, degrau elétrico e lanternas laterais já vêm de série.</p>
         <fieldset class="grupo">
           <legend>Toldo</legend>
@@ -500,7 +529,7 @@ body.dentro .doca{display:none}
 
       <section class="passo" data-p="4" aria-labelledby="h-p4">
         <p class="passo-n">Etapa 5 de 6</p>
-        <h2 id="h-p4">Experimente</h2>
+        <h2 id="h-p4" tabindex="-1">Experimente</h2>
         <p class="lead">Abra as portas, acenda as luzes e entre para andar pela cabine.</p>
         <button id="entrar" class="btn btn-full" style="margin-bottom:28px">Entrar no motorhome</button>
         <div class="grupo">
@@ -540,7 +569,7 @@ body.dentro .doca{display:none}
 
       <section class="passo" data-p="5" aria-labelledby="h-p5">
         <p class="passo-n">Etapa 6 de 6</p>
-        <h2 id="h-p5">Seu Motorhome Solar</h2>
+        <h2 id="h-p5" tabindex="-1">Seu Motorhome Solar</h2>
         <p class="lead">Confira as escolhas. Clique numa etapa no topo para trocar qualquer item.</p>
         <ul class="res" id="res"></ul>
         <p class="nota">Preços ilustrativos para o projeto da disciplina. O custo real sai do item 24 do memorial.</p>
@@ -599,7 +628,7 @@ body.dentro .doca{display:none}
 
     <div class="barra">
       <button class="btn-2" id="voltar" aria-label="Etapa anterior">←</button>
-      <div class="total"><span>Preço estimado</span><strong id="preco">–</strong></div>
+      <div class="total"><span>Preço estimado</span><strong id="preco" aria-live="polite">–</strong></div>
       <button class="btn" id="seguir">Continuar</button>
     </div>
   </aside>
@@ -1814,10 +1843,12 @@ document.getElementById('copy').addEventListener('click',async()=>{
 function resize(){ const w=vp.clientWidth,h=vp.clientHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix(); }
 new ResizeObserver(resize).observe(vp); resize();
 setAbertura(0); setCut(250);
-let tAnt=null; let sombraSuja=0;
+let tAnt=null; let sombraSuja=0; let palcoVisivel=true;
 addEventListener('pointerdown',()=>{ sombraSuja=Math.max(sombraSuja,60); }); addEventListener('keydown',()=>{ sombraSuja=Math.max(sombraSuja,60); });
 function loop(now){
-  requestAnimationFrame(loop); const dt=tAnt===null?0:Math.max(0,Math.min(0.05,(now-tAnt)/1000)); tAnt=now;
+  requestAnimationFrame(loop);
+  if(!palcoVisivel){ tAnt=null; return; }
+  const dt=tAnt===null?0:Math.max(0,Math.min(0.05,(now-tAnt)/1000)); tAnt=now;
   if(!FP.on) stepAnim(now);
   animaInteracoes(now,dt); aplicaLuzes(now); if(FP.on) andaFP(dt);
   if(Math.abs(abertura-aberturaAlvo)>1e-3){ abertura+= (aberturaAlvo-abertura)*(reduz?1:1-Math.exp(-dt*4.2)); if(Math.abs(abertura-aberturaAlvo)<0.002)abertura=aberturaAlvo; setAbertura(abertura); document.getElementById('abre').value=Math.round(abertura*100); }
@@ -2254,7 +2285,7 @@ document.querySelector('[data-acao="entrar"]').addEventListener('click',()=>FP.o
 const PASSOS=['Exterior','Energia','Interior','Acessórios','Experimente','Resumo'];
 let passo=0; const visitados=new Set([0]);
 const navBtns=[...document.querySelectorAll('[data-passo]')];
-function irPara(i,mover=true){
+function irPara(i,mover=true,focar=false){
   passo=Math.max(0,Math.min(PASSOS.length-1,i)); visitados.add(passo);
   document.querySelectorAll('.passo').forEach(s=>s.classList.toggle('ativo',+s.dataset.p===passo));
   navBtns.forEach(b=>{ const n=+b.dataset.passo; if(n===passo) b.setAttribute('aria-current','step'); else b.removeAttribute('aria-current'); b.classList.toggle('feito',visitados.has(n)&&n!==passo); });
@@ -2262,7 +2293,14 @@ function irPara(i,mover=true){
   seg.textContent = passo<PASSOS.length-1 ? 'Próximo: '+PASSOS[passo+1] : 'Copiar resumo';
   document.getElementById('voltar').disabled = passo===0;
   document.getElementById('voltar').style.visibility = passo===0?'hidden':'visible';
-  document.getElementById('ui').scrollTop=0;
+  ui.scrollTop=0;
+  ui.parentElement.style.setProperty('--andamento',(passo+1)/PASSOS.length);
+  if(focar){
+    document.getElementById('h-p'+passo).focus({preventScroll:true});
+    if(matchMedia('(max-width: 900px)').matches){
+      ui.scrollIntoView({block:'start',behavior:reduz?'instant':'smooth'});
+    }
+  }
   if(select && selId) select(null);
   if(mover) camPasso(passo);
 }
@@ -2280,8 +2318,8 @@ function camPasso(i){
 controls.autoRotateSpeed=0.7;
 controls.addEventListener('start',()=>{ controls.autoRotate=false; anim=null; });
 navBtns.forEach(b=>b.addEventListener('click',()=>irPara(+b.dataset.passo)));
-document.getElementById('seguir').addEventListener('click',()=>{ if(passo<PASSOS.length-1) irPara(passo+1); else copiaResumo(); });
-document.getElementById('voltar').addEventListener('click',()=>irPara(passo-1));
+document.getElementById('seguir').addEventListener('click',()=>{ if(passo<PASSOS.length-1) irPara(passo+1,true,true); else copiaResumo(); });
+document.getElementById('voltar').addEventListener('click',()=>irPara(passo-1,true,true));
 
 async function copiaResumo(){
   const txt=['Minha configuração do Motorhome Solar', ...linhasResumo().map(([n,v],i)=>`- ${n}: ${i===0?brl(v):delta(v)}`), `Total estimado: ${brl(precoTotal())} (preços ilustrativos)`].join('\n');
@@ -2309,7 +2347,13 @@ function enquadra(){
 const PARAMS=new URLSearchParams(location.search);
 const SHOT=PARAMS.get('shot'), VITRINE=PARAMS.has('vitrine');
 if(SHOT) document.body.classList.add('shot');
-if(VITRINE) document.body.classList.add('vitrine');
+if(VITRINE){
+  document.body.classList.add('vitrine');
+  if(window.parent!==window){
+    // O observador também considera o recorte do iframe na página do produto.
+    new IntersectionObserver(([entrada])=>{ palcoVisivel=entrada.isIntersecting; }).observe(vp);
+  }
+}
 const V=(x,y,z)=>new THREE.Vector3(x,y,z);
 /* estúdio escuro: piso que some na névoa, luz principal + contorno, tons de cinema */
 let ESTUDIO=false, SOL_EST=[-7,10,-9], FAROL_K_RENDER=0.16;
@@ -2421,11 +2465,36 @@ function montaVitrine(){
   renderer.domElement.addEventListener('wheel',e=>{ controls.enableZoom=e.ctrlKey||e.metaKey; },{capture:true,passive:true});
   renderer.domElement.style.touchAction='pan-y';
   const dv=document.querySelector('.dica-vp'); if(dv) dv.textContent='Arraste para girar · Ctrl + rolar para aproximar';
+  const cenas=document.createElement('div');
+  cenas.className='cenas-vitrine';
+  cenas.setAttribute('role','group');
+  cenas.setAttribute('aria-label','Cenas do motorhome');
+  cenas.innerHTML=`<button data-cena="p-ext">Exterior</button>
+    <button data-cena="p-estac">Solar</button>
+    <button data-cena="p-interior">Interior</button>
+    <button data-cena="p-camp">Acampamento</button>`;
+  vp.appendChild(cenas);
+  const botoesCena=[...cenas.querySelectorAll('button')];
+  function marcaCena(id){
+    botoesCena.forEach(b=>b.setAttribute('aria-pressed',b.dataset.cena===id));
+  }
+  botoesCena.forEach(b=>b.addEventListener('click',()=>{
+    const id=b.dataset.cena;
+    if(selId) select(null);
+    for(const item of ['portaCasa','portaE','portaD','janela','toldo']) ABRE[item].alvo=0;
+    Object.assign(EST,{interna:false,drl:true,posicao:false,farol:'off',toldoLuz:false});
+    if(EST.noite && id!=='p-camp') setNoite(false);
+    preset(id);
+    if(CFG.solar!=='gavetas') aberturaAlvo=0;
+    if(CFG.toldo!=='sim'){ ABRE.toldo.alvo=0; EST.toldoLuz=false; }
+    marcaCena(id);
+    syncUI();
+  }));
   const dock=document.createElement('div'); dock.className='doca';
   dock.innerHTML=`<div class="doca-g" role="group" aria-label="Abrir e fechar">
       <button data-v="portaCasa">Porta de entrada</button><button data-v="portaE">Porta do motorista</button>
       <button data-v="janela">Janela</button><button data-v="toldo">Toldo</button></div>
-    <div class="doca-g"><button data-vn="leds">LEDs internos</button><button data-vn="noite">Noite</button><button data-vn="gav">Painéis solares</button><button data-vn="entrar" class="forte">Entrar</button></div>`;
+    <div class="doca-g" role="group" aria-label="Luzes, energia e visita"><button data-vn="leds">LEDs internos</button><button data-vn="noite">Noite</button><button data-vn="gav">Painéis solares</button><button data-vn="entrar" class="forte">Entrar</button></div>`;
   vp.appendChild(dock);
   const sync=()=>{
     dock.querySelectorAll('[data-v]').forEach(b=>b.setAttribute('aria-pressed',(ABRE[b.dataset.v]?.alvo??0)>0.5));
@@ -2434,6 +2503,7 @@ function montaVitrine(){
     dock.querySelector('[data-vn=gav]').setAttribute('aria-pressed',aberturaAlvo>0.5);
     dock.querySelector('[data-vn=entrar]').textContent=FP.on?'Sair':'Entrar';
   };
+  dock.addEventListener('click',e=>{ if(e.target.closest('button')) marcaCena(null); });
   dock.querySelectorAll('[data-v]').forEach(b=>b.addEventListener('click',()=>{
     const id=b.dataset.v; abre(id);
     if(FP.on) return;
@@ -2449,11 +2519,15 @@ function montaVitrine(){
   dock.querySelector('[data-vn=gav]').addEventListener('click',()=>{ aberturaAlvo=aberturaAlvo>0.5?0:1; if(!FP.on) setView('3d',V(0,1.6,0),V(-8.6,8.2,-10.5)); sync(); });
   dock.querySelector('[data-vn=entrar]').addEventListener('click',()=>{ FP.on?sair():entrar(); setTimeout(sync,800); });
   const s0=syncUI; syncUI=function(){ s0(); sync(); };
-  preset('p-ext'); setView('3d',V(0.2,1.15,0),V(-8.6,2.4,-7.4)); sync();
+  dock.querySelector('[data-vn=gav]').disabled=CFG.solar!=='gavetas';
+  dock.querySelector('[data-v=toldo]').disabled=CFG.toldo!=='sim';
+  preset('p-ext'); marcaCena('p-ext'); sync();
 }
 
 /* o site pode trocar a cor da vitrine ao vivo */
-addEventListener('message',e=>{ const d=e.data; if(!d) return;
+addEventListener('message',e=>{
+  if(!VITRINE || window.parent===window || e.source!==window.parent || e.origin!==location.origin) return;
+  const d=e.data; if(!d) return;
   if(typeof d.pintura==='string'&&PINTURAS.some(p=>p.id===d.pintura)){ CFG.pintura=d.pintura; aplicaCfg(false); }
   if(typeof d.leds==='boolean'){ EST.interna=d.leds; syncUI(); } });
 
