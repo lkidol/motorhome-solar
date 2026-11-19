@@ -19,15 +19,15 @@
 :root{
   --bg:#070708; --bg2:#0d0e10; --surface:#121417; --surface2:#181b20;
   --ink:#f5f6f7; --muted:#8e949a; --line:rgba(255,255,255,.11); --line-strong:rgba(255,255,255,.24);
-  --accent:#da291c; --accent-hover:#f03224; --accent-ink:#ffffff;
+  --accent:#c82d22; --accent-hover:#da3528; --accent-text:#ff7a6e; --accent-ink:#ffffff;
   --gold:#e9a54a;
   --font:"Archivo","Segoe UI",system-ui,sans-serif;
-  --wrap:1380px; --gut:36px; --r:2px;
+  --wrap:1380px; --gut:36px; --r:12px;
   color-scheme:dark;
 }
 :root[data-theme="light"]{ color-scheme:dark; }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;scroll-padding-top:88px}
 @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--font);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums;overflow-x:hidden}
 img{display:block;max-width:100%}
@@ -40,16 +40,13 @@ a{color:inherit}
 /* tipografia editorial estilo Maranello */
 .olho{display:inline-flex;align-items:center;gap:12px;margin:0 0 18px;font-size:11px;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--ink)}
 .olho::before{content:"";width:24px;height:2px;background:var(--accent);display:inline-block;flex-shrink:0}
-.olho em{font-style:normal;color:var(--accent)}
 .disp{margin:0;font-weight:800;font-stretch:125%;text-transform:uppercase;letter-spacing:-.015em;line-height:.94;text-wrap:balance}
 h2.disp{font-size:clamp(34px,5.2vw,82px)}
 .lead{font-size:clamp(16px,1.28vw,19px);color:var(--muted);max-width:54ch;margin:22px 0 0;line-height:1.65}
 
-/* botões e gatilhos com seta circular estilo Ferrari */
+/* botões e links */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:14px;min-height:52px;padding:0 26px;border-radius:var(--r);border:1px solid var(--accent);background:var(--accent);color:#fff;font:700 12px var(--font);letter-spacing:.18em;text-transform:uppercase;text-decoration:none;cursor:pointer;position:relative;transition:background .25s,border-color .25s,transform .18s,box-shadow .25s}
-.btn::after{content:"→";font-size:15px;line-height:1;transition:transform .25s}
 .btn:hover{background:var(--accent-hover);border-color:var(--accent-hover);transform:translateY(-1px);box-shadow:0 12px 32px rgba(218,41,28,.28)}
-.btn:hover::after{transform:translateX(4px)}
 .btn:active{transform:translateY(0)}
 .btn.sec{background:rgba(255,255,255,.03);color:var(--ink);border-color:var(--line-strong);backdrop-filter:blur(8px)}
 .btn.sec:hover{background:var(--ink);color:#070708;border-color:var(--ink);box-shadow:none}
@@ -67,7 +64,8 @@ h2.disp{font-size:clamp(34px,5.2vw,82px)}
 .marca small{font-weight:600;font-size:10px;letter-spacing:.22em;color:var(--muted);border-left:1px solid var(--line);padding-left:12px;margin-left:2px}
 .nav ul{display:flex;gap:22px;list-style:none;margin:0 0 0 auto;padding:0;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap}
 .nav ul a{display:inline-flex;align-items:center;gap:6px;padding:12px 0;color:rgba(245,246,247,.82);white-space:nowrap}
-.nav ul a span{color:var(--accent);font-size:10px;font-weight:700}
+.nav ul a[aria-current="location"]{color:#fff;background-size:100% 2px}
+.nav::after{content:"";position:absolute;inset:auto 0 -1px;height:2px;background:var(--accent-text);transform:scaleX(var(--progresso,0));transform-origin:left;pointer-events:none}
 .nav .btn{min-height:40px;padding:0 18px;font-size:11px;letter-spacing:.14em;white-space:nowrap;flex-shrink:0}
 .menu{display:none;margin-left:auto;min-height:40px;padding:0 16px;border-radius:var(--r);border:1px solid var(--line-strong);background:transparent;color:var(--ink);font:700 11px var(--font);letter-spacing:.18em;text-transform:uppercase}
 
@@ -77,7 +75,7 @@ h2.disp{font-size:clamp(34px,5.2vw,82px)}
 .heroi::before{content:"";position:absolute;inset:0;z-index:1;background:radial-gradient(90% 80% at 62% 45%,rgba(7,7,8,0) 20%,rgba(7,7,8,.78) 100%)}
 .heroi::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(7,7,8,.68) 0%,rgba(7,7,8,0) 28%,rgba(7,7,8,.18) 56%,rgba(7,7,8,.96) 100%)}
 .heroi-corpo{position:relative;z-index:2;width:100%;padding-bottom:44px}
-.heroi-grid{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:48px}
+
 .heroi h1{font-size:clamp(46px,7.8vw,132px);letter-spacing:-.02em;line-height:.9}
 .heroi h1 span{display:block;color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.78);font-weight:750}
 .heroi p.sub{margin:22px 0 32px;max-width:48ch;font-size:clamp(16px,1.35vw,20px);color:#cfd5da}
@@ -90,7 +88,7 @@ h2.disp{font-size:clamp(34px,5.2vw,82px)}
 .fatos div:first-child{border-left:0;padding-left:0}
 .fatos dt{order:2;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
 .fatos dd{order:1;margin:0;font-size:clamp(24px,2.4vw,34px);font-weight:800;font-stretch:120%;color:var(--ink);display:flex;align-items:baseline;gap:6px}
-.fatos dd small{font-size:.48em;font-weight:700;color:var(--accent);letter-spacing:.08em;text-transform:uppercase}
+.fatos dd small{font-size:.48em;font-weight:700;color:var(--accent-text);letter-spacing:.08em;text-transform:uppercase}
 .fatos dd,.num b{white-space:nowrap}
 
 @keyframes zoomIn{from{transform:scale(1.07);opacity:.15}to{transform:none;opacity:1}}
@@ -107,7 +105,7 @@ section{position:relative}
 
 /* capítulo 01: manifesto e perfil técnico */
 .manif{border-bottom:1px solid var(--line)}
-.manif-quadro{position:relative;border:1px solid var(--line);background:var(--bg2);overflow:hidden}
+.manif-quadro{position:relative;border-radius:var(--r);border:1px solid var(--line);background:var(--bg2);overflow:hidden}
 .manif-quadro img{width:100%;aspect-ratio:16/9;object-fit:cover}
 .manif-cota{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;padding:16px 24px;border-top:1px solid var(--line);background:var(--surface);font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
 .manif-cota span b{color:var(--ink);margin-right:6px}
@@ -117,20 +115,26 @@ section{position:relative}
 .nums .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
 .num{padding:68px 30px;border-left:1px solid var(--line);position:relative}
 .num:first-child{border-left:0;padding-left:0}
-.num::before{content:attr(data-idx);display:block;font-size:11px;font-weight:700;letter-spacing:.24em;color:var(--accent);margin-bottom:18px}
+.num::before{content:attr(data-idx);display:block;font-size:11px;font-weight:700;letter-spacing:.24em;color:var(--accent-text);margin-bottom:18px}
 .num b{display:block;font-size:clamp(44px,5.4vw,88px);font-weight:800;font-stretch:122%;line-height:.95}
-.num b small{font-size:.34em;font-weight:700;margin-left:6px;color:var(--accent);letter-spacing:.06em;text-transform:uppercase}
-.num span{display:block;margin-top:16px;color:var(--muted);font-size:14px;max-width:24ch;line-height:1.55}
+.num b small{font-size:.34em;font-weight:700;margin-left:6px;color:var(--accent-text);letter-spacing:.06em;text-transform:uppercase}
+.num > span{display:block;margin-top:16px;color:var(--muted);font-size:14px;max-width:24ch;line-height:1.55}
 
 /* capítulo 03: visor 3D ao vivo */
 .exp{padding:136px 0 0;border-bottom:1px solid var(--line)}
 .exp-topo{display:flex;justify-content:space-between;align-items:end;gap:40px;margin-bottom:44px}
 .exp-topo .lead{margin:0;max-width:42ch}
-.palco-barra{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 24px;background:var(--surface);border-top:1px solid var(--line);font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
-.palco-barra .vivo{display:inline-flex;align-items:center;gap:8px;color:var(--ink)}
-.palco-barra .vivo::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
-.palco{position:relative;height:min(86svh,880px);min-height:540px;background:#06080a;border-top:1px solid var(--line)}
+.visor{margin-bottom:clamp(32px,6vw,88px)}
+.visor-quadro{overflow:hidden;border:1px solid var(--line-strong);border-radius:calc(var(--r) * 1.5);background:#06080a;box-shadow:0 22px 70px #0006}
+.palco-barra{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;background:var(--surface);color:var(--muted)}
+.palco-barra strong{color:var(--ink);font-size:15px}
+.palco-barra .controles{display:flex;align-items:center;gap:18px;margin-left:auto;font-size:14px}
+.palco{position:relative;height:clamp(500px,72svh,790px);background:#06080a;border-top:1px solid var(--line)}
 .palco iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.visor-quadro:fullscreen{display:flex;flex-direction:column;border:0;border-radius:0}
+.visor-quadro:fullscreen .palco{flex:1;height:auto;min-height:0}
+.visor-acao,.galeria-acao{min-height:42px;padding:0 15px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface2);color:var(--ink);font:650 14px var(--font);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap}
+.visor-acao:hover,.galeria-acao:hover{border-color:var(--accent-text)}
 
 /* capítulo 04: engenharia exterior e detalhes */
 .bloco{display:grid;grid-template-columns:1.38fr 1fr;align-items:center;gap:64px}
@@ -148,8 +152,8 @@ section{position:relative}
 .bloco + .bloco{margin-top:120px}
 
 .det{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--bg2)}
-.det .grade{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:56px}
-.det .card-det{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line)}
+.det .grade{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:48px}
+.det .card-det{display:flex;flex-direction:column;overflow:hidden;border-radius:var(--r);background:var(--surface);border:1px solid var(--line)}
 .det .card-det .foto{border:0;border-bottom:1px solid var(--line)}
 .det .card-det .foto img{aspect-ratio:16/10}
 .det .card-txt{padding:22px 24px}
@@ -161,7 +165,7 @@ section{position:relative}
 .inter{border-bottom:1px solid var(--line)}
 .inter-topo{display:grid;grid-template-columns:1.1fr 1fr;gap:64px;align-items:end}
 .inter-topo .lead{margin:0}
-.inter .grade{display:grid;grid-template-columns:1.35fr 1fr;gap:20px;margin-top:56px}
+.inter .grade{display:grid;grid-template-columns:1.35fr 1fr;gap:20px;margin-top:48px}
 .inter .grade-sub{display:grid;grid-template-rows:1fr 1fr;gap:20px}
 .inter .foto img{aspect-ratio:16/10;height:100%}
 .inter .lista{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:48px;border:1px solid var(--line);background:var(--bg2)}
@@ -177,7 +181,7 @@ section{position:relative}
 .vitrine-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .45s ease}
 .vitrine-img img.on{opacity:1}
 .vitrine-selo{position:absolute;top:18px;left:18px;z-index:2;padding:7px 14px;background:rgba(7,7,8,.8);backdrop-filter:blur(10px);border-left:2px solid var(--accent);font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
-.atelier-box{padding:36px;background:var(--surface);border:1px solid var(--line)}
+.atelier-box{padding:36px;background:linear-gradient(155deg,var(--surface2),var(--surface) 65%);border:1px solid var(--line);border-radius:calc(var(--r) * 1.5)}
 .cores{display:flex;gap:10px;margin:26px 0 14px;flex-wrap:wrap}
 .cor{width:42px;height:42px;border-radius:50%;border:0;padding:0;background:transparent;position:relative;cursor:pointer;transition:transform .2s}
 .cor i{position:absolute;inset:5px;border-radius:50%;box-shadow:inset 0 -6px 10px rgba(0,0,0,.45),inset 0 4px 8px rgba(255,255,255,.28)}
@@ -194,10 +198,22 @@ section{position:relative}
 .chave-led[aria-pressed="true"] i::after{transform:translateX(18px)}
 .preco{margin:24px 0;padding:20px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:baseline;gap:16px}
 .preco span{color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase}
-.preco strong{font-size:clamp(26px,2.4vw,36px);font-weight:800;font-stretch:115%}
+.preco strong{white-space:nowrap;font-size:clamp(26px,2.4vw,36px);font-weight:800;font-stretch:115%}
 .nota{font-size:12px;color:var(--muted);margin:16px 0 0;line-height:1.5}
 .inclui{list-style:none;padding:0;margin:22px 0 0;display:grid;gap:8px;font-size:13px;color:var(--muted)}
 .inclui li::before{content:"";display:inline-block;width:8px;height:2px;background:var(--accent);margin-right:10px;vertical-align:4px}
+
+/* galeria de renders */
+.galeria-mini{display:block;width:100%;padding:0;text-align:left;font:inherit;cursor:zoom-in}
+.galeria-abrir{position:absolute;top:12px;right:12px;padding:5px 10px;border:1px solid #ffffff55;border-radius:6px;background:#0b0d10dd;color:#fff;font-size:13px}
+.galeria{width:min(1100px,calc(100% - 24px));max-width:none;max-height:calc(100dvh - 24px);padding:0;border:1px solid var(--line-strong);border-radius:var(--r);background:var(--surface);color:var(--ink)}
+body:has(.galeria[open]){overflow:hidden}
+.galeria::backdrop{background:#05070aeb}
+.galeria figure{margin:0}
+.galeria figure img{width:100%;max-height:70dvh;object-fit:contain;background:#08090b}
+.galeria figcaption,.galeria nav{padding:12px 16px}
+.galeria nav{display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--line)}
+#galeria-fechar{margin-left:auto}
 
 /* configurador em tela cheia */
 dialog.cfg{width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:#0e1113;color:var(--ink)}
@@ -241,9 +257,8 @@ footer .cred{grid-column:1/-1;margin-top:32px;padding-top:24px;border-top:1px so
   :root{--gut:18px}
   .nav ul,.nav .btn{display:none}
   .menu{display:inline-flex;align-items:center}
-  .nav.aberto ul{display:flex;position:fixed;inset:74px 0 0;flex-direction:column;gap:0;margin:0;padding:24px 18px;background:var(--bg);font-size:18px}
+  .nav.aberto ul{display:flex;position:absolute;inset:100% 0 auto;height:calc(100dvh - 74px);flex-direction:column;gap:0;margin:0;padding:24px 18px;background:var(--bg);font-size:18px}
   .nav.aberto ul a{display:flex;padding:18px 0;border-bottom:1px solid var(--line)}
-  .heroi-grid{grid-template-columns:minmax(0,1fr);gap:24px}
   .heroi h1{font-size:clamp(38px,11vw,64px)}
   h2.disp{font-size:clamp(30px,8.4vw,48px)}
   .heroi > img{object-position:60% 50%}
@@ -255,7 +270,11 @@ footer .cred{grid-column:1/-1;margin-top:32px;padding-top:24px;border-top:1px so
   .sec-pad{padding:88px 0}
   .exp{padding-top:88px}
   .exp-topo{flex-direction:column;align-items:flex-start;gap:18px}
-  .palco{height:78svh;min-height:480px}
+  .palco{height:clamp(490px,78svh,680px)}
+  .palco-barra{padding:8px 10px}
+  .palco-barra .controles > span{display:none}
+  .nav.aberto ul{overflow-y:auto}
+  .nav .marca{font-size:12px;letter-spacing:.1em}
   .det .grade{grid-template-columns:1fr}
   .num{padding:36px 16px 36px 0}
   .bloco + .bloco{margin-top:84px}
@@ -270,25 +289,25 @@ footer .cred{grid-column:1/-1;margin-top:32px;padding-top:24px;border-top:1px so
 <!-- Página: produto (tech). Visual editorial automotivo inspirado na Ferrari; renders de alta resolução gerados do modelo 3D v11.3. -->
 <a class="skip" href="#conteudo">Pular para o conteúdo</a>
 <header class="nav" id="nav">
-  <div class="wrap">
+  <nav class="wrap" aria-label="Seções do projeto">
     <a class="marca" href="#topo"><i aria-hidden="true"></i>Motorhome Solar<small>Série 01</small></a>
     <ul id="menu-lista">
-      <li><a class="lnk" href="#energia"><span>01</span>Energia</a></li>
-      <li><a class="lnk" href="#experimente"><span>02</span>Visor 3D</a></li>
-      <li><a class="lnk" href="#design"><span>03</span>Arquitetura</a></li>
-      <li><a class="lnk" href="#interior"><span>04</span>Interior</a></li>
-      <li><a class="lnk" href="#comprar"><span>05</span>Atelier</a></li>
+      <li><a class="lnk" href="#energia">Energia</a></li>
+      <li><a class="lnk" href="#experimente">Visor 3D</a></li>
+      <li><a class="lnk" href="#design">Arquitetura</a></li>
+      <li><a class="lnk" href="#interior">Interior</a></li>
+      <li><a class="lnk" href="#comprar">Atelier</a></li>
     </ul>
     <a class="btn" href="#comprar">Configurar</a>
     <button class="menu" id="menu-bt" aria-expanded="false" aria-controls="menu-lista">Menu</button>
-  </div>
+  </nav>
 </header>
 
 <main id="conteudo">
   <section class="heroi" id="topo" data-enter>
     <img src="img/heroi.jpg" alt="Motorhome Solar à noite, de frente, com a faixa de luz diurna acesa e o interior v11.3 iluminado" fetchpriority="high">
     <div class="heroi-corpo">
-      <div class="wrap heroi-grid">
+      <div class="wrap">
         <div>
           <p class="olho">Série 01 · Grand Tourer Solar Elétrico</p>
           <h1 class="disp">Motorhome<span>Solar</span></h1>
@@ -316,7 +335,7 @@ footer .cred{grid-column:1/-1;margin-top:32px;padding-top:24px;border-top:1px so
     <div class="wrap">
       <div class="sec-head">
         <div>
-          <p class="olho"><em>01</em> Manifesto Técnico</p>
+          <p class="olho">Manifesto Técnico</p>
           <h2 class="disp" id="h-manif">A casa que se recarrega sozinha</h2>
         </div>
         <p class="lead">O painel solar veste o teto de ponta a ponta e gera energia enquanto roda. Ao estacionar, duas gavetas laterais deslizam e dobram a área de captação. Todo o banco de baterias fica selado no piso duplo, baixando o centro de gravidade.</p>
@@ -336,27 +355,34 @@ footer .cred{grid-column:1/-1;margin-top:32px;padding-top:24px;border-top:1px so
   <section class="nums" id="energia" aria-labelledby="h-nums">
     <h2 class="disp" id="h-nums" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Energia em números</h2>
     <div class="wrap">
-      <div class="num" data-idx="01 / RESERVA"><b><span data-conta="128">128</span><small>kWh</small></b><span>de bateria LFP no piso duplo, dentro do isolamento térmico</span></div>
-      <div class="num" data-idx="02 / EXPANSÃO"><b><span data-conta="17.7">17,7</span><small>m²</small></b><span>de matriz solar com as duas gavetas abertas e o veículo estacionado</span></div>
-      <div class="num" data-idx="03 / EM ROTA"><b><span data-conta="8.8">8,8</span><small>m²</small></b><span>de painel fixo gerando energia o tempo todo, inclusive na estrada</span></div>
-      <div class="num" data-idx="04 / PLUG-IN"><b><span data-conta="11">11</span><small>kW</small></b><span>de recarga rápida em corrente alternada pela tomada CCS2 lateral</span></div>
+      <div class="num" data-idx="RESERVA"><b><span data-conta="128">128</span><small>kWh</small></b><span>de bateria LFP no piso duplo, dentro do isolamento térmico</span></div>
+      <div class="num" data-idx="EXPANSÃO"><b><span data-conta="17.7">17,7</span><small>m²</small></b><span>de matriz solar com as duas gavetas abertas e o veículo estacionado</span></div>
+      <div class="num" data-idx="EM ROTA"><b><span data-conta="8.8">8,8</span><small>m²</small></b><span>de painel fixo gerando energia o tempo todo, inclusive na estrada</span></div>
+      <div class="num" data-idx="PLUG-IN"><b><span data-conta="11">11</span><small>kW</small></b><span>de recarga rápida em corrente alternada pela tomada CCS2 lateral</span></div>
     </div>
   </section>
 
   <section class="exp" id="experimente" aria-labelledby="h-exp">
     <div class="wrap exp-topo">
       <div>
-        <p class="olho"><em>02</em> Visor 3D Interativo</p>
+        <p class="olho">Visor 3D Interativo</p>
         <h2 class="disp" id="h-exp">Abra a porta.<br>Entre.</h2>
       </div>
       <p class="lead">Gire o motorhome em tempo real, abra portas, janela basculante e toldo, estenda as gavetas solares, acenda as luzes noturnas e caminhe pelo interior v11.3 em primeira pessoa.</p>
     </div>
-    <div class="palco-barra">
-      <span class="vivo">Motor 3D Ativo · Interior v11.3</span>
-      <span>Arraste para girar · Clique nos comandos abaixo para acionar</span>
-    </div>
-    <div class="palco">
-      <iframe src="configurador.html?vitrine" title="Motorhome Solar em 3D: abra portas, janela e toldo" loading="lazy" allow="fullscreen"></iframe>
+    <div class="wrap visor">
+      <div class="visor-quadro" id="visor-quadro">
+        <div class="palco-barra">
+          <strong>Motorhome Solar em 3D</strong>
+          <div class="controles">
+            <span>Arraste para girar</span>
+            <a class="visor-acao" id="visor-expandir" href="configurador.html?vitrine">Tela cheia</a>
+          </div>
+        </div>
+        <div class="palco">
+          <iframe src="configurador.html?vitrine" title="Motorhome Solar em 3D: abra portas, janela e toldo" loading="lazy" allow="fullscreen"></iframe>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -364,7 +390,7 @@ footer .cred{grid-column:1/-1;margin-top:32px;padding-top:24px;border-top:1px so
     <div class="wrap">
       <div class="sec-head">
         <div>
-          <p class="olho"><em>03</em> Arquitetura Exterior</p>
+          <p class="olho">Arquitetura Exterior</p>
           <h2 class="disp" id="h-design">Feito para parar em qualquer lugar</h2>
         </div>
         <p class="lead">Aerodinâmica limpa na estrada e expansão completa no acampamento: em segundos o teto abre suas asas solares e a lateral direita se transforma em varanda iluminada.</p>
@@ -406,13 +432,13 @@ footer .cred{grid-column:1/-1;margin-top:32px;padding-top:24px;border-top:1px so
 
   <section class="det sec-pad" aria-labelledby="h-det">
     <div class="wrap">
-      <p class="olho"><em>03.1</em> Engenharia de Detalhe</p>
+      <p class="olho">Engenharia de Detalhe</p>
       <h2 class="disp" id="h-det" style="max-width:18ch">Luz de ponta a ponta, rodas aro 20″</h2>
       <div class="grade">
         <article class="card-det">
           <div class="foto"><img src="img/farol.jpg" alt="Frente do motorhome à noite com faróis LED e faixa contínua de luz diurna" loading="lazy"></div>
           <div class="card-txt">
-            <small>01 / Dianteira</small>
+            <small>Dianteira</small>
             <b>Assinatura LED Integral</b>
             <p>Faixa contínua de luz diurna (DRL) que cruza a dianteira e projetores duplos embutidos na máscara negra.</p>
           </div>
@@ -420,7 +446,7 @@ footer .cred{grid-column:1/-1;margin-top:32px;padding-top:24px;border-top:1px so
         <article class="card-det">
           <div class="foto"><img src="img/roda.jpg" alt="Roda aro 20 com tampa aerodinâmica, disco ventilado e pinça pintada na cor do friso" loading="lazy"></div>
           <div class="card-txt">
-            <small>02 / Rodagem</small>
+            <small>Rodagem</small>
             <b>Rodas Aero 20″ &amp; Freios a Disco</b>
             <p>Cubos com calota aerodinâmica de baixo arrasto, discos ventilados e pinças personalizadas na cor do friso.</p>
           </div>
@@ -428,7 +454,7 @@ footer .cred{grid-column:1/-1;margin-top:32px;padding-top:24px;border-top:1px so
         <article class="card-det">
           <div class="foto"><img src="img/traseira.jpg" alt="Traseira à noite com lanternas verticais e barra luminosa superior acesas" loading="lazy"></div>
           <div class="card-txt">
-            <small>03 / Traseira</small>
+            <small>Traseira</small>
             <b>Traseira com Barra Luminosa</b>
             <p>Lanternas verticais em LED, terceira luz de freio no topo e balanço traseiro chanfrado para maior ângulo de saída.</p>
           </div>
@@ -441,25 +467,28 @@ footer .cred{grid-column:1/-1;margin-top:32px;padding-top:24px;border-top:1px so
     <div class="wrap">
       <div class="inter-topo">
         <div>
-          <p class="olho"><em>04</em> Interior v11.3 &amp; Cockpit</p>
+          <p class="olho">Interior v11.3 &amp; Cockpit</p>
           <h2 class="disp" id="h-inter">Uma casa para dois</h2>
         </div>
         <p class="lead">Sala sobre tablado elevado de 15,5 cm com banquetas estofadas, cozinha com cooktop de indução e geladeira de 90 L, banheiro molhado reorganizado com vaso cassete e ducha, cama de casal transversal e bancos giratórios na cabine.</p>
       </div>
       <div class="grade">
-        <div class="foto">
+        <button type="button" class="foto galeria-mini" aria-haspopup="dialog" aria-label="Ampliar render da sala">
           <img src="img/sala.jpg" alt="Interior v11.3 à noite com forro ripado, cozinha equipada, banquetas da sala com almofadas e cama iluminados por fitas de LED" loading="lazy">
           <span class="foto-tag">Sala, Cozinha &amp; Quarto · Iluminação Noturna</span>
-        </div>
+          <span class="galeria-abrir" aria-hidden="true">Ampliar</span>
+        </button>
         <div class="grade-sub">
-          <div class="foto">
+          <button type="button" class="foto galeria-mini" aria-haspopup="dialog" aria-label="Ampliar render da planta">
             <img src="img/interior.jpg" alt="Corte superior isométrico mostrando cabine com bancos girados, cozinha, banheiro reorganizado, sala e cama transversal" loading="lazy">
             <span class="foto-tag">Planta Isométrica v11.3</span>
-          </div>
-          <div class="foto">
+            <span class="galeria-abrir" aria-hidden="true">Ampliar</span>
+          </button>
+          <button type="button" class="foto galeria-mini" aria-haspopup="dialog" aria-label="Ampliar render do cockpit">
             <img src="img/cabine.jpg" alt="Cockpit do motorista com volante multifuncional em couro e carbono e central de telemetria solar" loading="lazy">
             <span class="foto-tag">Cockpit &amp; Telemetria Solar</span>
-          </div>
+            <span class="galeria-abrir" aria-hidden="true">Ampliar</span>
+          </button>
         </div>
       </div>
       <div class="lista">
@@ -489,12 +518,12 @@ footer .cred{grid-column:1/-1;margin-top:32px;padding-top:24px;border-top:1px so
         <img data-cor="grafite_noite" src="img/grafite_noite.jpg" alt="Motorhome Solar em cinza grafite ao anoitecer, com os LEDs internos acesos" loading="lazy">
       </div>
       <div class="atelier-box">
-        <p class="olho"><em>05</em> Atelier de Configuração</p>
+        <p class="olho">Atelier de Configuração</p>
         <h2 class="disp" id="h-compra" style="font-size:clamp(32px,3.6vw,54px)">Monte o seu</h2>
         <div class="cores" role="group" aria-label="Cor da carroceria" id="cores"></div>
-        <p class="cor-nome" id="cor-nome"></p>
+        <p class="cor-nome" id="cor-nome" aria-live="polite"></p>
         <button class="chave-led" id="leds" aria-pressed="false"><span>Modo noturno &amp; LEDs internos</span><i aria-hidden="true"></i></button>
-        <div class="preco"><span>Preço configurado</span><strong id="preco">R$ 690.000</strong></div>
+        <div class="preco"><span>Preço configurado</span><strong id="preco" aria-live="polite">R$ 690.000</strong></div>
         <div class="acoes">
           <button class="btn ouro" id="abrir-cfg">Personalizar e reservar</button>
           <a class="btn sec" href="#experimente">Explorar em 3D</a>
@@ -509,6 +538,18 @@ footer .cred{grid-column:1/-1;margin-top:32px;padding-top:24px;border-top:1px so
     </div>
   </section>
 </main>
+
+<dialog class="galeria" id="galeria" aria-label="Galeria do interior">
+  <figure>
+    <img id="galeria-img" alt="">
+    <figcaption id="galeria-legenda" aria-live="polite"></figcaption>
+  </figure>
+  <nav aria-label="Controles da galeria">
+    <button type="button" class="galeria-acao" id="galeria-ant">Anterior</button>
+    <button type="button" class="galeria-acao" id="galeria-prox">Próxima</button>
+    <form method="dialog" id="galeria-fechar"><button class="galeria-acao" autofocus>Fechar</button></form>
+  </nav>
+</dialog>
 
 <dialog class="cfg" id="dlg" aria-label="Configurador do Motorhome Solar">
   <div class="barra"><b>Atelier 3D · Motorhome Solar</b><button id="fechar-cfg">Voltar ao site</button></div>
@@ -539,7 +580,7 @@ footer .cred{grid-column:1/-1;margin-top:32px;padding-top:24px;border-top:1px so
       </ul>
     </div>
     <div class="cred">
-      <span>Todas as imagens são renders 2400×1350 gerados diretamente do modelo 3D v11.3 do projeto.</span>
+      <span>Imagens renderizadas a partir do modelo 3D v11.3 do projeto.</span>
       <span>Série 01 · Entrega 02/12/2026</span>
     </div>
   </div>
@@ -547,13 +588,77 @@ footer .cred{grid-column:1/-1;margin-top:32px;padding-top:24px;border-top:1px so
 
 <script>
 (function(){
-  /* navegação: fundo sólido depois da abertura; menu no celular */
   const nav=document.getElementById('nav');
-  const solida=()=>nav.classList.toggle('solida',scrollY>40);
-  addEventListener('scroll',solida,{passive:true}); solida();
   const bt=document.getElementById('menu-bt');
-  bt.addEventListener('click',()=>{ const ab=!nav.classList.contains('aberto'); nav.classList.toggle('aberto',ab); bt.setAttribute('aria-expanded',ab); bt.textContent=ab?'Fechar':'Menu'; });
-  document.querySelectorAll('#menu-lista a').forEach(a=>a.addEventListener('click',()=>{ nav.classList.remove('aberto'); bt.setAttribute('aria-expanded',false); bt.textContent='Menu'; }));
+  const links=[...document.querySelectorAll('#menu-lista a')];
+  const secoes=links.map(a=>document.querySelector(a.hash));
+  function menu(aberto){
+    nav.classList.toggle('aberto',aberto);
+    bt.setAttribute('aria-expanded',aberto);
+    bt.textContent=aberto?'Fechar':'Menu';
+  }
+  bt.addEventListener('click',()=>menu(!nav.classList.contains('aberto')));
+  links.forEach(a=>a.addEventListener('click',()=>menu(false)));
+  nav.addEventListener('keydown',e=>{
+    if(e.key==='Escape' && nav.classList.contains('aberto')){
+      menu(false);
+      bt.focus();
+    }
+  });
+  let quadro=0;
+  function atualizaNav(){
+    quadro=0;
+    const altura=document.documentElement.scrollHeight-innerHeight;
+    nav.classList.toggle('solida',scrollY>40);
+    nav.style.setProperty('--progresso',altura>0?Math.min(1,Math.max(0,scrollY/altura)):0);
+    let atual=-1;
+    secoes.forEach((secao,i)=>{ if(secao.getBoundingClientRect().top<=nav.offsetHeight+32) atual=i; });
+    links.forEach((a,i)=>{
+      if(i===atual) a.setAttribute('aria-current','location');
+      else a.removeAttribute('aria-current');
+    });
+  }
+  function agendaNav(){ if(!quadro) quadro=requestAnimationFrame(atualizaNav); }
+  addEventListener('scroll',agendaNav,{passive:true});
+  addEventListener('resize',agendaNav);
+  new ResizeObserver(agendaNav).observe(document.querySelector('main'));
+  atualizaNav();
+
+  const visor=document.getElementById('visor-quadro');
+  const expandir=document.getElementById('visor-expandir');
+  const frameVitrine=visor.querySelector('iframe');
+  expandir.addEventListener('click',async e=>{
+    if(!document.fullscreenEnabled || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    if(document.fullscreenElement===visor){ await document.exitFullscreen(); return; }
+    try{ await visor.requestFullscreen(); }
+    catch{ location.assign(expandir.href); }
+  });
+  document.addEventListener('fullscreenchange',()=>{
+    expandir.textContent=document.fullscreenElement===visor?'Sair da tela cheia':'Tela cheia';
+  });
+
+  const miniaturas=[...document.querySelectorAll('.galeria-mini')];
+  const galeria=document.getElementById('galeria');
+  const imagem=document.getElementById('galeria-img');
+  const legenda=document.getElementById('galeria-legenda');
+  let foto=0;
+  function mostraFoto(i){
+    foto=(i+miniaturas.length)%miniaturas.length;
+    const mini=miniaturas[foto], img=mini.querySelector('img');
+    imagem.src=img.src;
+    imagem.alt=img.alt;
+    legenda.textContent=mini.querySelector('.foto-tag').textContent;
+  }
+  miniaturas.forEach((mini,i)=>mini.addEventListener('click',()=>{ mostraFoto(i); galeria.showModal(); }));
+  document.getElementById('galeria-ant').addEventListener('click',()=>mostraFoto(foto-1));
+  document.getElementById('galeria-prox').addEventListener('click',()=>mostraFoto(foto+1));
+  galeria.addEventListener('keydown',e=>{
+    if(e.key==='ArrowLeft' || e.key==='ArrowRight'){
+      e.preventDefault();
+      mostraFoto(foto+(e.key==='ArrowLeft'?-1:1));
+    }
+  });
 
   /* números: contam uma vez quando aparecem */
   const reduz=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -587,7 +692,7 @@ footer .cred{grid-column:1/-1;margin-top:32px;padding-top:24px;border-top:1px so
   let LEDS=false, COR=null;
   const ledBt=document.getElementById('leds');
   ledBt.addEventListener('click',()=>{ LEDS=!LEDS; ledBt.setAttribute('aria-pressed',LEDS); escolhe(COR,false);
-    const v=document.querySelector('.palco iframe'); try{ v.contentWindow.postMessage({leds:LEDS},'*'); }catch(e){} });
+    frameVitrine.contentWindow.postMessage({leds:LEDS},location.origin); });
   function escolhe(id,salvar){
     const c=CORES.find(x=>x.id===id)||CORES[0]; COR=c.id;
     coresEl.querySelectorAll('.cor').forEach(b=>b.setAttribute('aria-pressed',b.dataset.id===c.id));
@@ -600,9 +705,10 @@ footer .cred{grid-column:1/-1;margin-top:32px;padding-top:24px;border-top:1px so
     const extras=cfg.__total?cfg.__total-BASE-(PINT[(CORES.find(x=>x.id===cfg.pintura)||{}).tipo]||0):49000;
     document.getElementById('preco').textContent=brl(BASE+d+Math.max(0,extras));
     if(salvar){ const ant=PINT[(CORES.find(x=>x.id===cfg.pintura)||CORES[0]).tipo]; cfg.pintura=c.id; if(cfg.__total) cfg.__total+=d-ant; grava(cfg);
-      const v=document.querySelector('.palco iframe'); try{ v.contentWindow.postMessage({pintura:c.id},'*'); }catch(e){} }
+      frameVitrine.contentWindow.postMessage({pintura:c.id},location.origin); }
   }
   escolhe(le().pintura||'petroleo',false);
+  frameVitrine.addEventListener('load',()=>frameVitrine.contentWindow.postMessage({pintura:COR,leds:LEDS},location.origin));
 
   const dlg=document.getElementById('dlg'), fr=document.getElementById('cfg-frame');
   document.getElementById('abrir-cfg').addEventListener('click',()=>{ fr.src='configurador.html'; dlg.showModal(); document.body.style.overflow='hidden'; });
