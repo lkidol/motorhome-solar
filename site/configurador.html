@@ -1490,6 +1490,12 @@ async function carregaModelos(){
       const gl=await pega(pm.arq), obj=gl.scene.clone(true), o=compObj[pm.comp];
       const subst = pm.cfg.mat ? MI[pm.cfg.mat]() : null;
       obj.traverse(m=>{ if(!m.isMesh) return;
+        // Na sala, as costas e as laterais já são fechadas pelos painéis sob medida.
+        // O laminado original sobrepõe o estofado e aparece como manchas escuras.
+        if(pm.arq==='banqueta' && m.material.name==='LAMINADO_BOOTH'){
+          m.visible=false;
+          return;
+        }
         const tec = pm.cfg.tecido?.[m.material.name];
         if(subst){ m.material=subst; }
         else if(tec){ m.material=MI[tec]();   /* UVs do modelo estão em milímetros: cópia das texturas com repetição própria */
@@ -1497,6 +1503,7 @@ async function carregaModelos(){
         else { m.material=m.material.clone(); m.material.envMap=envTex; m.material.envMapIntensity=0.75; }
         m.material.clippingPlanes=[clip, ...(pm.cfg.cortes||[]).map(planoCorte)];
         m.material.side = pm.cfg.cortes ? THREE.DoubleSide : THREE.FrontSide;
+        if(pm.cfg.cortes) m.material.clipShadows=true;
         m.castShadow=m.receiveShadow=renderer.shadowMap.enabled;
         m.userData.comp=o.c; pickables.push(m); if(!o.mats.includes(m.material)) o.mats.push(m.material); });
       pm.g.add(encaixaModelo(obj,pm.cfg));
