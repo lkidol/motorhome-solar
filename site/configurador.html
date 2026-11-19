@@ -324,6 +324,8 @@ body.dentro .doca{display:none}
   .chaves{grid-template-columns:1fr}
   .top-acoes .btn-2{padding:0 12px;font-size:13px}
 }
+#vp .veu{position:absolute;inset:0;z-index:6;background:#0b0e11;opacity:0;pointer-events:none;transition:opacity .19s ease}
+#vp .veu.on{opacity:1}
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
 }
@@ -560,7 +562,7 @@ body.dentro .doca{display:none}
 
       <section class="tec" aria-labelledby="h-tec">
         <h2 id="h-tec">Modo técnico</h2>
-        <p class="nota" style="margin:0">Carcaça do STL, componentes e cotas do projeto · base v10 de 17/11/2026.</p>
+        <p class="nota" style="margin:0">Carcaça do STL, componentes e cotas do projeto · interior da v11.3 (modelos GLB, sala em tablado, banheiro reorganizado).</p>
         <h3>Cenas</h3>
         <div class="row"><button id="p-geral">Visão geral</button><button id="p-tecnico">Piso técnico</button></div>
         <h3>Vista</h3>
@@ -609,6 +611,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { toCreasedNormals } from 'three/addons/utils/BufferGeometryUtils.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 
 /* Configuração escolhida (lida pelo motor e pelo configurador). Fica salva neste navegador. */
 const CFG_PADRAO={pintura:'petroleo',teto:'preto',roda:'grafite',solar:'gavetas',amb:'carvalho',luz:'quente',toldo:'sim',estepe:'estepe'};
@@ -705,10 +708,10 @@ const COMPONENTES = [
   {"id": "coz", "grupo": "interior", "nome": "Bancada da cozinha (pia + cooktop 2 bocas)", "s": [2.74, 3.24], "x": [0.45, 1.03], "h": [0.3, 1.2], "nota": "Lado esquerdo, de frente para a porta de entrada. Bancada a 0,90 m do piso."},
   {"id": "gel", "grupo": "interior", "nome": "Geladeira 90 L (compressor 12 V)", "s": [3.24, 3.74], "x": [0.45, 1.03], "h": [0.3, 1.2], "nota": "Embaixo da bancada, no fim da cozinha."},
   {"id": "arm_coz", "grupo": "interior", "nome": "Armário aéreo da cozinha", "s": [2.74, 3.74], "x": [0.68, 1.0], "h": [1.62, 2.07]},
-  {"id": "banho", "grupo": "interior", "nome": "Banheiro 0,9 × 0,9 m (vaso cassete + chuveiro)", "s": [3.78, 4.68], "x": [0.13, 1.02], "h": [0.3, 2.08], "nota": "Lado esquerdo, em cima do tanque de água cinza."},
-  {"id": "bancoA", "grupo": "interior", "nome": "Banco da sala (frente)", "s": [3.74, 4.14], "x": [-1.03, -0.45], "h": [0.3, 1.25], "forma": "banco_r", "nota": "Sala do lado direito, sob a janela. A mesa abaixa e vira cama extra."},
-  {"id": "mesa", "grupo": "interior", "nome": "Mesa da sala", "s": [4.16, 4.62], "x": [-1.0, -0.42], "h": [0.3, 1.03], "forma": "mesa", "nota": "Bem embaixo da janela."},
-  {"id": "bancoB", "grupo": "interior", "nome": "Banco da sala (trás, sobre a caixa de roda)", "s": [4.64, 5.1], "x": [-1.03, -0.45], "h": [0.3, 1.3], "forma": "partes", "partes": [[[4.64, 4.665], [-1.03, -0.45], [0.3, 0.73]], [[4.665, 5.1], [-0.565, -0.45], [0.3, 0.73]], [[4.64, 5.1], [-1.03, -0.45], [0.73, 0.86]], [[4.98, 5.1], [-1.03, -0.45], [0.86, 1.3]]], "nota": "Construído por cima da caixa de roda traseira (topo a 0,72 m): o assento fica a 0,86 m, 0,56 m acima do piso. Um apoio de pés resolve."},
+  {"id": "banho", "grupo": "interior", "nome": "Banheiro 0,9 × 0,9 m (vaso cassete + chuveiro)", "s": [3.78, 4.68], "x": [0.13, 1.02], "h": [0.3, 2.08], "nota": "Lado esquerdo, em cima do tanque de água cinza. Banheiro molhado: pia e vaso cassete junto à parede externa (a gaveta do cassete sai por fora), chuveiro na faixa livre junto à porta, com ralo no meio e cortina. A porta abre para o corredor."},
+  {"id": "bancoA", "grupo": "interior", "nome": "Banco fixo da sala (frente)", "s": [3.70, 4.27], "x": [-1.03, -0.45], "h": [0.3, 1.41], "forma": "banco_r", "nota": "Banqueta estofada fixa, do tipo usado em cantinhos de cozinha: base fechada parafusada no tablado, encosto de gomos verticais e cinto subabdominal. Assento a 0,42 m do tablado, 29 cm abaixo do tampo da mesa."},
+  {"id": "mesa", "grupo": "interior", "nome": "Mesa da sala (sobre tablado de 15,5 cm)", "s": [4.16, 4.62], "x": [-1.0, -0.42], "h": [0.3, 1.165], "forma": "mesa", "nota": "Bem embaixo da janela. A sala fica num tablado de 15,5 cm para os dois bancos ficarem na mesma altura (o de trás não desce por causa da caixa de roda). Tampo a 0,71 m do tablado, 29 cm acima dos assentos."},
+  {"id": "bancoB", "grupo": "interior", "nome": "Banco fixo da sala (trás, sobre a caixa de roda)", "s": [4.64, 5.1], "x": [-1.03, -0.45], "h": [0.3, 1.3], "forma": "partes", "partes": [[[4.64, 4.665], [-1.03, -0.45], [0.3, 0.73]], [[4.665, 5.1], [-0.565, -0.45], [0.3, 0.73]], [[4.64, 5.1], [-1.03, -0.45], [0.73, 0.86]], [[4.98, 5.1], [-1.03, -0.45], [0.86, 1.3]]], "nota": "A mesma banqueta, sem a base, assentada num tampo fino logo acima da caixa de roda (0,745 m). Assento a 0,42 m do tablado, igual ao da frente."},
   {"id": "roupa", "grupo": "interior", "nome": "Guarda-roupa sobre a caixa de roda (esq.)", "s": [4.72, 5.2], "x": [0.585, 1.03], "h": [0.73, 2.06], "nota": "Apoiado no topo da caixa de roda traseira (0,72 m), até 2,06 m."},
   {"id": "degrau1", "grupo": "interior", "nome": "Degrau 1 de acesso à cama", "s": [4.62, 4.8], "x": [-0.4, 0.1], "h": [0.045, 0.5], "nota": "Do piso da sala (0,30 m) para 0,50 m."},
   {"id": "degrau", "grupo": "interior", "nome": "Degrau 2 / tampa do motor", "s": [4.8, 5.2], "x": [-0.45, 0.45], "h": [0.05, 0.7], "forma": "partes", "partes": [[[4.8, 4.82], [-0.45, 0.45], [0.05, 0.68]], [[4.8, 5.2], [-0.45, 0.45], [0.68, 0.7]]], "nota": "Tampa a 0,70 m sobre o motor; de lá se sobe para o estrado da cama (0,80 m)."},
@@ -883,14 +886,16 @@ async function carregaMalha(){
       const [det0,rel] = await Promise.all(['detalhes.json','relevos.json'].map(async f=>{ try{ return await (await fetch(f)).json(); }catch(e){ console.error(f,e); return []; } }));
       const det=[...det0,...rel]; const tex=placaTex();
       for(const d of det){
-        const o=compObj[d.id]; if(!o) continue;
+        const [cid,porta]=d.id.split('|'); const o=compObj[cid]; if(!o) continue;
         const g=new THREE.BufferGeometry();
         g.setAttribute('position',new THREE.BufferAttribute(b64(d.pos,Float32Array),3));
         g.setIndex(new THREE.BufferAttribute(b64(d.idx,Uint32Array),1)); g.computeVertexNormals();
         const mat=MATS_DET[d.mat]();
         if(d.mat==='placa'){ uvPlano(g,d.id==='placaT'); mat.map=tex; }
         const mesh=new THREE.Mesh(g,mat); mesh.renderOrder = d.mat==='lente'?4:2; mesh.userData.comp=o.c;
-        o.g.add(mesh); pickables.push(mesh); o.mats.push(mat); if(d.mat==='lente') mat.userData.op=0.3;
+        /* peças presas a uma porta (ex.: 'vinco|portaE') giram junto com ela */
+        if(porta&&PIVOS[porta]){ mesh.position.sub(PIVOS[porta].position); PIVOS[porta].add(mesh); mesh.userData.comp=compObj[porta].c; compObj[porta].mats.push(mat); } else o.g.add(mesh);
+        pickables.push(mesh); if(!porta) o.mats.push(mat); if(d.mat==='lente') mat.userData.op=0.3;
         regLuz(d.id+':'+d.mat,mat);
       }
     }catch(e){ console.error(e); }
@@ -1005,6 +1010,12 @@ function pbr(nome,rep=[1,1],cor=true){
   return PBR_C[k]={ map:ld(nome+(cor?'_diff.jpg':'_cinza.jpg'),true), normalMap:ld(nome+'_nor.jpg',false), roughnessMap:ld(nome+'_rough.jpg',false) };
 }
 const NS=(k)=>new THREE.Vector2(k,k);
+/* ---------- modelos 3D reais (GLB) ----------
+   Peças baixadas de bibliotecas abertas e otimizadas (meshopt). Cada uma entra num "slot" vazio criado pelo
+   construtor da peça; o arquivo é carregado depois e encaixado na caixa [s0,s1,x0,x1,h0,h1] do slot.
+   rotY gira o modelo antes do encaixe; espelhoZ espelha na lateral; modo 'uniforme' mantém a proporção. */
+const MODELOS_PEND=[];
+function slotModelo(arq,cfg){ const g=new THREE.Group(); g.name='slot:'+arq; MODELOS_PEND.push({arq,cfg,g}); return g; }
 /* materiais (um por peça, para o foco e a opacidade funcionarem por componente) */
 const MI={
   carvalho:()=>new THREE.MeshStandardMaterial({...pbr('carvalho'),normalScale:NS(0.6),roughness:0.9,clippingPlanes:[clip]}),
@@ -1078,15 +1089,8 @@ BUILD.telaRet=c=>{ const m=MI.preto(), sc=MI.tela(texRet()); const o=[];
 BUILD.volante=c=>{
   const [s0,s1]=c.s,[x0,x1]=c.x,[h0,h1]=c.h, m=MI.macio(), al=MI.alu(), o=[];
   const cen=W((s0+s1)/2,(x0+x1)/2,(h0+h1)/2), ax=new THREE.Vector3(Math.cos(0.55),Math.sin(0.55),0);
-  const q=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,0,1),ax);
-  const aro=new THREE.Mesh(new THREE.TorusGeometry(0.18,0.024,14,48),m); aro.quaternion.copy(q); aro.position.copy(cen); o.push(aro);
-  const hub=new THREE.Mesh(new THREE.CylinderGeometry(0.065,0.07,0.06,28),m); hub.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),ax); hub.position.copy(cen); o.push(hub);
-  for(const a of [Math.PI/2+0.0, Math.PI*1.17, -Math.PI*0.17]){
-    const v=new THREE.Vector3(Math.cos(a)*0.12,Math.sin(a)*0.12,0).applyQuaternion(q);
-    const sp=new THREE.Mesh(new RoundedBoxGeometry(0.11,0.022,0.035,2,0.009),m); sp.position.copy(cen).addScaledVector(v,0.52);
-    sp.quaternion.copy(q).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,0,1),a)); o.push(sp); }
-  const emb=new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.025,0.065,20),al); emb.quaternion.copy(hub.quaternion); emb.position.copy(cen); o.push(emb);
-  const fim=W(1.62,(x0+x1)/2,0.93), dir=new THREE.Vector3().subVectors(cen,fim);
+  o.push(slotModelo('volante',{volante:{cen,ax}}));
+  const fim=W(1.62,(x0+x1)/2,0.93), dir=new THREE.Vector3().subVectors(cen,fim).multiplyScalar(0.86);
   const col=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.05,dir.length(),18),m); col.position.copy(fim).addScaledVector(dir,0.5);
   col.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),dir.clone().normalize()); o.push(col);
   return o;
@@ -1105,16 +1109,9 @@ BUILD.console=c=>{ const m=MI.macio(), m2=MI.macio2(), te=MI.tecido(), pr=MI.pre
 BUILD.banco_cab=c=>{
   const [s0,s1]=c.s,[x0,x1]=c.x,[h0]=c.h; const te=MI.tecido(), es=MI.estofado(), pr=MI.preto(), al=MI.alu(); const o=[];
   const xin = (x0+x1)/2>0 ? x0 : x1;
-  o.push(cil((s0+s1)/2,(x0+x1)/2,h0,h0+0.09,0.16,pr), rb(s0+0.05,s1-0.08,x0+0.04,x1-0.04,h0+0.09,h0+0.17,pr,0.03));
-  o.push(rb(s0+0.01,s1-0.10,x0+0.05,x1-0.05,h0+0.15,h0+0.26,te,0.05));
-  o.push(rb(s0+0.04,s1-0.14,x0+0.15,x1-0.15,h0+0.255,h0+0.27,es,0.006));
-  for(const [a,b] of [[x0+0.005,x0+0.085],[x1-0.085,x1-0.005]]) o.push(rb(s0+0.03,s1-0.12,a,b,h0+0.17,h0+0.31,te,0.035));
-  const enc=[ rb(s1-0.15,s1-0.02,x0+0.02,x1-0.02,h0+0.27,h0+0.98,te,0.06), rb(s1-0.16,s1-0.145,x0+0.15,x1-0.15,h0+0.36,h0+0.92,es,0.006),
-              rb(s1-0.12,s1-0.03,x0+0.005,x0+0.07,h0+0.34,h0+0.90,te,0.03), rb(s1-0.12,s1-0.03,x1-0.07,x1-0.005,h0+0.34,h0+0.90,te,0.03) ];
-  for(const e of enc){ e.rotation.z=-0.16; e.position.x+=0.05; o.push(e); }
-  const cab=rb(s1-0.11,s1-0.02,x0+0.13,x1-0.13,h0+1.08,h0+1.30,te,0.045); cab.rotation.z=-0.16; cab.position.x+=0.16; o.push(cab);
-  for(const dx of [-0.08,0.08]){ const p=cil(s1-0.07,(x0+x1)/2+dx,h0+0.96,h0+1.10,0.007,al); p.rotation.z=-0.16; p.position.x+=0.16; o.push(p); }
-  o.push(rb(s0+0.22,s1-0.16,xin-0.035,xin+0.035,h0+0.40,h0+0.46,te,0.025));
+  // base giratória (pedestal + prato) e, em cima, o banco automotivo real (trilhos, regulagens e encosto de cabeça)
+  o.push(cil((s0+s1)/2,(x0+x1)/2,h0,h0+0.07,0.17,pr), rb(s0+0.06,s1-0.06,x0+0.05,x1-0.05,h0+0.065,h0+0.10,pr,0.02));
+  o.push(slotModelo('banco_cab',{caixa:[s0-0.06,s1+0.02,x0,x1,h0+0.10,h0+1.12],rotY:Math.PI,modo:'uniforme'}));
   const piv=pivo(o,(s0+s1)/2,(x0+x1)/2,0); bancosPiv.push(piv); return [piv];
 };
 BUILD.piso=c=>{ const L=c.s[1]-c.s[0], Wd=c.x[1]-c.x[0]; const pm=MI.piso(L,Wd);
@@ -1162,47 +1159,62 @@ BUILD.banho=c=>{
   o.push(rb(3.78,3.92,0.13,0.15,0.30,2.08,br,0.008), rb(4.48,4.68,0.13,0.15,0.30,2.08,br,0.008), rb(3.92,4.48,0.13,0.15,1.995,2.08,br,0.008));
   o.push(rb(3.78,3.80,0.15,1.02,0.30,2.08,br,0.008), rb(4.66,4.68,0.15,1.02,0.30,2.08,br,0.008), rb(3.80,4.66,1.0,1.02,0.30,2.08,br,0.008));
   o.push(rb(3.78,4.68,0.13,1.02,2.06,2.08,br,0.008));
-  o.push(rb(3.80,4.66,0.15,1.0,0.30,0.335,new THREE.MeshStandardMaterial({...pbr('terrazo',[1.5,1.5]),normalScale:NS(0.5),roughness:0.7,clippingPlanes:[clip]}),0.012), cil(4.0,0.40,0.335,0.338,0.03,MI.inoxF()));
-  o.push(rb(4.30,4.645,0.62,0.985,0.335,0.66,lc,0.06), anel(4.47,0.80,0.68,0.12,0.022,lc), rb(4.33,4.61,0.65,0.95,0.655,0.67,lc,0.007));
-  const tampa=rb(4.60,4.635,0.66,0.94,0.70,1.04,lc,0.02); tampa.rotation.z=0.12; o.push(tampa);
-  o.push(rb(4.64,4.655,0.70,0.90,0.70,0.79,MI.preto(),0.005));
+  /* Banheiro molhado 0,86 × 0,85 m. A porta abre para fora, para o corredor.
+     Parede externa (x = 1,0): pia na frente e vaso cassete atrás, de costas para a parede (a gaveta do cassete sai por fora).
+     Faixa livre junto à porta (x 0,15–0,56): área do chuveiro, com ralo no meio e cortina que protege pia e vaso. */
+  o.push(rb(3.80,4.66,0.15,1.0,0.30,0.335,new THREE.MeshStandardMaterial({...pbr('terrazo',[1.5,1.5]),normalScale:NS(0.5),roughness:0.7,clippingPlanes:[clip]}),0.012), cil(4.30,0.35,0.335,0.338,0.035,MI.inoxF()));
+  o.push(slotModelo('vaso',{caixa:[4.22,4.645,0.56,0.995,0.335,0.80],rotY:Math.PI,modo:'livre',escalaY:1.17,mat:'louca'}));
+  o.push(rb(4.33,4.53,0.985,1.0,0.84,0.92,MI.preto(),0.006), rb(4.40,4.46,0.98,0.986,0.87,0.89,MI.inoxF(),0.004));   // descarga e ventilação do cassete
+  { const rolo=cil(4.62,0.515,0.0,0.10,0.055,MI.branco()); rolo.geometry.rotateX(Math.PI/2); rolo.position.copy(W(4.60,0.47,0.78)); o.push(rolo,
+      rb(4.645,4.66,0.40,0.54,0.76,0.80,inx,0.006)); }                                                          // papel higiênico na parede de trás
   o.push(rb(3.80,4.12,0.66,1.0,0.335,1.04,cr,0.02), rb(3.81,4.11,0.645,0.665,0.36,1.02,MI.frente(),0.01), rb(3.90,4.02,0.636,0.646,0.98,0.995,mad,0.004));
   o.push(tampo(3.80,4.12,0.64,1.0,1.04,0.03,0.025,mad), rb(3.85,4.07,0.70,0.96,1.07,1.13,lc,0.04), rb(3.87,4.05,0.72,0.94,1.124,1.131,MI.inoxF(),0.03));
   o.push(cil(3.96,0.975,1.13,1.25,0.009,inx), rb(3.955,3.965,0.92,0.975,1.235,1.245,inx,0.004));
   o.push(rb(3.82,4.13,0.90,0.995,1.25,1.80,cr,0.02), rb(3.83,4.12,0.893,0.902,1.26,1.79,MI.espelho(),0.012));
-  o.push(rb(4.22,4.30,0.985,1.0,1.10,1.18,inx,0.01), cil(4.26,0.97,1.18,1.95,0.007,inx), rb(4.20,4.32,0.90,1.0,1.95,1.965,inx,0.02));
-  { const ar=new THREE.Mesh(new THREE.TorusGeometry(0.08,0.008,10,40),inx); ar.position.copy(W(4.42,0.975,1.45)); o.push(ar); }
-  { const L=[], P=[[3.83,0.18],[4.63,0.18],[4.63,0.97],[3.83,0.97]], u=0.03;
-    for(let d=0;d<4;d++){ const a=P[d], b=P[(d+1)%4], k=[Math.sign(b[0]-a[0]),Math.sign(b[1]-a[1])];
-      L.push([a[0]+k[0]*u,a[1]+k[1]*u,2.05],[b[0]-k[0]*u,b[1]-k[1]*u,2.05]); }
-    o.push(fita(L,true,0.006)); }
+  // chuveiro na parede de trás, na faixa livre: barra com ducha manual, misturador e ducha de teto sobre o ralo (s 4,30; x 0,35)
+  o.push(rb(4.625,4.66,0.17,0.27,1.08,1.17,inx,0.012), cil(4.615,0.195,1.11,1.14,0.014,inx), cil(4.615,0.245,1.11,1.14,0.014,inx));
+  o.push(slotModelo('chuveiro_barra',{caixa:[4.49,4.66,0.30,0.48,0.95,1.95],rotY:Math.PI,modo:'uniforme',mat:'inox'}));
+  o.push(slotModelo('chuveiro_ducha',{caixa:[4.30,4.66,0.26,0.44,1.95,2.03],rotY:Math.PI/2,modo:'uniforme',mat:'inox'}));
+  // cortina no trilho do teto, separando o chuveiro da pia e do vaso (recolhida junto à parede da frente)
+  o.push(rb(3.80,4.66,0.567,0.577,1.985,1.997,inx,0.004));
+  { const cort=new THREE.MeshStandardMaterial({color:'#e9eef0',roughness:0.7,transparent:true,opacity:0.92,side:THREE.DoubleSide,clippingPlanes:[clip]});
+    for(const [a,dx] of [[3.805,-0.012],[3.84,0.012],[3.875,-0.008]]) o.push(rb(a,a+0.035,0.562+dx,0.582+dx,0.62,1.98,cort,0.01)); }
+  { const ar=new THREE.Mesh(new THREE.TorusGeometry(0.08,0.008,10,40),inx); ar.rotation.y=Math.PI/2; ar.position.copy(W(3.815,0.30,1.50)); o.push(ar,
+      rb(3.80,3.815,0.27,0.33,1.57,1.60,inx,0.005)); }                                                         // argola de toalha na parede da frente
+  { const q=[], c=[[3.83,0.18],[4.63,0.18],[4.63,0.97],[3.83,0.97]], r=0.03;
+    for(let i=0;i<4;i++){ const a=c[i], b=c[(i+1)%4], d=[Math.sign(b[0]-a[0]),Math.sign(b[1]-a[1])];
+      q.push([a[0]+d[0]*r,a[1]+d[1]*r,2.05],[b[0]-d[0]*r,b[1]-d[1]*r,2.05]); }
+    o.push(fita(q,true,0.006)); }
   const porta=[ rb(3.925,4.475,0.13,0.15,0.335,1.99,MI.frente(),0.012), rb(4.40,4.45,0.115,0.13,1.05,1.07,mad,0.006), rb(4.40,4.45,0.15,0.165,1.05,1.07,mad,0.006),
                 rb(4.0,4.4,0.128,0.132,1.55,1.85,new THREE.MeshPhysicalMaterial({color:'#dfe4e6',roughness:0.6,transmission:0,transparent:true,opacity:0.85,clippingPlanes:[clip]}),0.02) ];
   portaBanhoPiv=pivo(porta,3.925,0.14,0); o.push(portaBanhoPiv);
   return o; };
 BUILD.banco_r=c=>{ const es=MI.estofado(), cr=MI.creme(), pr=MI.preto(), mad=MI.carvalho(), mo=MI.mostarda(), o=[];
-  o.push(rb(3.76,4.14,-1.03,-0.47,0.38,0.62,cr,0.02), rb(3.77,4.13,-1.0,-0.52,0.30,0.385,pr,0.01), rb(3.78,4.12,-0.47,-0.462,0.40,0.43,mad,0.004));
-  o.push(rb(3.74,3.80,-1.03,-0.45,0.62,1.20,cr,0.02));
-  for(const [a,b] of [[-1.02,-0.745],[-0.735,-0.46]]){ o.push(rb(3.84,4.14,a,b,0.62,0.75,es,0.05));
-    const bk=rb(3.79,3.88,a+0.01,b-0.01,0.76,1.20,es,0.045); bk.rotation.z=0.10; bk.position.x-=0.01; o.push(bk); }
+  // banqueta fixa estofada (tipo booth de cozinha), parafusada no piso; a ponta que passaria da parede é cortada
+  o.push(slotModelo('banqueta',{caixa:[3.70,4.27,-1.45,-0.45,0.455,1.405],modo:'uniforme',tecido:{VINIPIEL_NARANJA:'estofado'},cortes:[['x','>',-1.02]]}));
+  o.push(rb(3.70,4.25,-1.035,-0.99,0.30,1.375,MI.creme(),0.015));   // tampa lateral junto à parede
+  o.push(rb(3.695,3.728,-1.03,-0.45,0.30,1.41,MI.creme(),0.015));   // costas da banqueta, fechadas como os armários
   return o; };
 BUILD.mesa=c=>{ const mad=MI.carvalho(), inx=MI.inox(), o=[];
-  o.push(tampo(4.16,4.62,-1.0,-0.42,1.0,0.03,0.07,mad), cil(4.39,-0.71,0.30,0.315,0.15,MI.inox(),32), cil(4.39,-0.71,0.315,1.0,0.03,inx));
-  o.push(rb(4.37,4.41,-0.995,-0.97,0.92,1.0,inx,0.008));
-  const caneca=[cil(4.30,-0.58,1.03,1.12,0.04,MI.louca(),24)]; const asa=new THREE.Mesh(new THREE.TorusGeometry(0.025,0.007,8,16),MI.louca()); asa.position.copy(W(4.30,-0.535,1.075)); caneca.push(asa); o.push(...caneca);
-  o.push(rb(4.45,4.58,-0.90,-0.68,1.03,1.05,new THREE.MeshStandardMaterial({color:'#3d5a80',roughness:0.8,clippingPlanes:[clip]}),0.006), rb(4.452,4.578,-0.898,-0.682,1.05,1.058,MI.branco(),0.003));
+  const d=0.135;   // a sala fica num tablado de 15,5 cm: assentos a 0,42 m e tampo a 0,71 m do tablado (29 cm de folga)
+  o.push(rb(3.70,4.64,-1.03,-0.45,0.30,0.44,MI.creme(),0.01), rb(3.70,4.64,-1.03,-0.455,0.44,0.455,MI.piso(0.94,0.58),0.004), rb(3.70,4.64,-0.458,-0.446,0.43,0.458,MI.alu(),0.004));
+  o.push(tampo(4.16,4.62,-1.0,-0.42,1.0+d,0.03,0.07,mad), cil(4.39,-0.71,0.30+d,0.315+d,0.15,MI.inox(),32), cil(4.39,-0.71,0.315+d,1.0+d,0.03,inx));
+  o.push(rb(4.37,4.41,-0.995,-0.97,0.92+d,1.0+d,inx,0.008));
+  const caneca=[cil(4.30,-0.58,1.03+d,1.12+d,0.04,MI.louca(),24)]; const asa=new THREE.Mesh(new THREE.TorusGeometry(0.025,0.007,8,16),MI.louca()); asa.position.copy(W(4.30,-0.535,1.075+d)); caneca.push(asa); o.push(...caneca);
+  o.push(rb(4.45,4.58,-0.90,-0.68,1.03+d,1.05+d,new THREE.MeshStandardMaterial({color:'#3d5a80',roughness:0.8,clippingPlanes:[clip]}),0.006), rb(4.452,4.578,-0.898,-0.682,1.05+d,1.058+d,MI.branco(),0.003));
   return o; };
 BUILD.bancoB=c=>{ const es=MI.estofado(), cr=MI.creme(), mad=MI.carvalho(), mo=MI.mostarda(), o=[];
-  o.push(rb(4.64,4.67,-1.03,-0.45,0.30,0.73,cr,0.012), rb(4.665,5.10,-0.565,-0.45,0.30,0.73,cr,0.012), rb(4.64,5.10,-1.03,-0.45,0.73,0.78,cr,0.015));
-  o.push(rb(4.66,5.0,-1.02,-0.46,0.78,0.88,es,0.045));
-  const bk=rb(4.97,5.09,-1.01,-0.47,0.88,1.28,es,0.045); bk.rotation.z=-0.10; o.push(bk);
-  o.push(rb(4.55,4.63,-0.98,-0.50,0.47,0.50,mad,0.012));
+  o.push(rb(4.64,4.67,-1.03,-0.45,0.30,0.72,cr,0.012), rb(4.665,5.10,-0.565,-0.45,0.30,0.72,cr,0.012), rb(4.64,5.10,-1.03,-0.45,0.72,0.745,cr,0.01));
+  // a mesma banqueta, sem a base, assentada no tampo sobre a caixa de roda
+  o.push(slotModelo('banqueta',{caixa:[4.63,5.106,-1.45,-0.45,0.489,1.358],rotY:Math.PI,modo:'uniforme',tecido:{VINIPIEL_NARANJA:'estofado'},cortes:[['x','>',-1.02],['h','>',0.745]]}));
+  o.push(rb(4.64,5.10,-1.035,-0.99,0.745,1.33,MI.creme(),0.015));   // tampa lateral junto à parede
+  o.push(rb(5.082,5.115,-1.03,-0.45,0.72,1.345,MI.creme(),0.015));  // costas da banqueta, voltadas para a cama
   return o; };
 BUILD.degrau1=c=>{ return [ rb(4.63,4.80,-0.40,0.10,0.045,0.47,MI.creme(),0.015), rb(4.615,4.80,-0.41,0.11,0.47,0.50,MI.carvalho(),0.014), rb(4.612,4.64,-0.40,0.10,0.484,0.496,MI.preto(),0.005) ]; };
 BUILD.degrau=c=>{ return [ rb(4.80,4.83,-0.45,0.45,0.05,0.68,MI.creme(),0.012), rb(4.795,5.20,-0.455,0.455,0.675,0.70,MI.carvalho(),0.012),
   rb(4.86,4.96,-0.06,0.06,0.699,0.702,MI.preto(),0.01) ]; };
-BUILD.estrado=c=>{ const cr=MI.creme(); return [ rb(5.20,6.62,-0.955,0.955,0.775,0.80,MI.carvalho(),0.012), rb(5.20,5.23,-0.955,0.955,0.712,0.80,cr,0.01),
-  rb(5.20,5.23,0.45,0.57,0.03,0.715,cr,0.01), rb(5.20,5.23,-0.57,-0.45,0.03,0.715,cr,0.01) ]; };
+BUILD.estrado=c=>{ const cr=MI.creme(); return [ rb(5.20,6.62,-0.955,0.955,0.775,0.80,MI.carvalho(),0.012), rb(5.20,5.23,-0.955,0.955,0.745,0.80,cr,0.01),
+  rb(5.20,5.23,0.45,0.54,0.128,0.715,cr,0.01), rb(5.20,5.23,-0.54,-0.45,0.128,0.715,cr,0.01) ]; };
 BUILD.cama=c=>{ const le=MI.lencol(), ed=MI.edredom(), es=MI.estofado(), mo=MI.mostarda(), o=[];
   o.push(rb(5.21,6.59,-0.945,0.945,0.80,0.935,le,0.06));
   o.push(rb(5.20,6.60,-0.95,0.52,0.925,0.975,ed,0.04), rb(5.215,6.585,0.33,0.56,0.965,1.01,ed,0.03));
@@ -1216,13 +1228,13 @@ BUILD.acab=c=>{ const m=MI.macio(), cr=MI.creme(), al=MI.alu(), o=[];
     o.push(rb(0.62,1.725,r*0.535,r*0.56,0.03,0.76,m,0.008), rb(0.62,1.725,r*0.535,r*1.07,0.712,0.76,m,0.012));
     o.push(rb(1.725,1.76,r*0.535,r*1.05,0.03,0.76,m,0.008));
     o.push(rb(1.76,2.62,r*1.0,r*1.056,0.035,0.29,m,0.006));
-    o.push(rb(1.78,2.54,r*0.975,r*1.058,0.285,0.302,al,0.005));
+    o.push(rb(1.78,2.54,r*0.975,r*1.05,0.285,0.302,al,0.005));
   }
   o.push(rb(1.40,1.47,-0.535,0.535,0.04,0.76,m,0.02));
   o.push(rb(1.725,1.76,-0.535,0.535,0.03,0.30,m,0.008));
-  o.push(rb(2.69,3.70,-1.05,-1.0,0.035,0.29,cr,0.006), rb(2.71,3.70,-1.052,-0.97,0.285,0.302,al,0.005));
-  o.push(rb(4.66,5.20,0.45,0.47,0.03,0.735,cr,0.006), rb(4.66,4.678,0.47,1.03,0.03,0.30,cr,0.006), rb(4.68,5.20,0.47,1.03,0.708,0.735,cr,0.008));
-  o.push(rb(4.66,5.20,-0.47,-0.45,0.03,0.78,cr,0.006), rb(4.66,4.678,-1.03,-0.47,0.03,0.30,cr,0.006), rb(5.10,5.20,-1.03,-0.47,0.708,0.78,cr,0.008));
+  o.push(rb(2.715,3.69,-1.047,-1.0,0.035,0.29,cr,0.006), rb(2.72,3.685,-1.047,-0.97,0.285,0.302,al,0.005));
+  o.push(/* lateral do degrau: o fundo sobe a partir de 4,75 m */ rb(4.66,4.8,0.45,0.47,0.042,0.735,cr,0.006), rb(4.8,5.0,0.45,0.47,0.075,0.735,cr,0.006), rb(5.0,5.2,0.45,0.47,0.117,0.735,cr,0.006), rb(4.648,4.666,0.47,0.99,0.04,0.30,cr,0.006), rb(4.68,5.20,0.47,1.015,0.708,0.735,cr,0.008));
+  o.push(rb(4.66,4.8,-0.47,-0.45,0.042,0.78,cr,0.006), rb(4.8,5.0,-0.47,-0.45,0.075,0.78,cr,0.006), rb(5.0,5.2,-0.47,-0.45,0.117,0.78,cr,0.006), rb(4.648,4.666,-0.99,-0.47,0.04,0.30,cr,0.006), rb(5.10,5.20,-1.03,-0.47,0.708,0.745,cr,0.008));
   return o; };
 BUILD.arm_tras=c=>armario(6.62,6.93,-0.80,0.80,1.50,1.86,{portas:3,frenteS:6.62});
 
@@ -1413,8 +1425,58 @@ for(const c of COMPONENTES){
   const meshes=[]; g.traverse(o=>{ if(o.isMesh&&!parts.includes(o)){ o.userData.comp=c; pickables.push(o); } if(o.isMesh) meshes.push(o); });
   const mats=[...new Set(meshes.flatMap(p=>Array.isArray(p.material)?p.material:[p.material]))].filter(m=>m&&m!==vidroMat&&m!==fitaMat);
   compObj[c.id]={c,g,mat,mats,edges,center:W((s0+s1)/2,(x0+x1)/2,(h0+h1)/2)};
+  for(const pm of MODELOS_PEND) if(!pm.comp) pm.comp=c.id;
 }
-
+/* posiciona o modelo: gira, mede, escala e centraliza na caixa do slot (fundo apoiado em h0) */
+function encaixaModelo(obj,cfg){
+  const raiz=new THREE.Group(); raiz.add(obj);
+  if(cfg.volante){                                   // eixo do modelo (+Y) vira o eixo da coluna; centro do aro no centro do volante
+    const bb=new THREE.Box3().setFromObject(obj), c=bb.getCenter(new THREE.Vector3());
+    obj.position.set(-c.x,-(bb.max.y-0.035),-c.z);
+    raiz.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),cfg.volante.ax);
+    raiz.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),cfg.rolar??0));
+    raiz.position.copy(cfg.volante.cen); return raiz;
+  }
+  obj.rotation.y=cfg.rotY||0; if(cfg.espelhoZ) obj.scale.z=-1;
+  obj.updateMatrixWorld(true);
+  const bb=new THREE.Box3().setFromObject(obj), tam=bb.getSize(new THREE.Vector3());
+  const [s0,s1,x0,x1,h0,h1]=cfg.caixa, alvo=new THREE.Vector3(s1-s0,h1-h0,x1-x0);
+  let k=new THREE.Vector3(alvo.x/tam.x,alvo.y/tam.y,alvo.z/tam.z);
+  if(cfg.modo==='uniforme'){ const m=Math.min(k.x,k.y,k.z); k.set(m,m,m); }
+  if(cfg.escalaY) k.y=Math.min(alvo.y/tam.y,k.x*cfg.escalaY);
+  const meio=W((s0+s1)/2,(x0+x1)/2,h0);
+  raiz.scale.copy(k);
+  raiz.position.set(meio.x-(bb.min.x+bb.max.x)/2*k.x, meio.y-bb.min.y*k.y, meio.z-(bb.min.z+bb.max.z)/2*k.z);
+  return raiz;
+}
+/* plano de corte em coordenadas de projeto: ['x','>',v] mantém x > v; eixos s, x, h */
+function planoCorte([eixo,sin,v]){ const n=new THREE.Vector3(...(eixo==='s'?[1,0,0]:eixo==='h'?[0,1,0]:[0,0,1])), c=eixo==='s'?v-3.5:eixo==='h'?v+VAO:v;
+  if(sin==='>') return new THREE.Plane(n,-c); return new THREE.Plane(n.negate(),c); }
+async function bufModelo(arq){ const r=await fetch('modelos/'+arq+'.glb'); if(!r.ok) throw new Error(arq+': '+r.status); return r.arrayBuffer(); }
+async function carregaModelos(){
+  const ldr=new GLTFLoader().setMeshoptDecoder(MeshoptDecoder), cache={};
+  const pega=arq=>cache[arq]??=bufModelo(arq).then(b=>ldr.parseAsync(b,''));
+  await Promise.all(MODELOS_PEND.map(async pm=>{
+    try{
+      const gl=await pega(pm.arq), obj=gl.scene.clone(true), o=compObj[pm.comp];
+      const subst = pm.cfg.mat ? MI[pm.cfg.mat]() : null;
+      obj.traverse(m=>{ if(!m.isMesh) return;
+        const tec = pm.cfg.tecido?.[m.material.name];
+        if(subst){ m.material=subst; }
+        else if(tec){ m.material=MI[tec]();   /* UVs do modelo estão em milímetros: cópia das texturas com repetição própria */
+          for(const k of ['map','normalMap','roughnessMap']){ const t=m.material[k]; if(t){ const c=t.clone(); c.repeat.set(0.004,0.004); c.needsUpdate=true; m.material[k]=c; } } }
+        else { m.material=m.material.clone(); m.material.envMap=envTex; m.material.envMapIntensity=0.75; }
+        m.material.clippingPlanes=[clip, ...(pm.cfg.cortes||[]).map(planoCorte)];
+        m.material.side = pm.cfg.cortes ? THREE.DoubleSide : THREE.FrontSide;
+        m.castShadow=m.receiveShadow=renderer.shadowMap.enabled;
+        m.userData.comp=o.c; pickables.push(m); if(!o.mats.includes(m.material)) o.mats.push(m.material); });
+      pm.g.add(encaixaModelo(obj,pm.cfg));
+    }catch(e){ console.error('modelo',pm.arq,e); }
+  }));
+  setOpacity(+document.getElementById('op').value);
+  if(selId&&compObj[selId]) select(selId,false);
+  sombraSuja=Math.max(sombraSuja,30);
+}
 /* ---------- painel solar ---------- */
 function roofH(s){
   if(s<=PERFIL[0][0]) return PERFIL[0][1];
@@ -1515,6 +1577,7 @@ const numerosEl=document.getElementById('nums');
 const escondido={}; let ultimaOclusao=0; const camAnt=new THREE.Matrix4(); let cutAnt=null, opAnt=null;
 const rayOc=new THREE.Raycaster();
 function calcOclusao(now){
+  if(!numerosEl.checked||!document.body.classList.contains('tecnico')) return;   /* etiquetas só aparecem no modo técnico */
   const op=+document.getElementById('op').value;
   if(now-ultimaOclusao<250) return;
   if(camAnt.equals(camera.matrixWorld)&&cutAnt===clip.constant&&opAnt===op) return;
@@ -1649,7 +1712,7 @@ function dica(c,el,x,y){
 let ultimo=0;
 renderer.domElement.addEventListener('pointermove',e=>{
   if(e.buttons) { dica(null); return; }
-  const agora=performance.now(); if(agora-ultimo<50) return; ultimo=agora;
+  const agora=performance.now(); if(anim||FP.on||agora-ultimo<90) return; ultimo=agora;
   const r=renderer.domElement.getBoundingClientRect(); ptr.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);
   ray.setFromCamera(ptr,camera);
   const vis=pickables.filter(m=>{let o=m;while(o){if(!o.visible)return false;o=o.parent;}return true;});
@@ -1688,19 +1751,30 @@ const VISTAS = {
   tras:    {pos:[42,1.2,0],     fov:8},
 };
 /* telas estreitas: abre o campo de visão para o carro caber na largura (v10) */
-function fovAjuste(f){ const a=camera.aspect; if(a>=1.2) return f; const t=Math.tan(f*Math.PI/360)*1.2/a; return Math.min(80,2*Math.atan(t)*180/Math.PI); }
+function fovAjuste(f){ const a=camera.aspect; if(a>=1.2) return f; const t=Math.tan(f*Math.PI/360)*(1.2/a)*(1+0.25*(1.2-a));   /* contínuo em a=1,2; em pé dá um pouco de folga nas pontas */ return Math.min(80,2*Math.atan(t)*180/Math.PI); }
 let anim=null;
+/* Transição de câmera em arco: em vez de ir em linha reta (que corta o carro e faz a câmera "pular"),
+   gira em volta do alvo interpolando ângulos e distância. A duração cresce com o tamanho do giro. */
+const _sf=new THREE.Spherical(), _st=new THREE.Spherical(), _tmpV=new THREE.Vector3();
 function flyTo(vista,alvo,pos){
-  const t0=performance.now(), dur=reduz?0:650;
   const fromP=camera.position.clone(), fromT=controls.target.clone(), fromF=camera.fov;
   const toT = alvo? alvo.clone() : new THREE.Vector3(0,1.2,0);
   const toP = pos? pos.clone() : vista? new THREE.Vector3(...VISTAS[vista].pos).add(toT).sub(new THREE.Vector3(0,1.2,0)) : camera.position.clone().add(toT).sub(fromT);
   const toF = vista? fovAjuste(VISTAS[vista].fov) : fromF;
-  anim={t0,dur,fromP,fromT,fromF,toP,toT,toF};
+  const a=new THREE.Spherical().setFromVector3(_tmpV.subVectors(fromP,fromT)), b=new THREE.Spherical().setFromVector3(_tmpV.subVectors(toP,toT));
+  let dth=b.theta-a.theta; dth=Math.atan2(Math.sin(dth),Math.cos(dth));          // menor caminho em volta do carro
+  const giro=Math.abs(dth)+Math.abs(b.phi-a.phi), dist=fromT.distanceTo(toT)+Math.abs(Math.log(b.radius/a.radius))*3;
+  const dur = reduz ? 0 : Math.min(1500, 650 + 420*giro + 90*dist);
+  if(fromP.distanceToSquared(toP)<1e-6 && fromT.distanceToSquared(toT)<1e-6 && Math.abs(fromF-toF)<0.01){ anim=null; return; }
+  anim={t0:performance.now(),dur,fromT,toT,fromF,toF,a,b,dth,toP};
 }
+const suave=k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
 function stepAnim(now){
-  if(!anim) return; const k=anim.dur?Math.min(1,(now-anim.t0)/anim.dur):1; const e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
-  camera.position.lerpVectors(anim.fromP,anim.toP,e); controls.target.lerpVectors(anim.fromT,anim.toT,e);
+  if(!anim) return; const k=anim.dur?Math.min(1,(now-anim.t0)/anim.dur):1, e=suave(k);
+  controls.target.lerpVectors(anim.fromT,anim.toT,e);
+  _sf.radius=Math.exp(Math.log(anim.a.radius)+(Math.log(anim.b.radius)-Math.log(anim.a.radius))*e);
+  _sf.phi=anim.a.phi+(anim.b.phi-anim.a.phi)*e; _sf.theta=anim.a.theta+anim.dth*e;
+  if(k>=1) camera.position.copy(anim.toP); else camera.position.copy(controls.target).add(_tmpV.setFromSpherical(_sf));
   camera.fov=anim.fromF+(anim.toF-anim.fromF)*e; camera.updateProjectionMatrix(); if(k>=1) anim=null;
 }
 const viewBtns=[...document.querySelectorAll('[data-view]')];
@@ -1736,12 +1810,15 @@ document.getElementById('copy').addEventListener('click',async()=>{
 function resize(){ const w=vp.clientWidth,h=vp.clientHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix(); }
 new ResizeObserver(resize).observe(vp); resize();
 setAbertura(0); setCut(250);
-let tAnt=performance.now();
+let tAnt=performance.now(); let sombraSuja=0;
+addEventListener('pointerdown',()=>{ sombraSuja=Math.max(sombraSuja,60); }); addEventListener('keydown',()=>{ sombraSuja=Math.max(sombraSuja,60); });
 function loop(now){
   requestAnimationFrame(loop); const dt=Math.min(0.05,(now-tAnt)/1000); tAnt=now;
   if(!FP.on) stepAnim(now);
   animaInteracoes(now,dt); aplicaLuzes(now); if(FP.on) andaFP(dt);
-  if(Math.abs(abertura-aberturaAlvo)>1e-3){ abertura+= (aberturaAlvo-abertura)*(reduz?1:0.08); if(Math.abs(abertura-aberturaAlvo)<0.002)abertura=aberturaAlvo; setAbertura(abertura); document.getElementById('abre').value=Math.round(abertura*100); }
+  if(Math.abs(abertura-aberturaAlvo)>1e-3){ abertura+= (aberturaAlvo-abertura)*(reduz?1:1-Math.exp(-dt*4.2)); if(Math.abs(abertura-aberturaAlvo)<0.002)abertura=aberturaAlvo; setAbertura(abertura); document.getElementById('abre').value=Math.round(abertura*100); }
+  if(renderer.shadowMap.enabled && !renderer.shadowMap.autoUpdate){ const mexe=Object.values(ABRE).some(a=>a.t!==a.alvo)||Math.abs(abertura-aberturaAlvo)>1e-3||LIMP.ang>0||EST.limp;
+    if(mexe) sombraSuja=Math.max(sombraSuja,3); if(sombraSuja>0){ renderer.shadowMap.needsUpdate=true; sombraSuja--; } }
   enquadra(); if(!FP.on) controls.update(); if(COMPOSER) COMPOSER.render(); else renderer.render(scene,camera); if(!FP.on){ updateLabels(); calcOclusao(now); updateTags(); }
 }
 /* =================== INTERAÇÕES: portas, luzes, noite, toldo, limpadores, entrar =================== */
@@ -1791,37 +1868,39 @@ if(compObj.toldo){ for(const o of [lona,barra]){ o.userData.comp=compObj.toldo.c
 /* ---- objetos reais do interior (modelos fotogramétricos Poly Haven, CC0) ---- */
 const PROPS=[
   // [modelo, nó (ou null = todos), s, x, h (apoio), rotY, escala, componente]
+  // a sala fica num tablado de 15,5 cm: tampo da mesa a 1,165 m e tablado a 0,455 m do fundo
   ['potted_plant_04',null, 3.64, 0.90, 1.200,  0.6, 1.00,'gel'],
   ['wooden_cutting_board',null, 3.42, 0.70, 1.200, 0.25, 0.85,'gel'],
   ['lemon',null, 3.47, 0.66, 1.226, 0.0, 1.0,'gel'],
   ['lemon',null, 3.40, 0.74, 1.226, 1.9, 1.0,'gel'],
   ['jug_01',null, 3.31, 0.94, 1.200, 2.4, 0.85,'gel'],
   ['pot_enamel_01',null, 2.88, 0.66, 1.2075, 0.4, 0.95,'coz'],
-  ['wooden_bowl_01',null, 4.29, -0.83, 1.030, 0.0, 0.80,'mesa'],
-  ['food_apple_01',null, 4.27, -0.85, 1.045, 0.3, 1.0,'mesa'],
-  ['food_apple_01',null, 4.32, -0.80, 1.045, 2.1, 1.0,'mesa'],
-  ['bananas','bananas_bunch', 4.30, -0.83, 1.07, 0.9, 0.75,'mesa'],
-  ['throw_pillows_01','throw_pillows_01_pillow01', 3.90, -0.88, 0.75, -1.2, 0.80,'bancoA'],
-  ['throw_pillows_01','throw_pillows_01_pillow02', 4.95, -0.60, 0.88, 1.8, 0.80,'bancoB'],
-  ['throw_pillows_01','throw_pillows_01_pillow01', 5.65, 0.52, 0.975, -1.75, 0.95,'cama'],
-  ['throw_pillows_01','throw_pillows_01_pillow02', 6.15, 0.52, 0.975, -1.45, 0.95,'cama'],
-  ['wicker_basket_01',null, 4.40, -0.86, 0.306, 0.15, 0.85,'mesa'],
+  ['wooden_bowl_01',null, 4.29, -0.83, 1.166, 0.0, 0.80,'mesa'],
+  ['food_apple_01',null, 4.27, -0.85, 1.181, 0.3, 1.0,'mesa'],
+  ['food_apple_01',null, 4.32, -0.80, 1.181, 2.1, 1.0,'mesa'],
+  ['bananas','bananas_bunch', 4.30, -0.83, 1.206, 0.9, 0.75,'mesa'],
+  ['throw_pillows_01','throw_pillows_01_pillow01', 3.93, -0.79, 0.872, -1.2, 0.80,'bancoA'],
+  ['throw_pillows_01','throw_pillows_01_pillow02', 4.95, -0.60, 0.872, 1.8, 0.80,'bancoB'],
+  ['throw_pillows_01','throw_pillows_01_pillow01', 5.65, 0.52, 1.0, -1.75, 0.95,'cama'],
+  ['throw_pillows_01','throw_pillows_01_pillow02', 6.15, 0.52, 1.0, -1.45, 0.95,'cama'],
+  ['wicker_basket_01',null, 4.40, -0.86, 0.456, 0.15, 0.85,'mesa'],
   ['rubber_duck_toy',null, 4.09, 0.95, 1.070, 2.6, 0.30,'banho'],
   ['hanging_picture_frame_01',null, 5.92, 0.965, 1.44, 3.1416, 0.42,'cama'],
-  ['alarm_clock_01',null, 6.48, 0.80, 0.975, -2.2, 0.9,'cama'],
+  ['alarm_clock_01',null, 6.72, 0.05, 1.861, -1.6, 0.6,'arm_tras'],
 ];
 async function carregaProps(){
   const ld=new GLTFLoader(), cache={};
+  for(const [nome] of PROPS) cache[nome]??=ld.loadAsync(`props/${nome}/${nome}.json`).catch(e=>{ console.warn('objeto',nome,e); return null; });   /* baixa todos em paralelo */
   for(const [nome,no,s,x,h,ry,esc,comp] of PROPS){
     try{
       if(!cache[nome]) cache[nome]=ld.loadAsync(`props/${nome}/${nome}.json`);
-      const gl=await cache[nome];
+      const gl=await cache[nome]; if(!gl) continue;
       let src=no? gl.scene.getObjectByName(no) : gl.scene; if(!src) continue;
       const obj=src.clone(true); obj.position.set(0,0,0); obj.updateMatrixWorld(true);
       const grp=new THREE.Group(); grp.add(obj);
       const bb=new THREE.Box3().setFromObject(obj), c=bb.getCenter(new THREE.Vector3());
       obj.position.set(-c.x,-bb.min.y,-c.z);
-      grp.scale.setScalar(esc); grp.rotation.y=ry; grp.position.copy(W(s,x,h));
+      grp.scale.setScalar(esc); grp.rotation.y=ry; grp.position.copy(W(s,x,h)); grp.userData.propGrp=nome;
       grp.traverse(o=>{ if(o.isMesh){ o.castShadow=o.receiveShadow=true; const ms=Array.isArray(o.material)?o.material:[o.material];
         o.material=ms.map(m=>{ const k=m.clone(); k.clippingPlanes=[clip]; k.envMapIntensity=0.8; return k; }); if(o.material.length===1) o.material=o.material[0]; o.userData.prop=nome; } });
       const alvo=compObj[comp]; (alvo? alvo.g : layers.interior).add(grp);
@@ -1829,17 +1908,17 @@ async function carregaProps(){
     }catch(e){ console.warn('objeto',nome,e); }
   }
 }
-window.__PROPS_PRONTOS = carregaProps();
+window.__PROPS_PRONTOS = carregaProps().then(()=>{ sombraSuja=Math.max(sombraSuja,30); });
 
 /* ---- o que abre: portas (dobradiça vertical), janela (basculante), toldo ---- */
-const ABRE={};
+const ABRE={}; const PIVOS={};
 function montaPorta(id){
   const o=compObj[id]; if(!o) return; const c=o.c; const lado=Math.sign(c.x[0]+c.x[1]);
   const P=FUROS[c.furo]; const sMin=Math.min(...P.map(p=>p[0])), sMax=Math.max(...P.map(p=>p[0]));
   const tras=c.dobradica==='tras', sh=tras?sMax:sMin, xw=wallX((sMin+sMax)/2);
   const piv=new THREE.Group(); piv.position.set(sh-3.5,0,lado*xw);
   for(const p of [...o.g.children]){ o.g.remove(p); p.position.sub(piv.position); piv.add(p); }
-  o.g.add(piv);
+  o.g.add(piv); PIVOS[id]=piv;
   const ang = id==='portaCasa' ? 1.0 : 1.15;
   ABRE[id]={nome:c.nome,t:0,alvo:0,apl:t=>{ piv.rotation.y=-lado*(tras?-1:1)*ang*t; }};
 }
@@ -1857,7 +1936,11 @@ function montaPorta(id){
 }
 ABRE.toldo={nome:'Toldo',t:0,alvo:0,apl:setToldo,vel:0.6};
 if(portaBanhoPiv) ABRE.banho={nome:'Porta do banheiro',t:0,alvo:0,apl:t=>{ portaBanhoPiv.rotation.y=1.45*t; }};
-if(bancosPiv.length){ ABRE.bmot=ABRE.bpas=ABRE.bancos={nome:'Bancos giratórios',t:0,alvo:0,apl:t=>{ bancosPiv.forEach(p=>p.rotation.y=Math.PI*t); }}; }
+/* bancos giratórios: a coluna de direção recolhe e sobe antes (é telescópica), senão o encosto do motorista bate no volante */
+if(bancosPiv.length){ const vg=compObj.volante?.g;
+  ABRE.bmot=ABRE.bpas=ABRE.bancos={nome:'Bancos giratórios',t:0,alvo:0,apl:t=>{
+    const r=Math.min(1,t/0.45); bancosPiv.forEach(p=>p.rotation.y=Math.PI*Math.max(0,(t-0.12)/0.88));
+    if(vg) vg.position.set(-0.10*r,0.035*r,0); }}; }
 function abre(id,v){ const a=ABRE[id]; if(!a) return; a.alvo = v===undefined ? (a.alvo>0.5?0:1) : (v?1:0); syncUI(); if(selId===id) select(id,false); }
 
 /* ---- limpadores: cada um vira um grupo que gira no plano do para-brisa ---- */
@@ -1934,7 +2017,11 @@ const LUGARES=[
   {id:'cama',    nome:'Cama',             s:6.10,x:0.10, eye:1.55,yaw:0,          pitch:-0.12},
 ];
 const fpEl=document.getElementById('fp');
-function vaiPara(id){ const L=LUGARES.find(l=>l.id===id); Object.assign(FP,{s:L.s,x:L.x,eye:L.eye,yaw:L.yaw,pitch:L.pitch});
+/* véu: escurece o palco por um instante para trocar de lugar sem o "pulo" seco da câmera */
+const veu=document.createElement('div'); veu.className='veu'; veu.setAttribute('aria-hidden','true'); vp.appendChild(veu);
+function comVeu(fn){ if(reduz){ fn(); return; } veu.classList.add('on'); setTimeout(()=>{ fn(); requestAnimationFrame(()=>requestAnimationFrame(()=>veu.classList.remove('on'))); },190); }
+function vaiPara(id,direto){ if(FP.on&&!direto){ comVeu(()=>vaiPara(id,true)); return; }
+  const L=LUGARES.find(l=>l.id===id); Object.assign(FP,{s:L.s,x:L.x,eye:L.eye,yaw:L.yaw,pitch:L.pitch});
   if((id==='mot'||id==='pas')&&ABRE.bancos&&ABRE.bancos.alvo>0.5) FP.yaw=Math.PI;
   if(id==='banho'&&ABRE.banho&&ABRE.banho.alvo<0.5) abre('banho',true);
   fpEl.querySelectorAll('[data-lugar]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lugar===id)); }
@@ -1943,15 +2030,17 @@ function entrar(){
   setOpacity(100); setCut(250); Object.keys(GRUPOS).forEach(k=>setLayer(k,true)); numerosEl.checked=false;
   abre('portaCasa',true);
   setView('3d',W(3.2,-0.5,1.6),W(3.0,-4.2,1.75));
-  setTimeout(()=>{
-    FP.on=true; anim=null; controls.enabled=false; vaiPara('porta');
+  const dentro=()=>{ FP.on=true; anim=null; controls.enabled=false; vaiPara('porta',true);
     camera.fov=72; camera.near=0.02; camera.updateProjectionMatrix();
-    document.body.classList.add('dentro'); syncUI();
-  }, reduz?0:720);
+    document.body.classList.add('dentro'); syncUI(); };
+  if(reduz) dentro(); else setTimeout(()=>comVeu(dentro), Math.max(300,(anim?.dur??700)-150));
 }
 function sair(){
-  if(!FP.on) return; FP.on=false; controls.enabled=true; camera.near=0.05; document.body.classList.remove('dentro');
-  preset('p-ext'); syncUI();
+  if(!FP.on) return;
+  comVeu(()=>{ FP.on=false; controls.enabled=true; camera.near=0.05; document.body.classList.remove('dentro');
+    /* sai pela porta: a câmera reaparece do lado de fora e de lá volta para a vista geral */
+    anim=null; controls.target.copy(W(3.2,-0.5,1.6)); camera.position.copy(W(3.0,-4.2,1.75)); camera.fov=35; camera.updateProjectionMatrix(); controls.update();
+    preset('p-ext'); syncUI(); });
 }
 function andaFP(dt){
   const k=FP.keys; let f=FP.pad.f, st=0, t=FP.pad.t;
@@ -1992,7 +2081,22 @@ function syncUI(){
   document.getElementById('entrar').textContent=FP.on?'Sair do motorhome':'Entrar no motorhome';
   const ce=document.querySelector('[data-acao="entrar"]'); if(ce) ce.textContent=FP.on?'Sair':'Entrar';
 }
-ui.querySelectorAll('[data-abre]').forEach(b=>b.addEventListener('click',()=>abre(b.dataset.abre)));
+/* ao abrir algo que está fora de vista, a câmera gira (em arco) até um ângulo que mostra a peça */
+const VW=(x,y,z)=>new THREE.Vector3(x,y,z);
+const VISTA_ABRE={ portaCasa:[VW(0.4,1.2,-1.0),VW(4.8,2.6,-8.8)], toldo:[VW(0.4,1.2,-1.2),VW(5.6,2.6,-10.2)], janela:[VW(0.8,1.4,-1.0),VW(3.4,2.3,-7.6)],
+  portaE:[VW(-1.4,1.3,0.9),VW(-4.2,2.4,7.8)], portaD:[VW(-1.4,1.3,-0.9),VW(-4.2,2.4,-7.8)] };
+function mostraAbertura(id,sempre){
+  if(FP.on||TEC()) return;
+  if(id==='bancos'||id==='banho'){ const o=compObj[id==='bancos'?'bmot':'banho']; if(!o) return;
+    setOpacity(100); setCut(195); setLayer('vidro',false);
+    const c=id==='bancos'? W(2.3,0,1.0) : o.center.clone();
+    setView('3d',c,c.clone().add(id==='bancos'?VW(2.6,4.6,-3.4):VW(-2.0,4.4,-3.2))); return; }
+  const v=VISTA_ABRE[id]; if(!v) return;
+  if(clip.constant<50){ setCut(250); setLayer('vidro',true); }
+  const lado=id==='portaE'?1:-1, rel=camera.position.z-controls.target.z;
+  if(sempre || rel*lado<1.5) setView('3d',v[0].clone(),v[1].clone());
+}
+ui.querySelectorAll('[data-abre]').forEach(b=>b.addEventListener('click',()=>{ const id=b.dataset.abre; abre(id); if(ABRE[id]?.alvo>0.5) mostraAbertura(id); }));
 ui.querySelectorAll('[data-farol]').forEach(b=>b.addEventListener('click',()=>{ EST.farol=b.dataset.farol; syncUI(); }));
 ui.querySelectorAll('[data-luz]').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.luz; EST[k]=!EST[k];
   if(k==='alerta'&&EST.alerta){EST.setaE=EST.setaD=false;} if((k==='setaE'||k==='setaD')&&EST[k]){ EST.alerta=false; EST[k==='setaE'?'setaD':'setaE']=false; } syncUI(); }));
@@ -2170,7 +2274,7 @@ function camPasso(i){
   if(i===5){ preset('p-ext'); controls.autoRotate=!reduz; }
 }
 controls.autoRotateSpeed=0.7;
-controls.addEventListener('start',()=>{ controls.autoRotate=false; });
+controls.addEventListener('start',()=>{ controls.autoRotate=false; anim=null; });
 navBtns.forEach(b=>b.addEventListener('click',()=>irPara(+b.dataset.passo)));
 document.getElementById('seguir').addEventListener('click',()=>{ if(passo<PASSOS.length-1) irPara(passo+1); else copiaResumo(); });
 document.getElementById('voltar').addEventListener('click',()=>irPara(passo-1));
@@ -2254,6 +2358,7 @@ function luxo(sombra=true, mapa=2048){
   themeColors();
   if(!sombra) return;
   renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer.shadowMap.autoUpdate=false; sombraSuja=90;   /* a sombra só é refeita quando algo se mexe (girar a câmera não muda a sombra) */
   sun.castShadow=true; sun.shadow.mapSize.set(mapa,mapa);
   const c=sun.shadow.camera; c.left=-7; c.right=7; c.top=7; c.bottom=-7; c.near=2; c.far=40; c.updateProjectionMatrix();
   sun.shadow.bias=-0.0004; sun.shadow.normalBias=0.03; sun.shadow.radius=4;
@@ -2296,7 +2401,7 @@ async function fazShot(n){
   luxo(S.sombra!==false, 4096);
   await realismo('render',S.pp||{});
   if(S.fp){
-    FP.on=true; controls.enabled=false; vaiPara(S.fp); Object.assign(FP,S.fpAdj||{});
+    FP.on=true; controls.enabled=false; vaiPara(S.fp,true); Object.assign(FP,S.fpAdj||{});
     camera.fov=S.fov; camera.near=0.02; document.body.classList.add('dentro');
   } else { camera.position.copy(S.pos); controls.target.copy(S.alvo); camera.fov=S.fov; controls.update(); }
   camera.updateProjectionMatrix(); syncUI();
@@ -2305,6 +2410,12 @@ async function fazShot(n){
 /* vitrine: só o carro e os botões de abrir */
 function montaVitrine(){
   luxo(true,2048); realismo('vitrine');
+  /* embutida no site: rolar a página por cima do 3D continua rolando a página (aproxima só com Ctrl/⌘ ou pinça),
+     e no celular o arrasto vertical rola a página enquanto o horizontal gira o carro */
+  controls.enableZoom=false;
+  renderer.domElement.addEventListener('wheel',e=>{ controls.enableZoom=e.ctrlKey||e.metaKey; },{capture:true,passive:true});
+  renderer.domElement.style.touchAction='pan-y';
+  const dv=document.querySelector('.dica-vp'); if(dv) dv.textContent='Arraste para girar · Ctrl + rolar para aproximar';
   const dock=document.createElement('div'); dock.className='doca';
   dock.innerHTML=`<div class="doca-g" role="group" aria-label="Abrir e fechar">
       <button data-v="portaCasa">Porta de entrada</button><button data-v="portaE">Porta do motorista</button>
@@ -2321,8 +2432,7 @@ function montaVitrine(){
   dock.querySelectorAll('[data-v]').forEach(b=>b.addEventListener('click',()=>{
     const id=b.dataset.v; abre(id);
     if(FP.on) return;
-    const vistas={portaCasa:[V(0.4,1.2,-1.0),V(4.8,2.6,-8.8)], toldo:[V(0.4,1.2,-1.2),V(5.6,2.6,-10.2)], janela:[V(0.8,1.4,-1.0),V(3.4,2.3,-7.6)], portaE:[V(-1.4,1.3,0.9),V(-4.2,2.4,7.8)]};
-    if(vistas[id]) setView('3d',...vistas[id]);
+    if(VISTA_ABRE[id]) setView('3d',VISTA_ABRE[id][0].clone(),VISTA_ABRE[id][1].clone());
     if(id==='toldo' && ABRE.toldo.alvo>0.5){ EST.toldoLuz=EST.noite; }
     sync();
   }));
@@ -2362,8 +2472,9 @@ function validaCfg(){
   if(!COR_FITA[CFG.luz]) CFG.luz=CFG_PADRAO.luz;
 }
 validaCfg(); aplicaCfg(false); irPara(0,false);
+carregaModelos();
 carregaMalha().then(()=>{ vp.classList.add('pronto'); aplicaCfg(false);
-  if(SHOT) fazShot(SHOT); else if(VITRINE) montaVitrine(); else preset('p-ext'); });
+  if(SHOT) fazShot(SHOT); else if(VITRINE) montaVitrine(); else if(PARAMS.has('tecnico')) setTec(true); else preset('p-ext'); });
 </script>
 </body>
 </html>

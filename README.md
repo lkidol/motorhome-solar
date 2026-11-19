@@ -9,8 +9,9 @@ Entrega: 02/12/2026.
 | Pasta | Conteúdo |
 |---|---|
 | `docs/` | Estado do projeto, decisões e roteiro de render no Blender |
-| `site/` | Portal do produto e configurador 3D (`index.html`, `configurador.html`, `img/`, `tex/`, `props/`, JSONs de malha), além de ferramentas de build (`build.py`, `main.js`, `debug.js`, `modelos.json`) e versões anteriores |
-| `modelos/` | Modelos GLB do interior (banco, banqueta, volante, vaso, chuveiros) e scripts de otimização (`scripts/`) |
+| `site/` | Portal do produto e configurador 3D (`index.html`, `configurador.html`, `img/`, `tex/`, `props/`, `modelos/`, JSONs de malha), além de ferramentas de build (`build.py`, `main.js`, `debug.js`, `modelos.json`) e versões anteriores |
+| `site/modelos/` | Modelos GLB do interior (banco da cabine, banqueta da sala, volante, vaso, barra e ducha do chuveiro), carregados pelo configurador |
+| `modelos/scripts/` | Scripts de otimização dos GLB (gltf-transform/meshopt) |
 | `mec/` | Cálculo de massa e estrutura (`massa.json`, `massa.txt`, `estrut.*`, `casca.*`) |
 | `plan/` | Planilha `Inventario_de_Massas_Motorhome_Solar.xlsx` e o script `atualiza.py` que a regenera |
 | `geo/` | Geometria da carroceria e do traçado do LED (scripts e dados) |

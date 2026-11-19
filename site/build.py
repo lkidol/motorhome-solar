@@ -3,7 +3,7 @@ import base64, json, os, pathlib, re, subprocess
 SITE = pathlib.Path(__file__).resolve().parent
 ROOT = SITE.parent
 DADOS = ROOT / 'dados'
-MODELOS = ROOT / 'modelos'
+MODELOS = SITE / 'modelos'
 
 src = (SITE / 'index.html').read_text(encoding='utf-8')
 # module script body

@@ -6,7 +6,7 @@
 - Salvar o projeto em uma pasta própria, com texturas e modelos junto.
 
 ## 2. Importar
-- File > Import > glTF 2.0 para cada GLB da pasta `modelos/`.
+- File > Import > glTF 2.0 para cada GLB da pasta `site/modelos/`.
 - Conferir a escala (projeto em metros). Ajustar com N > Item > Scale e aplicar com Ctrl+A > Scale.
 - Coleções: `Carroceria`, `Interior`, `Eletrica`, `Solar`, `Luz`, `Camera`.
 
