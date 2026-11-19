@@ -1757,23 +1757,27 @@ let anim=null;
    gira em volta do alvo interpolando ângulos e distância. A duração cresce com o tamanho do giro. */
 const _sf=new THREE.Spherical(), _st=new THREE.Spherical(), _tmpV=new THREE.Vector3();
 function flyTo(vista,alvo,pos){
+  if(controls.enableDamping){ controls.enableDamping=false; controls.update(); controls.enableDamping=true; }
   const fromP=camera.position.clone(), fromT=controls.target.clone(), fromF=camera.fov;
   const toT = alvo? alvo.clone() : new THREE.Vector3(0,1.2,0);
   const toP = pos? pos.clone() : vista? new THREE.Vector3(...VISTAS[vista].pos).add(toT).sub(new THREE.Vector3(0,1.2,0)) : camera.position.clone().add(toT).sub(fromT);
   const toF = vista? fovAjuste(VISTAS[vista].fov) : fromF;
   const a=new THREE.Spherical().setFromVector3(_tmpV.subVectors(fromP,fromT)), b=new THREE.Spherical().setFromVector3(_tmpV.subVectors(toP,toT));
+  a.radius=Math.max(0.05,a.radius); b.radius=Math.max(0.05,b.radius);
   let dth=b.theta-a.theta; dth=Math.atan2(Math.sin(dth),Math.cos(dth));          // menor caminho em volta do carro
   const giro=Math.abs(dth)+Math.abs(b.phi-a.phi), dist=fromT.distanceTo(toT)+Math.abs(Math.log(b.radius/a.radius))*3;
   const dur = reduz ? 0 : Math.min(1500, 650 + 420*giro + 90*dist);
   if(fromP.distanceToSquared(toP)<1e-6 && fromT.distanceToSquared(toT)<1e-6 && Math.abs(fromF-toF)<0.01){ anim=null; return; }
-  anim={t0:performance.now(),dur,fromT,toT,fromF,toF,a,b,dth,toP};
+  /* t0 é gravado no primeiro frame de rAF (mesmo relógio que `now`), evitando k negativo em iframes */
+  anim={t0:null,dur,fromT,toT,fromF,toF,a,b,dth,toP};
 }
-const suave=k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
+const suave=k=>{ k=Math.max(0,Math.min(1,k)); return k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2; };
 function stepAnim(now){
-  if(!anim) return; const k=anim.dur?Math.min(1,(now-anim.t0)/anim.dur):1, e=suave(k);
+  if(!anim) return; if(anim.t0===null) anim.t0=now;
+  const k=anim.dur?Math.max(0,Math.min(1,(now-anim.t0)/anim.dur)):1, e=suave(k);
   controls.target.lerpVectors(anim.fromT,anim.toT,e);
   _sf.radius=Math.exp(Math.log(anim.a.radius)+(Math.log(anim.b.radius)-Math.log(anim.a.radius))*e);
-  _sf.phi=anim.a.phi+(anim.b.phi-anim.a.phi)*e; _sf.theta=anim.a.theta+anim.dth*e;
+  _sf.phi=Math.max(1e-4,Math.min(Math.PI-1e-4,anim.a.phi+(anim.b.phi-anim.a.phi)*e)); _sf.theta=anim.a.theta+anim.dth*e;
   if(k>=1) camera.position.copy(anim.toP); else camera.position.copy(controls.target).add(_tmpV.setFromSpherical(_sf));
   camera.fov=anim.fromF+(anim.toF-anim.fromF)*e; camera.updateProjectionMatrix(); if(k>=1) anim=null;
 }
@@ -1810,10 +1814,10 @@ document.getElementById('copy').addEventListener('click',async()=>{
 function resize(){ const w=vp.clientWidth,h=vp.clientHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix(); }
 new ResizeObserver(resize).observe(vp); resize();
 setAbertura(0); setCut(250);
-let tAnt=performance.now(); let sombraSuja=0;
+let tAnt=null; let sombraSuja=0;
 addEventListener('pointerdown',()=>{ sombraSuja=Math.max(sombraSuja,60); }); addEventListener('keydown',()=>{ sombraSuja=Math.max(sombraSuja,60); });
 function loop(now){
-  requestAnimationFrame(loop); const dt=Math.min(0.05,(now-tAnt)/1000); tAnt=now;
+  requestAnimationFrame(loop); const dt=tAnt===null?0:Math.max(0,Math.min(0.05,(now-tAnt)/1000)); tAnt=now;
   if(!FP.on) stepAnim(now);
   animaInteracoes(now,dt); aplicaLuzes(now); if(FP.on) andaFP(dt);
   if(Math.abs(abertura-aberturaAlvo)>1e-3){ abertura+= (aberturaAlvo-abertura)*(reduz?1:1-Math.exp(-dt*4.2)); if(Math.abs(abertura-aberturaAlvo)<0.002)abertura=aberturaAlvo; setAbertura(abertura); document.getElementById('abre').value=Math.round(abertura*100); }
