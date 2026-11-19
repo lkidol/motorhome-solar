@@ -2392,6 +2392,7 @@ SHOTS.campo1={...SHOTS.campo, pp:{bloom:false}}; SHOTS.campo2={...SHOTS.campo, p
 for(const p of ['petroleo','salvia','gelo','areia','laranja','grafite']) SHOTS[p+'_noite']={...SHOTS[p], noite:true, est:{drl:true,posicao:true,interna:true}};
 async function fazShot(n){
   const S=SHOTS[n]; if(!S){ document.title='SEM CENA'; return; }
+  await Promise.all([window.__MODELOS_PRONTOS, window.__PROPS_PRONTOS]);
   Object.assign(CFG,S.cfg||{}); aplicaCfg(false);
   preset('p-ext'); anim=null;
   if(S.noite) setNoite(true);
@@ -2408,8 +2409,8 @@ async function fazShot(n){
     FP.on=true; controls.enabled=false; vaiPara(S.fp,true); Object.assign(FP,S.fpAdj||{});
     camera.fov=S.fov; camera.near=0.02; document.body.classList.add('dentro');
   } else { camera.position.copy(S.pos); controls.target.copy(S.alvo); camera.fov=S.fov; controls.update(); }
-  camera.updateProjectionMatrix(); syncUI();
-  setTimeout(()=>{ document.title='PRONTO'; },2500);
+  camera.updateProjectionMatrix(); syncUI(); sombraSuja=60;
+  setTimeout(()=>{ document.title='PRONTO'; },1200);
 }
 /* vitrine: só o carro e os botões de abrir */
 function montaVitrine(){
@@ -2476,7 +2477,7 @@ function validaCfg(){
   if(!COR_FITA[CFG.luz]) CFG.luz=CFG_PADRAO.luz;
 }
 validaCfg(); aplicaCfg(false); irPara(0,false);
-carregaModelos();
+window.__MODELOS_PRONTOS = carregaModelos();
 carregaMalha().then(()=>{ vp.classList.add('pronto'); aplicaCfg(false);
   if(SHOT) fazShot(SHOT); else if(VITRINE) montaVitrine(); else if(PARAMS.has('tecnico')) setTec(true); else preset('p-ext'); });
 </script>
