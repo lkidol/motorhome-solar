@@ -1,0 +1,9 @@
+.assetsignore
+build.py
+debug.js
+main.js
+modelos.json
+package.json
+package-lock.json
+node_modules/
+versoes-anteriores/

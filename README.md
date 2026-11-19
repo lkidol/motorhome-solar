@@ -9,7 +9,7 @@ Entrega: 02/12/2026.
 | Pasta | Conteúdo |
 |---|---|
 | `docs/` | Estado do projeto, decisões e roteiro de render no Blender |
-| `site/` | Código do site 3D publicado (`index.html`, `modelos.json`), fonte do build offline (`build.py`, `main.js`, `debug.js`) e versões anteriores |
+| `site/` | Portal do produto e configurador 3D (`index.html`, `configurador.html`, `img/`, `tex/`, `props/`, JSONs de malha), além de ferramentas de build (`build.py`, `main.js`, `debug.js`, `modelos.json`) e versões anteriores |
 | `modelos/` | Modelos GLB do interior (banco, banqueta, volante, vaso, chuveiros) e scripts de otimização (`scripts/`) |
 | `mec/` | Cálculo de massa e estrutura (`massa.json`, `massa.txt`, `estrut.*`, `casca.*`) |
 | `plan/` | Planilha `Inventario_de_Massas_Motorhome_Solar.xlsx` e o script `atualiza.py` que a regenera |
@@ -20,7 +20,7 @@ Entrega: 02/12/2026.
 
 ## Como rodar
 
-**Site offline / local:** dentro de `site/`, `npm install` e depois `python3 build.py` gera `motorhome_solar_3d.html` com os modelos embutidos. `site/index.html` também pode ser servido localmente a partir da raiz do repo (ex.: `python -m http.server`, abrindo `/site/`).
+**Site (local e deploy):** a pasta `site/` é um site estático autocontido. Para rodar localmente, execute `python -m http.server` dentro de `site/` e acesse `http://localhost:8000/`. O deploy em produção publica `./site` automaticamente no Cloudflare Workers Static Assets conforme configurado em `wrangler.jsonc` (e `site/.assetsignore`). Para gerar o build offline legado do esquemático, confira os scripts e históricos em `site/`.
 
 **Planilha:** `python3 plan/atualiza.py` reconstrói a aba Materiais a partir de `plan/original.xlsx`.
 
