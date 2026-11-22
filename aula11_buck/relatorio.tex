@@ -1,0 +1,324 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{siunitx}
+\usepackage{booktabs,array,tabularx}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{caption}
+\usepackage[hidelinks]{hyperref}
+\sisetup{output-decimal-marker={,},group-separator={\,},detect-weight=true}
+\captionsetup{font=small,labelfont=bf}
+\newcommand{\TODO}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
+\newcommand{\fs}{f_s}
+\newcommand{\Vin}{V_{in}}
+\newcommand{\Vo}{V_o}
+\newcommand{\dIL}{\Delta i_L}
+\newcommand{\dvo}{\Delta v_o}
+\newcommand{\placeholder}[2]{%
+  \fbox{\parbox[c][#1][c]{0.92\linewidth}{\centering\Large\textbf{#2}}}}
+% figura gerada pelo MATLAB (buck_projeto.m); se ainda nao existir, mostra o marcador
+\newcommand{\figMATLAB}[2]{%
+  \IfFileExists{fig/#1.pdf}{\includegraphics[width=#2\linewidth]{fig/#1.pdf}}%
+  {\placeholder{6cm}{INSERIR AQUI \detokenize{fig/#1.pdf}\\(gerar com \texttt{buck\_projeto.m} no MATLAB)}}}
+
+\title{SEM0320 -- Interfaces Eletromec\^anicas\\
+\large Aula 11: projeto e simula\c{c}\~ao de um conversor \emph{Buck} 24\,V$\to$12\,V}
+\author{\TODO{nome e n.\textordmasculine\ USP}}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Problema e requisitos}
+Projetar um conversor \emph{Buck} n\~ao isolado que alimente um subsistema mecatr\^onico de 12\,V a partir de um barramento CC de 24\,V, com carga resistiva equivalente que muda de \SI{12}{\ohm} para \SI{6}{\ohm} em \SI{50}{ms} (corrente nominal de sa\'ida de 1 a 2\,A). Os requisitos est\~ao na Tabela~\ref{tab:req}.
+
+\begin{table}[h]
+\centering
+\caption{Requisitos do projeto (slide 42).}
+\label{tab:req}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Grandeza & Requisito \\ \midrule
+Entrada / sa\'ida & $\Vin=\SI{24}{V}$, $\Vo=\SI{12}{V}$, erro m\'edio $\le \pm 2\,\%$ nas duas cargas \\
+Carga & $R=\SI{12}{\ohm}$ ($t<\SI{50}{ms}$), $R=\SI{6}{\ohm}$ ($t\ge\SI{50}{ms}$) \\
+Chaveamento & $\fs=\SI{20}{kHz}$ ($T_s=\SI{50}{\micro s}$) \\
+Ondula\c{c}\~ao (regime, pico a pico) & $\dIL\le\SI{0,40}{A}$, $\dvo\le\SI{0,12}{V}$ \\
+Efici\^encia & $\eta\ge 90\,\%$ na carga de \SI{6}{\ohm} \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Premissas.} (i) Conversor em malha aberta, $D$ constante em cada ensaio; (ii) carga puramente resistiva, sem a din\^amica do motor; (iii) os limites de ondula\c{c}\~ao valem em regime permanente, n\~ao no transit\'orio do degrau; (iv) $\Vin=\SI{24}{V}$ ideal e constante; (v) temperatura de jun\c{c}\~ao n\~ao modelada (par\^ametros de datasheet a 25\,$^\circ$C, salvo indica\c{c}\~ao).
+
+%==================================================================
+\section{Dimensionamento (Quest\~ao 1)}
+\subsection{Raz\~ao c\'iclica ideal}
+Em regime peri\'odico e condu\c{c}\~ao cont\'inua (CCM), $\langle v_L\rangle_{T_s}=0$, logo $D(\Vin-\Vo)+(1-D)(-\Vo)=0$ e
+\begin{equation}
+ \Vo = D\,\Vin \;\Rightarrow\; D=\frac{12}{24}=0{,}5 .
+\end{equation}
+
+\subsection{Indut\^ancia}
+Com a chave ligada, $L\,di_L/dt=\Vin-\Vo$ durante $DT_s$, ent\~ao
+\begin{equation}
+ \dIL=\frac{(\Vin-\Vo)D}{L\fs}\;\Rightarrow\; L\ge\frac{(\Vin-\Vo)D}{\fs\,\dIL^{max}}
+ =\frac{(24-12)\cdot0{,}5}{20\,000\cdot0{,}40}=\SI{750}{\micro H}.
+\end{equation}
+O valor inicial do arquivo de apoio ($L=\SI{470}{\micro H}$) resulta em $\dIL=6/(20\,000\cdot470\cdot10^{-6})=\SI{0,638}{A}>\SI{0,40}{A}$ e portanto \textbf{n\~ao atende}. Escolho o valor comercial $L=\SI{1}{mH}$ (s\'erie E6, toler\^ancia t\'ipica $\pm20\,\%$):
+\begin{equation}
+ \dIL=\frac{6}{20\,000\cdot10^{-3}}=\SI{0,300}{A}.
+\end{equation}
+Com $-20\,\%$ de toler\^ancia ($L=\SI{800}{\micro H}$), $\dIL=\SI{0,375}{A}$, ainda dentro do limite.
+
+\subsection{Condu\c{c}\~ao cont\'inua na carga mais leve}
+A carga mais leve \'e $R=\SI{12}{\ohm}$ ($I_o=\SI{1}{A}$). A fronteira CCM/DCM \'e
+\begin{equation}
+ L_{crit}=\frac{(1-D)R}{2\fs}=\frac{0{,}5\cdot12}{2\cdot20\,000}=\SI{150}{\micro H}.
+\end{equation}
+Como $L=\SI{1}{mH}\gg L_{crit}$, o conversor opera em CCM. Confirma\c{c}\~ao: $I_{L,min}=I_o-\dIL/2=1-0{,}15=\SI{0,85}{A}>0$.
+
+\subsection{Capacitor}
+Para corrente triangular no capacitor e ESR $r_C$, a regra do slide 36 (soma conservadora das parcelas capacitiva e resistiva) \'e
+\begin{equation}
+ \dvo\lesssim\frac{\dIL}{8\fs C}+r_C\,\dIL
+ \;\Rightarrow\;
+ C\ge\frac{\dIL}{8\fs\,(\dvo^{max}-r_C\,\dIL)} .
+\end{equation}
+Usando $\dIL=\dIL^{max}=\SI{0,40}{A}$ (pior caso):
+\begin{itemize}
+ \item sem ESR: $C\ge 0{,}4/(8\cdot20\,000\cdot0{,}12)=\SI{20,8}{\micro F}$;
+ \item $r_C=\SI{100}{m\ohm}$ (hip\'otese did\'atica): $C\ge0{,}4/(160\,000\cdot0{,}08)=\SI{31,3}{\micro F}$;
+ \item $r_C=\SI{130}{m\ohm}$ (candidato comercial, Tab.~\ref{tab:comp}): $C\ge0{,}4/(160\,000\cdot0{,}068)=\SI{36,8}{\micro F}$.
+\end{itemize}
+O valor inicial do arquivo de apoio ($C=\SI{22}{\micro F}$) d\'a $\dvo\approx0{,}638/(8\cdot20\,000\cdot22\cdot10^{-6})=\SI{0,18}{V}>\SI{0,12}{V}$ e tamb\'em \textbf{n\~ao atende} (a simula\c{c}\~ao confirma $\SI{0,182}{V}$ com $L=\SI{470}{\micro H}$, $C=\SI{22}{\micro F}$, sem parasitas).
+
+Escolho $C=\SI{100}{\micro F}$ (toler\^ancia $\pm20\,\%$): com $\dIL=\SI{0,30}{A}$, a parcela capacitiva \'e $0{,}30/(8\cdot20\,000\cdot100\cdot10^{-6})=\SI{18,8}{mV}$ e, somando $r_C\dIL=\SI{39}{mV}$, o limite conservador \'e \SI{57,7}{mV}, bem abaixo de \SI{120}{mV}. O ESR m\'aximo admiss\'ivel para este $C$ \'e $r_{C,max}=(0{,}12-0{,}025)/0{,}40\approx\SI{0,24}{\ohm}$.
+
+\subsection{Esfor\c{c}os nos componentes (carga de \SI{6}{\ohm}, $I_o=\SI{2}{A}$)}
+\begin{align}
+ I_{L,pico}&=I_o+\tfrac{\dIL}{2}=\SI{2,15}{A}, &
+ I_{L,rms}&=\sqrt{I_o^2+\dIL^2/12}=\SI{2,002}{A},\\
+ I_{C,rms}&=\dIL/\sqrt{12}=\SI{87}{mA}, &
+ \bar I_{D}&=(1-D)I_o\approx\SI{0,95}{A},\;\; I_{D,pico}=\SI{2,15}{A},\\
+ I_{S,rms}&=\sqrt{D\,(I_o^2+\dIL^2/12)}\approx\SI{1,45}{A}, &
+ V_{DS,max}&\approx V_{R,diodo}\approx\Vin=\SI{24}{V}.
+\end{align}
+A partida com $D$ constante gera um pico de corrente maior (Se\c{c}\~ao~\ref{sec:val}), tratado como risco na Se\c{c}\~ao~\ref{sec:concl}.
+
+%==================================================================
+\section{Sele\c{c}\~ao comercial (Quest\~ao 3)}
+A Tabela~\ref{tab:comp} lista os componentes escolhidos. \textbf{Os n\'umeros de datasheet foram obtidos de p\'aginas de distribuidores e c\'opias de terceiros encontradas em busca na web; os PDFs oficiais n\~ao foram abertos}. Os itens marcados em vermelho precisam ser conferidos antes de qualquer montagem.
+
+\begin{table}[h]
+\centering
+\caption{Componentes escolhidos, par\^ametros usados no modelo e margens.}
+\label{tab:comp}
+\footnotesize
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{2.1cm} >{\raggedright\arraybackslash}p{2.6cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X@{}}
+\toprule
+Fun\c{c}\~ao & Fabricante / c\'odigo & Par\^ametros usados (modelo / perdas) & Limite e margem \\ \midrule
+MOSFET canal N (chave lado alto) & Infineon (IR) \texttt{IRFZ44N}~\cite{ds_irfz44n} &
+ $r_S=R_{DS(on)}=\SI{20}{m\ohm}$ ($V_{GS}=\SI{10}{V}$; \SI{17,5}{m\ohm} na folha IR, \SI{20}{m\ohm} em c\'opia de terceiros, usei o maior); $Q_g=\SI{63}{nC}$; $Q_{gd}=\SI{23}{nC}$; $t_r=\SI{60}{ns}$, $t_f=\SI{45}{ns}$ (condi\c{c}\~oes de teste: \SI{28}{V}, \SI{25}{A}, $R_G=\SI{12}{\ohm}$); $V_{GS(th)}$ \SIrange{2}{4}{V} \TODO{conferir no datasheet oficial} &
+ $V_{DSS}=\SI{55}{V}$ vs \SI{24}{V}: margem $2{,}3\times$; $I_D=\SI{49}{A}$ vs \SI{2,15}{A} \\
+Diodo de roda livre & STMicroelectronics \texttt{1N5822}~\cite{ds_1n5822} &
+ $V_F=\SI{0,525}{V}$ a 3\,A (listagem de distribuidor; usei este valor tamb\'em a 2\,A, conservador) \TODO{conferir curva $V_F(I_F)$ e $T_j$} &
+ $V_{RRM}=\SI{40}{V}$ vs \SI{24}{V}: $1{,}7\times$; $I_{F(AV)}=\SI{3}{A}$ vs \SI{0,95}{A} (m\'edia) e \SI{2,15}{A} (pico). Status NRND: alternativa \texttt{SS34}/\texttt{1N5822G} (onsemi) \\
+Indutor & 1\,mH, $I_{sat}\ge\SI{4,5}{A}$ (ver Se\c{c}\~ao~\ref{sec:concl}), $I_{rms}\ge\SI{2,5}{A}$, DCR $\le\SI{0,2}{\ohm}$ &
+ $L=\SI{1}{mH}$, $r_L=\SI{195}{m\ohm}$ (candidato de 1\,mH / 3,5\,A / \SI{195}{m\ohm} tipo \emph{through-hole} encontrado em agregador) \TODO{definir c\'odigo exato do fabricante (ex.: s\'erie Bourns) e conferir $I_{sat}$, DCR e toler\^ancia} &
+ Corrente de pico em regime \SI{2,15}{A}; \SI{4,0}{A} na partida sem \emph{soft-start} \\
+Capacitor & Panasonic \texttt{EEU-FR1E101}~\cite{ds_eeufr} (100\,$\mu$F, 25\,V, alum\'inio) &
+ $C=\SI{100}{\micro F}$, $r_C=\SI{130}{m\ohm}$ (listagem de distribuidor) \TODO{conferir ESR a \SI{100}{kHz} e eleva\c{c}\~ao com temperatura} &
+ $V_C$ 12\,V vs 25\,V ($2{,}1\times$); \SI{19}{V} na partida; $I_{ripple}$ nominal \SI{455}{mA} vs \SI{87}{mA} rms \\
+\emph{Driver} lado alto & Infineon \texttt{IR2104}~\cite{ds_ir2104} (substituto novo: \texttt{2ED2104S06F}) &
+ $I_{O\pm}\approx\SI{130}{mA}/\SI{270}{mA}$ (folha IR legada; folha atual indica 0,21/0,36\,A) \TODO{conferir} &
+ $V_{CC}=\SIrange{10}{20}{V}$; uso $V_{CC}=\SI{12}{V}$ \\ \bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Tens\~ao de porta e \emph{driver} de lado alto.} Um MOSFET canal N no lado alto precisa que $V_G$ fique acima de $V_{in}$ quando ligado. O \texttt{IR2104} fornece isso por \emph{bootstrap}: com a chave desligada, o n\'o de comuta\c{c}\~ao $V_S$ \'e puxado a $\approx-V_F$ pelo diodo de roda livre e o capacitor de \emph{bootstrap} carrega at\'e $\approx V_{CC}-V_{F,boot}$; ao ligar, o \emph{driver} aplica essa tens\~ao entre porta e fonte. Definindo $V_{CC}=\SI{12}{V}$ e um diodo r\'apido de \emph{bootstrap} com $V_F\approx\SI{0,7}{V}$, $V_{GS}\approx\SI{11}{V}$, acima dos \SI{10}{V} em que $R_{DS(on)}$ \'e especificado e muito acima de $V_{GS(th)}$ (\SIrange{2}{4}{V}). Nesta faixa o MOSFET est\'a na regi\~ao \'ohmica durante a condu\c{c}\~ao.
+
+\begin{itemize}
+ \item \textbf{Capacitor de \emph{bootstrap}}: para $\Delta V_{boot}\le\SI{0,5}{V}$ e fator de seguran\c{c}a 2, $C_{boot}\ge2Q_g/\Delta V=2\cdot63\,\text{nC}/0{,}5\,\text{V}=\SI{252}{nF}$; adotar \SI{1}{\micro F}/25\,V X7R.
+ \item \textbf{Tempo m\'inimo desligado}: $T_s(1-D)\approx\SI{24}{\micro s}$, suficiente para recarregar $C_{boot}$ (a recarga s\'o ocorre com a chave desligada, ent\~ao $D$ n\~ao pode chegar a 1).
+ \item \textbf{Resistor de porta} $R_G\approx\SIrange{10}{22}{\ohm}$ para amortecer o \emph{ringing} da malha porta-fonte (valor t\'ipico, ajustar em bancada). A pot\^encia de acionamento \'e $P_{drv}=Q_gV_{GS}\fs=63\,\text{nC}\cdot12\,\text{V}\cdot20\,\text{kHz}=\SI{15}{mW}$.
+ \item \textbf{Alimenta\c{c}\~ao do \emph{driver}} na partida: a sa\'ida ainda est\'a em \SI{0}{V}, ent\~ao $V_{CC}$ n\~ao pode vir do pr\'oprio $V_o$; usar regulador auxiliar 24\,V$\to$12\,V de baixa corrente \TODO{definir o regulador auxiliar; fora do escopo da simula\c{c}\~ao}.
+\end{itemize}
+Como o \texttt{IR2104} fornece apenas $\approx\SI{130}{mA}$ para ligar a porta, o tempo de comuta\c{c}\~ao \'e limitado pela carga de Miller: $t_{on}\approx Q_{gd}/I_{src}=23\,\text{nC}/0{,}13\,\text{A}\approx\SI{177}{ns}$ e $t_{off}\approx23\,\text{nC}/0{,}27\,\text{A}\approx\SI{85}{ns}$. Uso esse valor, mais conservador que $t_r$, $t_f$ de datasheet, na estimativa de $P_{sw}$.
+
+%==================================================================
+\section{Modelo, ensaios e valida\c{c}\~ao (Quest\~ao 2)}\label{sec:val}
+\subsection{Modelo}
+Modelo chaveado expl\'icito (slides 44--45), estados $i_L$ e $v_C$:
+\begin{align}
+ \frac{di_L}{dt}&=\frac{q(\Vin-r_Si_L)-(1-q)V_F-r_Li_L-v_o}{L}, &
+ \frac{dv_C}{dt}&=\frac{i_C}{C},\\
+ i_C&=i_L-\frac{v_o}{R}, &
+ v_o&=\frac{v_C+r_Ci_L}{1+r_C/R}, \qquad i_L\ge0 .
+\end{align}
+No ensaio \textbf{A} todos os parasitas s\~ao nulos e $D=0{,}5$. No ensaio \textbf{B}, parasitas did\'aticos $r_S=\SI{50}{m\ohm}$, $r_L=\SI{100}{m\ohm}$, $r_C=\SI{100}{m\ohm}$, $V_F=\SI{0,5}{V}$. No ensaio \textbf{C} (atualiza\c{c}\~ao pedida na entrega) uso os dados dos componentes escolhidos: $r_S=\SI{20}{m\ohm}$, $r_L=\SI{195}{m\ohm}$, $r_C=\SI{130}{m\ohm}$, $V_F=\SI{0,525}{V}$. Em B e C, $D$ \'e corrigido para $R=\SI{6}{\ohm}$ ($I_o=\SI{2}{A}$) e mantido constante:
+\begin{equation}
+ D\approx\frac{V_o+V_F+I_or_L}{\Vin+V_F-I_or_S}\;\Rightarrow\; D_B=0{,}5205,\quad D_C=0{,}5275 .
+\end{equation}
+Para prever a tens\~ao em outra carga com $D$ fixo (CCM, regime), basta impor $\langle v_L\rangle=0$ com $I_L=\Vo/R$:
+\begin{equation}
+ \Vo(R)=\frac{D\Vin-(1-D)V_F}{1+(Dr_S+r_L)/R}.
+\end{equation}
+
+\begin{figure}[h]
+\centering
+\placeholder{6.5cm}{INSERIR AQUI O MODELO\\(Simulink / Simscape / LTspice)}
+\caption{Modelo do conversor \emph{Buck} implementado na ferramenta escolhida, com gerador PWM expl\'icito ($f_s=\SI{20}{kHz}$) e degrau de carga em \SI{50}{ms}. \TODO{colar a captura do modelo; a simula\c{c}\~ao por script, \texttt{buck\_projeto.m}, usa as mesmas equa\c{c}\~oes.}}
+\label{fig:modelo}
+\end{figure}
+
+\subsection{Configura\c{c}\~ao num\'erica}
+Condi\c{c}\~oes iniciais $i_L(0)=0$, $v_C(0)=0$; $0$--\SI{100}{ms}; degrau em \SI{50}{ms}; \texttt{ode23tb}, passo m\'aximo $T_s/100=\SI{0,5}{\micro s}$, $\mathrm{RelTol}=10^{-6}$; m\'edias nas janelas \SIrange{30}{40}{ms} ($R=\SI{12}{\ohm}$) e \SIrange{90}{100}{ms} ($R=\SI{6}{\ohm}$), com o n\'umero inteiro de per\'iodos; ondula\c{c}\~ao nos \'ultimos 10 per\'iodos de cada janela.
+
+\paragraph{Verifica\c{c}\~ao de resolu\c{c}\~ao temporal.} Os resultados abaixo foram calculados por duas implementa\c{c}\~oes independentes do mesmo modelo: um script Python (\texttt{buck\_check.py}, \texttt{solve\_ivp}, passo m\'ax. $T_s/20$, tol. $10^{-8}$) e o script MATLAB \texttt{buck\_projeto.m} executado no Octave com \texttt{ode45} (passo m\'ax. $T_s/100$, tol. $10^{-6}$). As m\'etricas concordam em at\'e 4 algarismos significativos (ex.: $\dvo=\SI{18,76}{mV}$ em ambos no caso A). \TODO{rodar \texttt{buck\_projeto.m} no MATLAB com \texttt{ode23tb} e repetir com metade do passo m\'aximo, como pede o slide 46.}
+
+\subsection{Resultados em regime permanente}
+\begin{table}[h]
+\centering
+\caption{M\'etricas em regime permanente (simula\c{c}\~ao) e previs\~ao anal\'itica de $\Vo$.}
+\label{tab:res}
+\small
+\begin{tabular}{@{}llrrrrrrr@{}}
+\toprule
+Caso & $R$ ($\Omega$) & $\overline{v_o}$ (V) & $\Vo$ anal. (V) & $\dvo$ (mV) & $\dIL$ (A) & $I_{L,min}$ (A) & $\eta_{cond}$ (\%) \\ \midrule
+A ($D=0{,}5$)        & 12 & 12,000 & 12,000 & 18,8 & 0,300 & 0,850 & 100 \\
+A                    & 6  & 12,000 & 12,000 & 18,8 & 0,300 & 1,850 & 100 \\
+B ($D=0{,}5205$)     & 12 & 12,125 & 12,125 & 31,1 & 0,305 & 0,858 & 97,1 \\
+B                    & 6  & 12,000 & 12,000 & 30,9 & 0,305 & 1,848 & 96,1 \\
+C ($D=0{,}5275$)     & 12 & 12,202 & 12,202 & 39,5 & 0,306 & 0,864 & 96,4 \\
+C                    & 6  & 12,000 & 12,000 & 39,1 & 0,305 & 1,847 & 94,8 \\ \bottomrule
+\end{tabular}
+\\[2pt]\footnotesize $\eta_{cond}$ inclui somente as perdas do modelo (condu\c{c}\~ao do MOSFET, DCR, ESR e diodo); comuta\c{c}\~ao e \emph{driver} entram na Se\c{c}\~ao~\ref{sec:perdas}.
+\end{table}
+
+\begin{figure}[p]
+\centering
+\figMATLAB{regime_A}{0.88}\\[6pt]
+\figMATLAB{regime_C}{0.88}
+\caption{Corrente do indutor $i_L$ e tens\~ao de sa\'ida $v_o$ nos \'ultimos 10 per\'iodos de cada janela de regime permanente (esquerda: $R=\SI{12}{\ohm}$; direita: $R=\SI{6}{\ohm}$). Acima: caso A (ideal). Abaixo: caso C (componentes escolhidos).}
+\label{fig:regime}
+\end{figure}
+
+Discuss\~ao (Fig.~\ref{fig:regime} e Tab.~\ref{tab:res}):
+\begin{itemize}
+ \item \textbf{Tens\~ao m\'edia.} Em A, $\overline{v_o}=\SI{12,000}{V}$ nas duas cargas, como previsto por $\Vo=D\Vin$. Em C, com $D$ ajustado em \SI{6}{\ohm}, $\overline{v_o}=\SI{12,000}{V}$ nessa carga e \SI{12,202}{V} em \SI{12}{\ohm} ($+1{,}7\,\%$), por pouco dentro de $\pm2\,\%$. A previs\~ao anal\'itica $\Vo(R)$ coincide com a simula\c{c}\~ao at\'e a quarta casa. O motivo da deriva \'e que as quedas ($r_S$, $r_L$, $V_F$) crescem com a corrente: ajustar $D$ para \SI{2}{A} supercompensa em \SI{1}{A}. Com malha aberta e $D$ fixo, a margem \'e pequena (apenas $0{,}3$ ponto percentual); por isso a malha fechada da pr\'oxima aula \'e necess\'aria na pr\'atica.
+ \item \textbf{Ondula\c{c}\~ao de corrente.} Anal\'itico (ideal) $\dIL=\SI{0,300}{A}$; simula\c{c}\~ao A: \SI{0,3002}{A}; C: \SI{0,305}{A}. O leve aumento em B e C vem da roda livre: $\dIL=(v_o+V_F+r_Li_L)(1-D)/(L\fs)=(12+0{,}525+0{,}39)\cdot0{,}4725/(10^{-3}\cdot20\,000)=\SI{0,305}{A}$ no caso C (a tens\~ao sobre o indutor \'e maior em m\'odulo, mas o intervalo \'e mais curto). Todos ficam abaixo de \SI{0,40}{A}.
+ \item \textbf{Ondula\c{c}\~ao de tens\~ao.} Em A, a f\'ormula $\dIL/(8\fs C)=\SI{18,75}{mV}$ concorda com $\SI{18,76}{mV}$ simulado. Em C o resultado \'e \SI{39}{mV}, \emph{menor} que a soma conservadora \SI{57,7}{mV} do slide 36: as parcelas capacitiva (m\'aximo no cruzamento por zero de $i_C$) e resistiva ($r_C i_C$, m\'aximo nos picos de $i_C$) est\~ao defasadas de $90^\circ$, ent\~ao o pico a pico fica pr\'oximo da parcela dominante ($r_C\dIL=\SI{40}{mV}$ aqui) e n\~ao da soma aritm\'etica. A regra de dimensionamento \'e, portanto, segura. Todos os casos ficam abaixo de \SI{120}{mV}, com margem de $3\times$.
+ \item \textbf{CCM.} $I_{L,min}\ge\SI{0,85}{A}>0$ at\'e na carga mais leve; n\~ao ocorre DCM, e portanto o limitador $i_L\ge0$ n\~ao age em regime.
+\end{itemize}
+
+\subsection{Degrau de carga e partida}
+\begin{figure}[h]
+\centering
+\figMATLAB{degrau}{0.85}
+\caption{Resposta ao degrau de carga $\SI{12}{\ohm}\to\SI{6}{\ohm}$ em \SI{50}{ms} (janela \SIrange{45}{60}{ms}), casos A e C. Em cima: $v_o$; embaixo: $i_L$. Escala ampliada em torno do degrau.}
+\label{fig:degrau}
+\end{figure}
+\begin{figure}[h]
+\centering
+\figMATLAB{partida}{0.85}
+\caption{Partida com $D$ constante, $R=\SI{12}{\ohm}$, casos A e C (janela \SIrange{0}{20}{ms}). Em cima: $v_o$; embaixo: $i_L$.}
+\label{fig:partida}
+\end{figure}
+
+\begin{table}[h]
+\centering
+\caption{Transit\'orios em malha aberta, $D$ constante (simula\c{c}\~ao).}
+\label{tab:trans}
+\small
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+Caso & $v_{o,min}$ (V) & desvio (V / \%) & acomod. 1\% (ms) & $i_{L,max}$ (A) & partida $i_{L,max}$ (A) & partida $v_{o,max}$ (V) \\ \midrule
+A & 9,778 & $-2{,}22$ / $-18{,}5$ & 3,80 & 2,574 & 4,18 & 19,9 \\
+B & 9,915 & $-2{,}09$ / $-17{,}4$ & 3,64 & 2,529 & 4,06 & 19,3 \\
+C & 9,982 & $-2{,}02$ / $-16{,}8$ & 2,91 & 2,508 & 4,01 & 19,0 \\ \bottomrule
+\end{tabular}
+\end{table}
+
+Discuss\~ao (Figs.~\ref{fig:degrau}--\ref{fig:partida}, Tab.~\ref{tab:trans}). No degrau, a corrente do indutor n\~ao muda instantaneamente; o capacitor fornece a diferen\c{c}a e $v_o$ cai a \SI{9,98}{V} no caso C (afundamento de $\approx17\,\%$), antes de oscilar de volta ao regime em $\approx\SI{2,9}{ms}$ (faixa de $1\,\%$). A oscila\c{c}\~ao \'e subamortecida, na frequ\^encia natural $f_0=1/(2\pi\sqrt{LC})=\SI{503}{Hz}$ ($T_0\approx\SI{2}{ms}$) e amortecida principalmente pela carga ($\tau\approx2RC=\SI{1,2}{ms}$ em \SI{6}{\ohm}). A corrente passa de \SI{1}{A} para um pico de \SI{2,5}{A} (ultrapassagem de $\approx25\,\%$ sobre o novo regime de \SI{2}{A}). Esse afundamento \'e esperado: o enunciado afirma que os limites de ondula\c{c}\~ao n\~ao se aplicam ao transit\'orio, e \'e papel da malha fechada reduz\'i-lo. Na partida com $D$ fixo, $i_L$ atinge $\approx\SI{4}{A}$ ($\approx1{,}9\times$ o pico de regime) e $v_o$ ultrapassa \SI{19}{V}, o que pesa na escolha de $I_{sat}$ do indutor e da tens\~ao do capacitor (Se\c{c}\~ao~\ref{sec:concl}).
+
+%==================================================================
+\section{Perdas, efici\^encia e conclus\~ao (Quest\~ao 4)}\label{sec:perdas}
+\subsection{Estimativa de perdas a $I_o=\SI{2}{A}$}
+Com os par\^ametros da Tabela~\ref{tab:comp}, $D=0{,}5275$, $I_{S,rms}^2=D(I_o^2+\dIL^2/12)$ e $\dIL=\SI{0,305}{A}$:
+\begin{align}
+ P_{cond}&=R_{DS(on)}I_{S,rms}^2=0{,}020\cdot0{,}5275\cdot4{,}0075=\SI{0,042}{W},\\
+ P_{diodo}&=V_F(1-D)I_o=0{,}525\cdot0{,}4725\cdot2=\SI{0,496}{W},\\
+ P_{L}&=r_L I_{L,rms}^2=0{,}195\cdot4{,}0075=\SI{0,781}{W},\qquad
+ P_{ESR}=r_C\dIL^2/12=\SI{1}{mW},\\
+ P_{sw}&=\tfrac12\Vin I_o(t_{on}+t_{off})\fs=\tfrac12\cdot24\cdot2\cdot(262\,\text{ns})\cdot20\,\text{kHz}=\SI{0,126}{W},\\
+ &\quad(\text{com }t_r{+}t_f=105\,\text{ns}:\;P_{sw}=\SI{0,050}{W}),\\
+ P_{drv}&=Q_gV_{GS}\fs=\SI{15}{mW}.
+\end{align}
+Soma: $P_{perdas}=\SI{1,46}{W}$ e, com $P_{out}=\SI{24}{W}$,
+\begin{equation}
+ \eta=\frac{P_{out}}{P_{out}+P_{perdas}}=\frac{24}{25{,}46}=\SI{94,3}{\percent}\;\;(\SI{94,5}{\percent}\text{ com }t_r{+}t_f\text{ de datasheet}).
+\end{equation}
+Verifica\c{c}\~ao cruzada: $P_{cond}+P_{diodo}+P_L+P_{ESR}=\SI{1,320}{W}$, e a simula\c{c}\~ao do caso C d\'a $P_{in}-P_{out}=25{,}321-24{,}000=\SI{1,321}{W}$; a diferen\c{c}a \'e s\'o a comuta\c{c}\~ao e o \emph{driver}, n\~ao modelados na simula\c{c}\~ao. Se $R_{DS(on)}$ subir a \SI{35}{m\ohm} a quente (hip\'otese $\approx1{,}75\times$, \TODO{conferir curva de $R_{DS(on)}\times T_j$ no datasheet}), $\eta=\SI{94,1}{\percent}$.
+
+As perdas dominantes s\~ao as do \textbf{indutor} (53\,\%) e do \textbf{diodo} (34\,\%); o MOSFET (condu\c{c}\~ao mais comuta\c{c}\~ao) responde por $\approx11\,\%$. Isso aponta o caminho de otimiza\c{c}\~ao: indutor de menor DCR ou diodo de menor $V_F$ (retifica\c{c}\~ao s\'incrona, usando o canal baixo do \texttt{IR2104}).
+
+\subsection{Compromisso $\fs$ $\times$ ondula\c{c}\~ao $\times$ perdas}
+\begin{table}[h]
+\centering
+\caption{Efeito de $\fs$ com $L=\SI{1}{mH}$, $C=\SI{100}{\micro F}$ fixos ($I_o=\SI{2}{A}$, $\Vin=\SI{24}{V}$, $D=0{,}5$; $P_{sw}$ com $t_{on}+t_{off}=\SI{262}{ns}$).}
+\label{tab:fs}
+\begin{tabular}{@{}rrrrr@{}}
+\toprule
+$\fs$ (kHz) & $\dIL$ (A) & $\dvo$ capacitivo (mV) & $P_{sw}$ (W) & $P_{drv}$ (mW) \\ \midrule
+10  & 0,600 & 75,0 & 0,063 & 7,6 \\
+20  & 0,300 & 18,8 & 0,126 & 15,1 \\
+50  & 0,120 & 3,0  & 0,315 & 37,8 \\
+100 & 0,060 & 0,8  & 0,629 & 75,6 \\ \bottomrule
+\end{tabular}
+\end{table}
+$\dIL\propto1/\fs$ e $\dvo\propto1/\fs^2$ para $L$, $C$ fixos, enquanto $P_{sw}$ e $P_{drv}$ crescem linearmente com $\fs$ (Tab.~\ref{tab:fs}). Em \SI{10}{kHz}, $\dIL=\SI{0,6}{A}$ viola o requisito com este $L$; em \SI{50}{kHz} ou mais, $L$ e $C$ poderiam ser reduzidos (menor volume, DCR e custo), ao pre\c{c}o de $P_{sw}$ 2,5 a 5 vezes maior (\SIrange{0,3}{0,6}{W}) e mais EMI. Aos \SI{20}{kHz}, com as perdas dominadas pelo indutor e pelo diodo, o acr\'escimo de $P_{sw}$ \'e pequeno (\SI{0,13}{W}, $\approx0{,}5\,\%$ da sa\'ida), o que justifica manter \SI{20}{kHz} com $L$ de \SI{1}{mH}.
+
+\subsection{Atendimento aos requisitos}\label{sec:concl}
+\begin{table}[h]
+\centering
+\caption{Requisitos \emph{vs.} resultado (caso C, componentes escolhidos).}
+\label{tab:atend}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{3.3cm} l >{\raggedright\arraybackslash}p{3.4cm} X@{}}
+\toprule
+Requisito & Limite & Resultado & Status \\ \midrule
+Erro de $\overline{v_o}$, \SI{6}{\ohm} & $\le2\,\%$ & $0{,}0\,\%$ & Atende (por constru\c{c}\~ao, $D$ ajustado nesta carga) \\
+Erro de $\overline{v_o}$, \SI{12}{\ohm} & $\le2\,\%$ & $+1{,}7\,\%$ & Atende, margem pequena; ver abaixo \\
+$\dIL$ & $\le\SI{0,40}{A}$ & \SI{0,305}{A} & Atende \\
+$\dvo$ & $\le\SI{0,12}{V}$ & \SI{0,039}{V} (limite conservador \SI{0,058}{V}) & Atende \\
+$\eta$ em \SI{6}{\ohm} & $\ge90\,\%$ & $94{,}3\,\%$ & Atende \\
+CCM em \SI{12}{\ohm} & $I_{L,min}>0$ & \SI{0,864}{A} & Atende \\ \bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Conclus\~ao.} O projeto com $L=\SI{1}{mH}$, $C=\SI{100}{\micro F}$, $D=0{,}5275$, $\fs=\SI{20}{kHz}$ atende a todos os requisitos em \emph{simula\c{c}\~ao}. Os valores do arquivo de apoio ($\SI{470}{\micro H}$, $\SI{22}{\micro F}$) violam $\dIL$ e $\dvo$.
+
+\paragraph{Ajustes e riscos que precisam de aten\c{c}\~ao.}
+\begin{enumerate}
+ \item \textbf{Corrente de partida.} Com $D$ fixo e sem \emph{soft-start}, $i_L$ chega a \SI{4}{A}, acima de \SI{3,5}{A} do candidato de indutor encontrado; o n\'ucleo satura e a corrente dispara. Recomenda-se \emph{soft-start} (rampa de $D$) ou indutor com $I_{sat}\ge\SI{4,5}{A}$. \emph{Esta recomenda\c{c}\~ao n\~ao foi simulada} \TODO{simular a rampa de $D$ e medir o novo pico}.
+ \item \textbf{Regula\c{c}\~ao em malha aberta.} Margem de apenas $0{,}3$ ponto percentual em \SI{12}{\ohm}; varia\c{c}\~oes de $V_F$, DCR, $R_{DS(on)}$ com a temperatura e de $\Vin$ consomem essa margem. A solu\c{c}\~ao \'e a malha fechada (pr\'oxima aula).
+ \item \textbf{Afundamento no degrau} ($\approx17\,\%$, \SI{2,9}{ms}): aceit\'avel apenas se o subsistema tolera, o que o enunciado n\~ao exige para o transit\'orio.
+ \item \textbf{Par\^ametros a validar} (marcados em vermelho na Tab.~\ref{tab:comp}): ESR do capacitor, DCR/$I_{sat}$ do indutor, $V_F(I_F)$ do diodo, $R_{DS(on)}(T_j)$, correntes do \emph{driver}. Atualizar o bloco de par\^ametros \texttt{par.C} em \texttt{buck\_projeto.m} e reexecutar.
+ \item \textbf{N\~ao modelado}: carga do motor, indut\^ancias parasitas de layout, \emph{ringing} no n\'o de comuta\c{c}\~ao, EMI, perdas de n\'ucleo do indutor, $Q_{rr}/C_{oss}$, tempo morto.
+\end{enumerate}
+
+\section{Reprodutibilidade}
+\begin{itemize}
+ \item \texttt{buck\_projeto.m}: c\'alculos, simula\c{c}\~oes A/B/C, tabelas e figuras vetoriais (\texttt{exportgraphics}) em \texttt{fig/}. \textbf{N\~ao foi executado no MATLAB}; executado no Octave com \texttt{ode45} no lugar de \texttt{ode23tb} (reordenando as fun\c{c}\~oes locais para o Octave), sem gerar figuras (sem \emph{toolkit} gr\'afico).
+ \item \texttt{buck\_check.py}, \texttt{design\_calc.py}: verifica\c{c}\~ao independente em Python; \texttt{design\_calc.py} imprime o dimensionamento e o balan\c{c}o de perdas.
+\end{itemize}
+
+\nocite{lyshevski2017,boylestad2012,slva477,slua618}
+\bibliographystyle{plain}
+\bibliography{refs}
+
+\end{document}
