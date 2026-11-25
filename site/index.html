@@ -71,7 +71,13 @@ h2.disp{font-size:clamp(34px,5.2vw,82px)}
 
 /* hero cinematográfico com barra de telemetria ancorada na base */
 .heroi{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;border-bottom:1px solid var(--line)}
-.heroi > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:54% 48%}
+.heroi > img,.heroi > video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:54% 48%}
+.heroi > video{background:#07080a}
+/* pausar o vídeo do topo (o movimento automático dura mais de 5 s) */
+.heroi-pausa{position:absolute;z-index:3;right:var(--gut);top:96px;display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 14px;border-radius:999px;border:1px solid rgba(255,255,255,.22);background:rgba(7,7,8,.45);color:#e5e9ee;font:700 10px var(--font);letter-spacing:.18em;text-transform:uppercase;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);cursor:pointer}
+.heroi-pausa:hover{border-color:rgba(255,255,255,.5)}
+.heroi-pausa:focus-visible{outline:2px solid var(--accent-text);outline-offset:3px}
+.heroi-pausa svg{width:10px;height:10px;fill:currentColor}
 .heroi::before{content:"";position:absolute;inset:0;z-index:1;background:radial-gradient(90% 80% at 62% 45%,rgba(7,7,8,0) 20%,rgba(7,7,8,.78) 100%)}
 .heroi::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(7,7,8,.68) 0%,rgba(7,7,8,0) 28%,rgba(7,7,8,.18) 56%,rgba(7,7,8,.96) 100%)}
 .heroi-corpo{position:relative;z-index:2;width:100%;padding-bottom:44px}
@@ -93,7 +99,7 @@ h2.disp{font-size:clamp(34px,5.2vw,82px)}
 
 @keyframes zoomIn{from{transform:scale(1.07);opacity:.15}to{transform:none;opacity:1}}
 @keyframes sobe{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
-[data-enter] > img{animation:zoomIn 1.9s cubic-bezier(.16,1,.3,1) both}
+[data-enter] > img,[data-enter] > video{animation:zoomIn 1.9s cubic-bezier(.16,1,.3,1) both}
 [data-enter] .heroi-corpo{animation:sobe 1s .3s cubic-bezier(.16,1,.3,1) both}
 [data-enter] .tele-bar{animation:sobe 1s .5s cubic-bezier(.16,1,.3,1) both}
 
@@ -261,7 +267,10 @@ footer .cred{grid-column:1/-1;margin-top:32px;padding-top:24px;border-top:1px so
   .nav.aberto ul a{display:flex;padding:18px 0;border-bottom:1px solid var(--line)}
   .heroi h1{font-size:clamp(38px,11vw,64px)}
   h2.disp{font-size:clamp(30px,8.4vw,48px)}
-  .heroi > img{object-position:60% 50%}
+  .heroi{padding-top:128px}   /* o texto do topo é mais alto que a tela do celular: não entra sob o cabeçalho */
+  .heroi > img,.heroi > video{object-position:58% 50%}
+  .heroi-pausa{top:82px;width:40px;min-height:40px;padding:0;justify-content:center}
+  .heroi-pausa span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   .fatos{grid-template-columns:repeat(2,1fr)}
   .fatos div{padding:16px}
   .fatos div:nth-child(3){border-left:0;padding-left:0}
@@ -305,7 +314,11 @@ footer .cred{grid-column:1/-1;margin-top:32px;padding-top:24px;border-top:1px so
 
 <main id="conteudo">
   <section class="heroi" id="topo" data-enter>
-    <img src="img/heroi.jpg" alt="Motorhome Solar à noite, de frente, com a faixa de luz diurna acesa e o interior v11.3 iluminado" fetchpriority="high">
+    <video id="heroi-video" autoplay muted loop playsinline preload="auto" poster="video/heroi.jpg" aria-label="Filme: o Motorhome Solar rodando à noite por uma estrada molhada, com faróis e LEDs internos acesos e o teto solar à mostra">
+      <source src="video/heroi.webm" type="video/webm">
+      <source src="video/heroi.mp4" type="video/mp4">
+    </video>
+    <button class="heroi-pausa" id="heroi-pausa" type="button"><svg viewBox="0 0 10 10" aria-hidden="true"><rect x="1" y="0" width="3" height="10"/><rect x="6" y="0" width="3" height="10"/></svg><span>Pausar vídeo</span></button>
     <div class="heroi-corpo">
       <div class="wrap">
         <div>
@@ -662,6 +675,18 @@ footer .cred{grid-column:1/-1;margin-top:32px;padding-top:24px;border-top:1px so
 
   /* números: contam uma vez quando aparecem */
   const reduz=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* vídeo do topo: parado em quem pede menos movimento ou economia de dados, pausa fora da tela e tem botão de pausar */
+  { const v=document.getElementById('heroi-video'), bt=document.getElementById('heroi-pausa');
+    const economia=navigator.connection&&navigator.connection.saveData;
+    let pausadoPeloUsuario=reduz||economia;
+    const marca=()=>{ const p=v.paused; bt.querySelector('span').textContent=p?'Reproduzir vídeo':'Pausar vídeo';
+      bt.querySelector('svg').innerHTML=p?'<path d="M1 0l9 5-9 5z"/>':'<rect x="1" y="0" width="3" height="10"/><rect x="6" y="0" width="3" height="10"/>'; };
+    if(pausadoPeloUsuario){ v.removeAttribute('autoplay'); v.preload='none'; v.pause(); }
+    v.addEventListener('play',marca); v.addEventListener('pause',marca);
+    bt.addEventListener('click',()=>{ if(v.paused){ pausadoPeloUsuario=false; v.play().catch(()=>{}); } else { pausadoPeloUsuario=true; v.pause(); } });
+    new IntersectionObserver(([e])=>{ if(pausadoPeloUsuario) return; e.isIntersecting?v.play().catch(()=>{}):v.pause(); },{threshold:0.15}).observe(v);
+    marca(); }
   const fmt=(v,d)=>v.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
   const io=new IntersectionObserver(es=>es.forEach(e=>{ if(!e.isIntersecting) return; io.unobserve(e.target);
     const el=e.target, alvo=+el.dataset.conta, d=String(el.dataset.conta).includes('.')?1:0; if(reduz) return;

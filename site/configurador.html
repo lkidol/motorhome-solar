@@ -2475,19 +2475,32 @@ async function realismo(modo,pp={}){
     pisoEst.material.transparent=true; pisoEst.material.opacity=EST.noite?0.9:0.92; pisoEst.material.needsUpdate=true;
     COMPOSER=new EffectComposer(renderer); COMPOSER.setPixelRatio(renderer.getPixelRatio()); COMPOSER.setSize(w,h);
     COMPOSER.addPass(new RenderPass(scene,camera));
+    /* um pixel com valor inválido (NaN ou infinito) num realce especular vira um bloco preto quando o brilho o espalha;
+       este passe zera esses pixels e limita o HDR antes da oclusão e do brilho */
+    { const {ShaderPass}=await import('three/addons/postprocessing/ShaderPass.js');
+      COMPOSER.addPass(new ShaderPass({uniforms:{tDiffuse:{value:null}},
+        vertexShader:'varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }',
+        fragmentShader:'uniform sampler2D tDiffuse; varying vec2 vUv; void main(){ vec4 c=texture2D(tDiffuse,vUv); bool ruim=!(c.r==c.r&&c.g==c.g&&c.b==c.b&&c.a==c.a)||any(greaterThan(abs(c),vec4(1e4))); gl_FragColor=ruim?vec4(0.0,0.0,0.0,1.0):vec4(min(c.rgb,vec3(64.0)),c.a); }'})); }
     const ao=new GTAOPass(scene,camera,w,h); ao.updateGtaoMaterial({radius:0.45,distanceFallOff:1,thickness:1.2,samples:16}); ao.blendIntensity=0.9;
-    if(pp.semBancosNaOclusao){
-      // O passe de oclusão usa um material que ignora os recortes dos bancos.
-      // Na vista externa, esse volume invisível não deve escurecer a carroceria.
-      const bancos=MODELOS_PEND.filter(pm=>pm.arq==='banqueta');
-      const preparaOclusao=ao.overrideVisibility.bind(ao);
-      ao.overrideVisibility=()=>{
-        preparaOclusao();
-        for(const {g} of bancos) g.visible=false;
+    /* O passe de oclusão desenha normais e profundidade com um material único, que ignora os planos de corte
+       de cada peça (banquetas recortadas rente à parede, corte do teto). Aqui cada malha usa um material de normais
+       com os mesmos recortes e o mesmo lado, para a oclusão enxergar exatamente o que aparece na imagem. */
+    { const cache=new Map(), base=ao.renderOverride.bind(ao);
+      const normal=m=>{ let n=cache.get(m); if(!n){ n=new THREE.MeshNormalMaterial({side:m.side,clippingPlanes:m.clippingPlanes,blending:THREE.NoBlending}); cache.set(m,n); }
+        n.visible=m.visible && (m.colorWrite!==false); return n; };   // caixas de clique invisíveis continuam fora
+      ao.renderOverride=function(r,mat,rt,cc,ca){
+        if(mat!==ao.normalMaterial) return base(r,mat,rt,cc,ca);
+        const troca=[], cor0=r.getClearColor(new THREE.Color()), a0=r.getClearAlpha(), auto0=r.autoClear;
+        scene.traverse(o=>{ if(!o.isMesh||!o.material) return; troca.push([o,o.material]);
+          o.material=Array.isArray(o.material)?o.material.map(normal):normal(o.material); });
+        r.setRenderTarget(rt); r.autoClear=false; r.setClearColor(cc); r.setClearAlpha(ca||0); r.clear();
+        r.render(scene,camera);
+        for(const [o,m] of troca) o.material=m;
+        r.autoClear=auto0; r.setClearColor(cor0); r.setClearAlpha(a0);
       };
     }
     if(pp.ao!==false) COMPOSER.addPass(ao);
-    if(pp.bloom!==false) COMPOSER.addPass(new UnrealBloomPass(new THREE.Vector2(w,h),EST.noite?0.5:0.12,0.4,1.05));
+    if(pp.bloom!==false) COMPOSER.addPass(new UnrealBloomPass(new THREE.Vector2(w,h),pp.bloomK??(EST.noite?0.5:0.12),0.4,1.05));
     COMPOSER.addPass(new OutputPass());
   }catch(e){ console.warn('pós-processamento indisponível',e); COMPOSER=null; }
 }
@@ -2526,7 +2539,6 @@ const SHOTS={
 /* mesmas cores ao anoitecer, com os LEDs internos acesos (para o botão de LEDs da seção de compra) */
 SHOTS.campo1={...SHOTS.campo, pp:{bloom:false}}; SHOTS.campo2={...SHOTS.campo, pp:{bloom:false,ao:false}};
 for(const p of ['petroleo','salvia','gelo','areia','laranja','grafite']){
-  SHOTS[p].pp={semBancosNaOclusao:true};
   SHOTS[p+'_noite']={...SHOTS[p], noite:true, est:{drl:true,posicao:true,interna:true}};
 }
 async function fazShot(n){
@@ -2549,6 +2561,93 @@ async function fazShot(n){
     camera.fov=S.fov; camera.near=0.02; document.body.classList.add('dentro');
   } else { camera.position.copy(S.pos); controls.target.copy(S.alvo); camera.fov=S.fov; controls.update(); }
   camera.updateProjectionMatrix(); syncUI(); sombraSuja=60;
+  setTimeout(()=>{ document.title='PRONTO'; },1200);
+}
+
+/* =================== ?filme: quadros do vídeo do topo do site ===================
+   O carro fica parado e o mundo corre por baixo: estrada molhada com faixas, tachas e postes passando,
+   rodas girando com um leve rastro (desfoque de movimento) e câmera em três tomadas.
+   ferramentas/filme.js chama window.__quadro(tomada, t) para cada quadro e grava a tela. */
+async function montaFilme(){
+  await Promise.all([window.__MODELOS_PRONTOS, window.__PROPS_PRONTOS]);
+  aplicaCfg(false); preset('p-ext'); anim=null;
+  setNoite(true); Object.assign(EST,{drl:true,farol:'baixo',posicao:true,interna:true});
+  luxo(true,2048); await realismo('render',{ao:false,bloomK:0.24});
+  renderer.toneMappingExposure=1.55; FAROL_K_RENDER=FAROL_K=0.022;
+  /* luar frio do lado da câmera e céu um pouco mais aberto, para a pintura aparecer à noite */
+  const lua=()=>{ hemi.intensity=0.7; sun.intensity=1.1; sun.color.set('#a9bde6'); sun.position.set(-6,10,-9); fill.intensity=0.25; rim.intensity=0.55; };
+  lua();
+  const VEL=5.5, R=RODAS.r, TILE=12;
+  /* céu da hora azul: degradê de tela, com a névoa na cor do horizonte */
+  const ceu=document.createElement('canvas'); ceu.width=8; ceu.height=512; { const g=ceu.getContext('2d'), d=g.createLinearGradient(0,0,0,512);
+    d.addColorStop(0,'#03060c'); d.addColorStop(0.42,'#0b1626'); d.addColorStop(0.56,'#22304a'); d.addColorStop(0.62,'#3a3640'); d.addColorStop(0.7,'#0c1016'); d.addColorStop(1,'#05070a');
+    g.fillStyle=d; g.fillRect(0,0,8,512); }
+  const ceuT=new THREE.CanvasTexture(ceu); ceuT.colorSpace=THREE.SRGBColorSpace;
+  const fixaCeu=()=>{ scene.background=ceuT; scene.fog=new THREE.Fog('#151b26',18,70); };
+  fixaCeu(); const tc=themeColors; themeColors=function(){ tc(); fixaCeu(); lua(); };
+  /* asfalto: textura com grão, faixa tracejada no meio e linhas contínuas nas bordas (1 ladrilho = 12 m) */
+  const cv=document.createElement('canvas'); cv.width=1024; cv.height=1024; const g=cv.getContext('2d');
+  g.fillStyle='#16191c'; g.fillRect(0,0,1024,1024);
+  for(let i=0;i<26000;i++){ const v=18+rnd()*34|0; g.fillStyle=`rgba(${v},${v+2},${v+4},${0.35+rnd()*0.5})`; g.fillRect(rnd()*1024,rnd()*1024,1+rnd()*2.5,1+rnd()*2.5); }
+  for(let i=0;i<14;i++){ g.strokeStyle='rgba(8,9,10,0.5)'; g.lineWidth=4+rnd()*10; g.beginPath(); const y=rnd()*1024; g.moveTo(0,y); g.lineTo(1024,y+(rnd()-0.5)*60); g.stroke(); }
+  const L=9, zF=z=>(z+3.2)/L*1024;            // estrada de z = -3,2 a +5,8 (faixa do carro centrada em z = 0)
+  g.fillStyle='#d9d4c4'; g.fillRect(0,zF(-2.95),1024,0.15/L*1024); g.fillRect(0,zF(5.4),1024,0.15/L*1024);
+  g.fillStyle='#d8a531'; g.fillRect(0,zF(1.55),4/TILE*1024,0.13/L*1024);
+  const tex=new THREE.CanvasTexture(cv); tex.colorSpace=THREE.SRGBColorSpace; tex.wrapS=THREE.RepeatWrapping; tex.anisotropy=8;
+  const COMP=180; tex.repeat.set(COMP/TILE,1);
+  const estrada=new THREE.Mesh(new THREE.PlaneGeometry(COMP,L),new THREE.MeshStandardMaterial({map:tex,roughness:0.66,metalness:0.0,transparent:true,opacity:0.88,envMapIntensity:0.2}));
+  estrada.rotation.x=-Math.PI/2; estrada.position.set(0,0.0005,1.3); estrada.receiveShadow=true; scene.add(estrada);
+  /* acostamento de terra e mato baixo, escuro */
+  const terra=new THREE.Mesh(new THREE.PlaneGeometry(COMP,40),new THREE.MeshStandardMaterial({color:'#0b0d0b',roughness:1}));
+  terra.rotation.x=-Math.PI/2; terra.position.set(0,0.0002,-3.2-20); scene.add(terra);
+  const terra2=terra.clone(); terra2.position.z=5.8+20; scene.add(terra2);
+  /* postes de iluminação no acostamento, a cada 30 m, e tachas refletivas na faixa do meio */
+  const postes=[], tachas=[], ESP=30, NP=6;
+  const metal=new THREE.MeshStandardMaterial({color:'#2a2f34',roughness:0.5,metalness:0.7});
+  const lampM=new THREE.MeshStandardMaterial({color:'#fff2dc',emissive:'#ffd9a8',emissiveIntensity:6});
+  for(let i=0;i<NP;i++){ const p=new THREE.Group();
+    const haste=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.09,7.5,12),metal); haste.position.set(0,3.75,-5.0); p.add(haste);
+    const braco=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.1,2.2),metal); braco.position.set(0,7.45,-3.95); p.add(braco);
+    const cab=new THREE.Mesh(new THREE.BoxGeometry(0.6,0.12,0.28),metal); cab.position.set(0,7.38,-2.9); p.add(cab);
+    const lamp=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.03,0.22),lampM); lamp.position.set(0,7.31,-2.9); p.add(lamp);
+    scene.add(p); postes.push(p); }
+  const luzesP=[0,1,2].map(()=>{ const s=new THREE.SpotLight('#ffd2a0',90,22,0.85,0.7,1.6); s.position.set(0,7.2,-2.9); s.target.position.set(0,0,-1.6); scene.add(s,s.target); return s; });
+  const tachaM=new THREE.MeshStandardMaterial({color:'#ffe9b0',emissive:'#ffb640',emissiveIntensity:2.2});
+  for(let i=0;i<16;i++){ const m=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.02,0.1),tachaM); m.position.set(0,0.01,1.62); scene.add(m); tachas.push(m); }
+  /* rodas: tudo menos a pinça gira; a face ganha cópias translúcidas atrás dela, como o rastro de um obturador aberto */
+  const giros=[];
+  for(const roda of layers.rodas.children){ const gir=new THREE.Group();
+    for(const c of [...roda.children]) if(!pincaMats.includes(c.material)) gir.add(c);
+    roda.add(gir); giros.push(gir);
+    const face=gir.children.find(c=>c.material===aroMat);
+    if(face) for(let k=1;k<=4;k++){ const f=face.clone(); f.material=aroMat.clone(); f.material.transparent=true; f.material.opacity=0.32; f.material.depthWrite=false;
+      const piv=new THREE.Group(); piv.add(f); piv.rotation.z=-k*0.085; piv.userData.rastro=true; gir.add(piv); } }
+  scene.traverse(o=>{ if(o.isMesh && o!==sh && o!==chao){ o.castShadow=o!==pisoEst&&o!==estrada&&o!==terra&&o!==terra2; o.receiveShadow=true; } });
+  renderer.shadowMap.needsUpdate=true;
+  /* tomadas: posição e alvo da câmera no começo e no fim, com aceleração suave e um leve balanço de câmera na mão */
+  const TOM=[
+    {dur:4.6, p:[V(-12.5,0.55,-3.6),V(-8.6,0.8,-5.4)], a:[V(-1.8,1.0,-0.2),V(-0.6,1.1,0)], fov:[26,30]},
+    {dur:4.4, p:[V(3.6,0.7,-5.6),V(-2.4,0.85,-5.9)], a:[V(1.4,0.75,-0.6),V(-2.0,0.95,-0.4)], fov:[34,34]},
+    {dur:5.0, p:[V(10.5,1.6,-5.8),V(6.2,5.4,-8.8)], a:[V(0.4,1.1,0),V(0.5,0.9,0)], fov:[30,31]},
+  ];
+  const ease=x=>x<0?0:x>1?1:x*x*(3-2*x);
+  window.__TOMADAS=TOM.map(t=>t.dur);
+  window.__quadro=(i,t)=>{
+    const T=TOM[i], u=t/T.dur, k=0.55*u+0.45*ease(u), tg=TOM.slice(0,i).reduce((a,b)=>a+b.dur,0)+t, x=VEL*tg;
+    tex.offset.x=1-(x/TILE)%1;   // o chão corre para trás (+x) enquanto o carro "anda" para -x
+    postes.forEach((p,j)=>{ p.position.x=((j*ESP+x)%(NP*ESP))-NP*ESP/2; });
+    const perto=[...postes].sort((a,b)=>Math.abs(a.position.x)-Math.abs(b.position.x));
+    luzesP.forEach((s,j)=>{ s.position.x=s.target.position.x=perto[j].position.x; });
+    tachas.forEach((m,j)=>{ m.position.x=((j*TILE+x)%(16*TILE))-8*TILE; });
+    giros.forEach(gr=>{ gr.rotation.z=x/R; });
+    const bal=V(Math.sin(tg*1.3)*0.012,Math.sin(tg*1.9+1)*0.01,Math.sin(tg*1.1+2)*0.012);
+    camera.position.lerpVectors(T.p[0],T.p[1],k).add(bal); controls.target.lerpVectors(T.a[0],T.a[1],k);
+    camera.fov=T.fov[0]+(T.fov[1]-T.fov[0])*k; camera.updateProjectionMatrix(); camera.lookAt(controls.target);
+    aplicaLuzes(0);
+    if(COMPOSER) COMPOSER.render(); else renderer.render(scene,camera);
+    const gl=renderer.getContext(); gl.readPixels(0,0,1,1,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array(4));   // espera a GPU terminar o quadro
+  };
+  document.body.classList.add('shot'); syncUI();
   setTimeout(()=>{ document.title='PRONTO'; },1200);
 }
 /* vitrine: só o carro e os botões de abrir */
@@ -2648,7 +2747,7 @@ function validaCfg(){
 validaCfg(); aplicaCfg(false); irPara(0,false);
 window.__MODELOS_PRONTOS = carregaModelos();
 carregaMalha().then(()=>{ vp.classList.add('pronto'); aplicaCfg(false);
-  if(SHOT) fazShot(SHOT); else if(VITRINE) montaVitrine(); else if(PARAMS.has('tecnico')) setTec(true); else preset('p-ext'); });
+  if(SHOT) fazShot(SHOT); else if(PARAMS.has('filme')) montaFilme(); else if(VITRINE) montaVitrine(); else if(PARAMS.has('tecnico')) setTec(true); else preset('p-ext'); });
 </script>
 </body>
 </html>
