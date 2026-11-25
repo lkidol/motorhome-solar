@@ -1,7 +1,8 @@
-import re, json, math, numpy as np
-html=open('/home/claude/motorhome/index.html',encoding='utf-8').read()
+import re, json, math, pathlib, numpy as np
+AQUI=pathlib.Path(__file__).resolve().parent
+html=(AQUI.parent/'site'/'configurador.html').read_text(encoding='utf-8')
 F=json.loads(re.search(r'const FUROS = (\{.*?\});\n',html).group(1))
-C=json.load(open('casca.json'))
+C=json.load(open(AQUI/'casca.json'))
 def area_poly(P):
     P=np.array(P); x,y=P[:,0],P[:,1]; return abs(np.dot(x,np.roll(y,1))-np.dot(y,np.roll(x,1)))/2
 def vidro_porta(P,vh,folga=0.07):
@@ -24,7 +25,7 @@ def add(sub,nome,mat,m,s,x,h,ds=0.2,dx=0.2,dh=0.2,cen='vazio'):
 # Carroceria
 add('Carroceria','Casca sanduíche 30 mm (sem portas)',f'Al 3 mm + PIR 23 mm + compensado 3 mm ({kgm2:.2f} kg/m²)',A_ext*kgm2,*cgS,6.5,2.0,2.0)
 add('Carroceria','Quadro de perfis (cavernas e longitudinais)','Al 6063-T6, tubo 40×40×2 mm (0,82 kg/m), ~165 m',165*0.821*1.10,3.6,0,1.15,6.5,2.2,2.1)
-add('Carroceria','Caixas de roda (4)','Al 5754 3 mm (CAD: 5 mm)',C['caixas']['area_total']*3e-3*rhoAl,3.2,0,0.40,4.4,1.8,0.6)
+add('Carroceria','Caixas de roda (4)',f'Mesmo sanduíche da carroceria: Al 5754 3 mm + PIR 23 mm + choupo 3 mm ({kgm2:.2f} kg/m²)',C['caixas']['area_total']*kgm2,3.2,0,0.40,4.4,1.8,0.6)
 add('Carroceria','Adesivos, selantes e rebites de montagem','PU/MS polímero',18,3.5,0,1.1,6,2,2)
 # Aberturas
 for nome,A,Av,s,x,hg,ferr in [('Porta do motorista',A_portaE,Av_E,2.15,1.08,1.1,9),('Porta do passageiro',A_portaD,Av_D,2.15,-1.08,1.1,9),('Porta de entrada',A_casa,Av_casa,3.20,-1.07,1.15,12)]:
@@ -45,26 +46,40 @@ add('Chassi','Piso elevado estrutural','Painel colmeia Al 20 mm (5 kg/m²) + apo
 for s in (1.2,5.2):
     for x in (0.85,-0.85):
         add('Rodas e suspensão','Roda + pneu 245/70 R17.5','Aço 17,5×6,75 + pneu radial LT',48,s,x,0.20,0.79,0.24,0.79)
-        add('Rodas e suspensão','Cubo, disco ventilado e pinça','Ferro fundido + aço',16,s,x*0.9,0.20,0.35,0.15,0.35)
+        add('Rodas e suspensão','Cubo, disco ventilado e pinça','Disco ref. Iveco Daily 70C15 Ø 306 × 28 mm (ferro fundido EN-GJL-250) + aço',16,s,x*0.9,0.20,0.35,0.15,0.35)
 add('Rodas e suspensão','Suspensão dianteira (braços, molas, amortecedores)','Aço',90,1.2,0,0.25,0.5,1.6,0.5)
 add('Rodas e suspensão','Suspensão traseira independente','Aço',100,5.2,0,0.25,0.5,1.6,0.5)
 add('Rodas e suspensão','Direção elétrica + coluna','Aço/Al',25,1.0,0.3,0.3,0.5,0.6,0.5)
 add('Rodas e suspensão','Estepe (roda + pneu)','Aço + borracha',48,6.05,-0.45,0.665,0.79,0.79,0.22)
 # Trem de força e elétrico
-add('Elétrico e tração','Bateria de tração 128S1P LFP 128,6 kWh','Células LFP 314 Ah + caixa Al + placa fria',860,2.8,0,0.16,1.6,1.3,0.26)
-add('Elétrico e tração','Motor + redução 15:1 + diferencial','Aço/Al/cobre',120,5.1,0,0.415,0.5,0.5,0.5)
+# bateria NCM de 203,6 kWh (itens 10, 34 e 35): 764 células equivalentes à LG E65D (0,906 kg) em 2 camadas sobre placas frias
+add('Elétrico e tração','Células da bateria de tração (764, NCM, 203,6 kWh)','Pouch equivalente à LG E65D, 0,906 kg cada',764*0.906,2.8,0,0.16,1.56,1.25,0.23)
+add('Elétrico e tração','Caixa do pack AT, BMS e barramentos','Estrutura do pack (Inventário de Massas, aba Elétrica)',200,2.8,0,0.16,1.6,1.3,0.26)
+add('Elétrico e tração','Placas frias da bateria (2)','Al, 1250 × 1560 × 6 mm, 120 canais de 10 × 3 mm',2*19.4,2.8,0,0.10,1.56,1.25,0.12)
+add('Elétrico e tração','Gap filler sob as células','DOWSIL TC-5515 LT, 1,5 mm',9,2.8,0,0.10,1.56,1.25,0.12)
+add('Elétrico e tração','Motor de tração Cascadia SS-320-180','Aço/Al/cobre (massa do Inventário de Massas)',149,5.1,0,0.415,0.5,0.5,0.5)
+add('Elétrico e tração','Redutor 8:1 com diferencial (hipótese)','Carcaça de Al + engrenagens de aço, 450 × 350 × 300 mm',60,5.1,0,0.30,0.45,0.35,0.30)
 add('Elétrico e tração','Semieixos (2)','Aço forjado',18,5.2,0,0.25,0.2,1.4,0.1)
-add('Elétrico e tração','Inversor de tração','Al fundido + eletrônica',12,5.65,0,0.40,0.3,0.4,0.15)
+add('Elétrico e tração','Inversor de tração Cascadia CM350SiC','Al fundido + eletrônica (Inventário de Massas)',15,5.65,0,0.40,0.3,0.4,0.15)
 add('Elétrico e tração','Caixa de alta tensão + chave de serviço','Aço/cobre',15,3.8,0.55,0.15,0.3,0.4,0.2)
-add('Elétrico e tração','Baía técnica (carregador 11 kW, DC-DC, 3 MPPT, inversor 3 kVA)','Eletrônica',40,6.03,0.48,0.65,0.65,0.85,0.26)
+add('Elétrico e tração','Baía técnica (carregador 11 kW, DC-DC, conversor solar BrightLoop DCHV, inversor 3 kVA)','Eletrônica',40,6.03,0.48,0.65,0.65,0.85,0.26)
 add('Elétrico e tração','Bateria auxiliar 12 V LFP 200 Ah','LFP',22,6.2,0.7,0.6,0.35,0.2,0.25)
-add('Elétrico e tração','Chicotes AT (35–70 mm²) e BT','Cobre + isolação',60,3.5,0,0.3,6,1.5,0.5)
-add('Elétrico e tração','Arrefecimento (chiller, bomba, radiador, 8 L de fluido)','Al + fluido',30,0.3,0,0.58,0.3,0.6,0.4)
+add('Elétrico e tração','Chicotes AT e BT (fases: Coroplast 9-2611, 70 mm²)','Cobre + isolação',60,3.5,0,0.3,6,1.5,0.5)
+# arrefecimento (itens 10, 34 e 35): um circuito para motor, inversor, conversor solar e bateria, sem chiller
+add('Água e térmico','Radiador sob medida (núcleo 800 × 400 × 66 mm)','Al brasado, fluxo cruzado em 4 passes',8,0.19,0,0.545,0.07,0.88,0.42)
+add('Água e térmico','Ventiladores SPAL VA18 de 16″ (2)','Aspirantes, 12 V',2*2.57,0.28,0,0.545,0.1,0.8,0.4)
+add('Água e térmico','Bombas Pierburg CWA 150 e Rheinmetall CWP 50 + válvula de 3 vias','12 V',1.0+0.6+0.4,0.45,0,0.40,0.2,0.3,0.2)
+add('Água e térmico','Fluido de arrefecimento 19,8 L','Etilenoglicol 50 % em água',21,2.9,0,0.25,5,1,0.3)
+add('Água e térmico','Mangueiras (4 m de Ø 25 e 12 m de Ø 16) + reservatório de 1 L','EPDM',4.8+0.5,2.9,0,0.25,5,1,0.3)
+# lubrificação (item 12)
+add('Elétrico e tração','Óleos do motor (ATF 4,6 L) e do redutor (2,5 L) + bomba auxiliar','Dexron-VI ATF + Mobilube 1 SHC 75W-90',3.8+2.2+1.0,5.1,0,0.30,0.5,0.5,0.3)
 # Água e térmico
 add('Água e térmico','Tanque de água limpa 100 L (vazio)','PEAD rotomoldado',10,4.23,-0.55,0.16,0.5,0.9,0.24)
 add('Água e térmico','Tanque de água cinza 80 L (vazio)','PEAD',8,4.23,0.48,0.16,0.5,0.75,0.24)
 add('Água e térmico','Boiler 10 L + bomba (vazio)','Inox + Al',10,2.98,0.81,0.54,0.4,0.38,0.42)
-add('Água e térmico','Ar-condicionado / bomba de calor','Al/cobre/compressor',30,0.5,-0.32,0.32,0.36,0.6,0.4)
+# climatização (itens 11 e 32): 2 FreshWell sob o painel, MaxxFan no teto traseiro
+add('Água e térmico','Ar-condicionado Dometic FreshWell 3000 (2)','2,7 kW de frio e 3,0 kW de calor cada, 230 V',2*21,0.634,0,0.183,0.628,0.82,0.286)
+add('Água e térmico','Exaustor MaxxFan Deluxe','12 V, 30 W',5.4,6.58,0,2.06,0.42,0.59,0.13)
 add('Água e térmico','Tubulação, registros, ralos','PEX/PP',8,3.8,0,0.2,3,1.6,0.2)
 # Interior
 add('Interior','Piso: vinílico 2 mm + tapete','PVC vinílico (3,4 kg/m²)',7.0*3.4+2,3.2,0,0.30,2.9,2.08,0.01)
@@ -73,8 +88,8 @@ add('Interior','Revestimento das paredes','Feltro automotivo 4 mm (0,6 kg/m²)',
 add('Interior','Painel de instrumentos + telas + console','PP/ABS + aço + eletrônica',45,1.25,0,0.82,1.1,1.9,0.4)
 add('Interior','Bancos da cabine giratórios (2)','Aço + espuma PU + tecido',64,2.34,0,0.75,0.6,1.6,1.0)
 add('Interior','Volante, pedais, colunas','Aço/Al/PU',10,1.85,0.55,0.8,0.4,0.4,0.7)
-add('Interior','Cozinha (gabinete, bancada, pia, cooktop indução 2 zonas)','Choupo 15 mm + carvalho 35 mm + inox',48,2.99,0.74,0.75,0.5,0.58,0.9)
-add('Interior','Geladeira 90 L compressor 12 V','Aço + PU',25,3.49,0.74,0.75,0.5,0.55,0.8)
+add('Interior','Cozinha (gabinete, bancada, pia, cooktop Dometic CVI1525)','Choupo 15 mm + carvalho 35 mm + inox',48,2.99,0.74,0.75,0.5,0.58,0.9)
+add('Interior','Geladeira Dometic RC 10.4M90 (90 L, 12 V)','Aço + PU',21,3.49,0.74,0.75,0.5,0.55,0.8)
 add('Interior','Armário aéreo da cozinha','Choupo 12 mm',16,3.24,0.84,1.845,1.0,0.32,0.45)
 add('Interior','Banheiro (paredes GRP, piso de box, porta)','GRP 4 mm + choupo',42,4.23,0.58,1.2,0.9,0.89,1.78)
 add('Interior','Vaso cassete + cuba + armário com espelho + chuveiro','ABS/cerâmica/inox',30,4.23,0.8,0.9,0.8,0.4,1.2)
@@ -122,8 +137,8 @@ cen={'vazio':resumo(itens),'om':resumo(itens+[i for i in var if i['cen']=='om'])
 subs={}
 for i in itens: subs[i['sub']]=subs.get(i['sub'],0)+i['m']
 out=dict(geo=geo,camadas=camadas,kgm2=kgm2,esp=esp,A_ext=A_ext,reg=reg,itens=itens,var=var,cen=cen,subs=subs)
-json.dump(out,open('massa.json','w'),indent=1,ensure_ascii=False)
+json.dump(out,open(AQUI/'massa.json','w'),indent=1,ensure_ascii=False)
 print('geo',{k:round(v,3) for k,v in geo.items()}); print('kg/m2',round(kgm2,2),'esp',esp,'Aext',round(A_ext,2))
 for k,v in subs.items(): print(f'{k:22s} {v:7.1f}')
 for k,c in cen.items(): print(k,{a:round(b,3) for a,b in c.items()})
-print('carcaça',round(A_ext*kgm2,1),'quadro',round(165*0.821*1.1,1),'caixas',round(C['caixas']['area_total']*3e-3*rhoAl,1),'long',round(long,1),'trav',round(trav,1))
+print('carcaça',round(A_ext*kgm2,1),'quadro',round(165*0.821*1.1,1),'caixas',round(C['caixas']['area_total']*kgm2,1),'long',round(long,1),'trav',round(trav,1))

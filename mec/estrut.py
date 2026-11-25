@@ -1,5 +1,6 @@
-import json, numpy as np
-D=json.load(open('massa.json')); g=9.81
+import json, pathlib, numpy as np
+AQUI=pathlib.Path(__file__).resolve().parent
+D=json.load(open(AQUI/'massa.json')); g=9.81
 itens=D['itens']+D['var']
 nao_susp=lambda i: i['sub']=='Rodas e suspensão' and ('Roda + pneu' in i['nome'] or 'Cubo' in i['nome'])
 s=np.linspace(0,7,701); ds=s[1]-s[0]
@@ -37,12 +38,14 @@ res=dict(Msus=Msus,Rf=Rf/g,Rr=Rr/g,Msag=Msag,Mhog=Mhog,s_Msag=float(s[np.argmax(
          dist=[dict(est=f'{a:.1f}–{a+0.5:.1f}',kg=round(m,1)) for a,m in zip(estac,dist)])
 m=D['cen']['proj']['m']; hc=D['cen']['proj']['hsolo']; L=4.0; tr=1.70
 res['frenagem_dF']=m*0.8*g*hc/L/g; res['lateral_dF']=m*0.6*g*hc/tr/g
-res['bat_long']=860*20*g/1e3; res['bat_lat']=860*8*g/1e3
+# pack completo: células, caixa/BMS, placas frias e gap filler (itens no piso duplo em s = 2,8 m)
+m_bat=sum(i['m'] for i in D['itens'] if i['sub']=='Elétrico e tração' and abs(i['s']-2.8)<1e-6)
+res['m_bat']=m_bat; res['bat_long']=m_bat*20*g/1e3; res['bat_lat']=m_bat*8*g/1e3
 # drawers
 md=4.42*6.5; lev=(1.03-0.65+1.4)-1.04
 res['gaveta_Mest']=md*g*lev; q_=0.5*1.18*20**2*1.3; res['gaveta_vento_F']=q_*4.42; res['gaveta_vento_M']=q_*4.42*lev
 # sandwich D
 E1,t1,E2,t2,dd=70e9,0.003,9e9,0.003,0.027
 res['D_sand']=E1*t1*E2*t2*dd**2/(E1*t1+E2*t2)
-json.dump(res,open('estrut.json','w'),indent=1)
+json.dump(res,open(AQUI/'estrut.json','w'),indent=1)
 for k,v in res.items(): print(k, v if k=='dist' else round(v,4) if isinstance(v,float) else v)

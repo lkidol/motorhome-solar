@@ -1,14 +1,14 @@
 geo {'A_portaE': np.float64(1.328), 'A_portaD': np.float64(1.328), 'A_casa': np.float64(1.747), 'Av_E': np.float64(0.476), 'Av_D': np.float64(0.476), 'Av_casa': np.float64(0.478), 'A_jan': np.float64(0.907)}
 kg/m2 11.54 esp 30.0 Aext 50.97
-Carroceria               826.9
+Carroceria               857.3
 Aberturas                130.1
 Chassi                   412.1
 Rodas e suspensão        519.0
-Elétrico e tração       1177.0
-Água e térmico            66.0
-Interior                 545.9
+Elétrico e tração       1326.0
+Água e térmico           124.8
+Interior                 541.9
 Solar e externos         262.9
-vazio {'m': np.float64(3939.835), 's': np.float64(3.407), 'x': np.float64(0.017), 'h': np.float64(0.626), 'hsolo': np.float64(0.816), 'Rf': np.float64(1765.949), 'Rr': np.float64(2173.886), 'pf': np.float64(0.448), 'Ixx': np.float64(2878.783), 'Iyy': np.float64(12246.231), 'Izz': np.float64(11936.176), 'SSF': np.float64(1.042)}
-om {'m': np.float64(4034.835), 's': np.float64(3.391), 'x': np.float64(0.024), 'h': np.float64(0.629), 'hsolo': np.float64(0.819), 'Rf': np.float64(1824.424), 'Rr': np.float64(2210.411), 'pf': np.float64(0.452), 'Ixx': np.float64(2921.127), 'Iyy': np.float64(12358.964), 'Izz': np.float64(12063.096), 'SSF': np.float64(1.038)}
-proj {'m': np.float64(4453.835), 's': np.float64(3.491), 'x': np.float64(0.018), 'h': np.float64(0.623), 'hsolo': np.float64(0.813), 'Rf': np.float64(1903.342), 'Rr': np.float64(2550.493), 'pf': np.float64(0.427), 'Ixx': np.float64(3080.552), 'Iyy': np.float64(13585.429), 'Izz': np.float64(13322.637), 'SSF': np.float64(1.046)}
-carcaça 588.5 quadro 149.0 caixas 71.4 long 136.0 trav 46.6
+vazio {'m': np.float64(4174.038), 's': np.float64(3.439), 'x': np.float64(0.017), 'h': np.float64(0.605), 'hsolo': np.float64(0.795), 'Rf': np.float64(1837.402), 'Rr': np.float64(2336.637), 'pf': np.float64(0.44), 'Ixx': np.float64(2939.824), 'Iyy': np.float64(12719.95), 'Izz': np.float64(12371.239), 'SSF': np.float64(1.07)}
+om {'m': np.float64(4269.038), 's': np.float64(3.424), 'x': np.float64(0.024), 'h': np.float64(0.608), 'hsolo': np.float64(0.798), 'Rf': np.float64(1895.877), 'Rr': np.float64(2373.162), 'pf': np.float64(0.444), 'Ixx': np.float64(2982.755), 'Iyy': np.float64(12837.439), 'Izz': np.float64(12502.279), 'SSF': np.float64(1.065)}
+proj {'m': np.float64(4688.038), 's': np.float64(3.515), 'x': np.float64(0.019), 'h': np.float64(0.604), 'hsolo': np.float64(0.794), 'Rf': np.float64(1974.794), 'Rr': np.float64(2713.244), 'pf': np.float64(0.421), 'Ixx': np.float64(3141.26), 'Iyy': np.float64(14039.566), 'Izz': np.float64(13738.436), 'SSF': np.float64(1.07)}
+carcaça 588.5 quadro 149.0 caixas 101.8 long 136.0 trav 46.6

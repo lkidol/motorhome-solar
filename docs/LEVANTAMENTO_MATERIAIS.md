@@ -5,6 +5,10 @@ Baseado no **Inventário de Massas — Motorhome Solar (v3)** (`4.469,7 kg` carr
 > [!NOTE]
 > **Premissas de preço:** Valores estimados em reais (R$) apenas de **materiais e componentes** (sem mão de obra especializada, ferramental, frete interestadual ou homologação/CAT/CCT). Itens de alta tensão (células LFP, powertrain EV, OBC/DC-DC) refletem importação direta da China (Alibaba/DDP) com dólar-referência e tributos inclusos; itens mecânicos/interiores refletem distribuidores nacionais, autopeças comerciais e marketplaces (Mercado Livre, Leroy Merlin, Leo Madeiras, lojas de RV).
 
+
+> [!WARNING]
+> **Atualização de 25/11/2026 (inventário térmico, itens 11 e 30 a 35):** algumas linhas deste levantamento ficaram desatualizadas e precisam ser recotadas. A bateria passou a NCM de **203,6 kWh** (764 células equivalentes à LG E65D) com 2 placas frias, no lugar das 128 células LFP (linha 38). O motor é o **Cascadia SS-320-180** com redutor **8:1** e o inversor é o **CM350SiC** (linha 40). O conversor solar passou a ser o **BrightLoop DCHV** (linha 43). A climatização usa **2 Dometic FreshWell 3000 + MaxxFan Deluxe** (linha 49) e o arrefecimento tem **radiador sob medida, 2 ventiladores SPAL VA18, bombas Pierburg CWA 150 e Rheinmetall CWP 50**, sem chiller (linha 50). Geladeira (Dometic RC 10.4M90), cooktop (Dometic CVI1525), vaso (Thetford C223-CS) e películas 3M Crystalline também foram definidos. Os preços abaixo ainda são os da versão anterior; a lista de modelos está em `plan/Inventario_de_Massas_Motorhome_Solar.xlsx`.
+
 ---
 
 ## 1. Resumo Executivo por Subárea

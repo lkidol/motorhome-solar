@@ -84,6 +84,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 /* ficha sobre o palco */
 .ficha{position:absolute;top:28px;left:32px;right:32px;pointer-events:none;display:flex;flex-direction:column;gap:6px}
+body.tecnico .ficha{display:none}
 .ficha .olho{margin:0;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
 .ficha h1{margin:0;font-size:clamp(26px,2.6vw,38px);line-height:1.08;font-weight:700;font-stretch:110%;letter-spacing:-.02em;max-width:16ch;text-wrap:balance}
 .stats{display:flex;gap:28px;margin:14px 0 0;padding:0;flex-wrap:wrap}
@@ -390,7 +391,7 @@ body.dentro .doca,body.dentro .cenas-vitrine{display:none}
       <h1>Motorhome elétrico para duas pessoas</h1>
       <dl class="stats">
         <div><dt>de comprimento</dt><dd>7,00 m</dd></div>
-        <div><dt>de bateria LFP</dt><dd>128 kWh</dd></div>
+        <div><dt>de bateria NCM</dt><dd>203,6 kWh</dd></div>
         <div><dt>de solar rodando</dt><dd id="st-rod">–</dd></div>
         <div><dt>de solar parado</dt><dd id="st-est">–</dd></div>
       </dl>
@@ -459,8 +460,9 @@ body.dentro .doca,body.dentro .cenas-vitrine{display:none}
         <h2 id="h-p1" tabindex="-1">Energia</h2>
         <p class="lead">A bateria fica no piso duplo e o teto inteiro gera energia, inclusive em movimento.</p>
         <dl class="ficha-t">
-          <div><dt>Bateria de tração</dt><dd>128 kWh LFP</dd></div>
-          <div><dt>Recarga na tomada</dt><dd>CCS2 · 11 kW em CA</dd></div>
+          <div><dt>Bateria de tração</dt><dd>203,6 kWh NCM · 764 células</dd></div>
+          <div><dt>Recarga na tomada CCS2</dt><dd>80 kW em CC · 11 kW em CA</dd></div>
+          <div><dt>Arrefecimento da bateria</dt><dd>Placas frias no radiador do motor</dd></div>
           <div><dt>Inversor para a casa</dt><dd>3 kVA</dd></div>
           <div><dt>Painel fixo no teto</dt><dd><span data-area="fixo">–</span> m²</dd></div>
         </dl>
@@ -576,8 +578,10 @@ body.dentro .doca,body.dentro .cenas-vitrine{display:none}
         <h3 style="font-size:15px;font-weight:650;margin:0 0 10px">De série em todas as versões</h3>
         <ul class="serie">
           <li>Carroceria em painel sanduíche de 30 mm com núcleo de PIR</li>
-          <li>Motor traseiro com redução 15:1 e radiador com chiller da bateria</li>
-          <li>Bomba de calor sob o painel, deixando o teto livre para o solar</li>
+          <li>Motor traseiro Cascadia com redução 8:1; um radiador sob medida resfria motor, inversor e bateria, sem chiller</li>
+          <li>Dois Dometic FreshWell 3000 sob o painel e MaxxFan no teto traseiro, deixando o resto do teto livre para o solar</li>
+          <li>Películas 3M Crystalline: CR 70 na cabine e CR 30 na porta de entrada e na janela da sala</li>
+          <li>Freios a disco ventilados (referência Iveco Daily 70C15, Ø 306 mm)</li>
           <li>Água limpa de 100 L e água cinza de 80 L no piso isolado</li>
           <li>Faróis LED com faixa diurna de ponta a ponta</li>
           <li>Bancos da cabine giram 180° para a sala</li>
@@ -617,12 +621,17 @@ body.dentro .doca,body.dentro .cenas-vitrine{display:none}
           <li>A porta de entrada (lado direito, 2,70–3,70 m) tem soleira a 0,26 m, quase no nível do piso elevado (0,30 m): um degrau de 4 cm.</li>
           <li>As portas da frente têm soleira a 0,21 m e topo a 1,99 m. Acima do piso da cabine o vão livre fica em 1,69 m.</li>
           <li>O motor assenta no fundo, que sobe a partir de 4,75 m. Ele fica ~0,2 m acima do centro das rodas traseiras, então os semieixos trabalham inclinados.</li>
-          <li>O banco de trás da sala fica sobre a caixa de roda (topo a 0,72 m): assento a 0,56 m do piso, 11 cm mais alto que o normal.</li>
+          <li>O banco de trás da sala fica sobre a caixa de roda (topo a 0,72 m); o tablado de 15,5 cm deixa os dois bancos com assento a 0,42 m.</li>
           <li>O painel fixo fica 8 cm acima do teto para guardar as gavetas solares. A altura total sobe para ≈ 2,47 m.</li>
           <li>A traseira afunila: a cama de 1,9 m de largura só cabe até 6,6 m da frente.</li>
           <li>Os relevos externos somam até 7 cm por lado: largura total ≈ 2,34 m nos para-lamas (limite legal 2,60 m).</li>
+          <li>Renomear o bloco da bateria para NCM de 203,6 kWh e incluir as duas placas frias (1250 × 1560 × 6 mm).</li>
+          <li>Atualizar o motor e o redutor com as dimensões do redutor 8:1 comercial, quando for definido (hipótese: 450 × 350 × 300 mm, 60 kg).</li>
+          <li>Aumentar a altura da tomada de ar do radiador (840 × 280 mm atende até 33 °C de ambiente).</li>
+          <li>Abrir no teto o furo de 356 × 356 mm do MaxxFan.</li>
+          <li>Traçar os cabos de fase e as mangueiras de arrefecimento (16 m) e posicionar bombas, válvula de 3 vias e reservatório.</li>
         </ol>
-        <p class="note">Coordenadas de projeto: s = distância da frente, x = lateral (+ lado esquerdo), h = altura a partir do fundo da carcaça, em metros. Os volumes do interior são uma proposta para reservar espaço. Todos foram conferidos contra a superfície do STL (paredes, piso, teto, caixas de roda): nenhum atravessa a carcaça.</p>
+        <p class="note">Coordenadas de projeto: s = distância da frente, x = lateral (+ lado esquerdo), h = altura a partir do fundo da carcaça, em metros. Os volumes do interior são uma proposta para reservar espaço. Todos foram conferidos contra a superfície do STL (paredes, piso, teto, caixas de roda), também com portas abertas e bancos girados: nenhum atravessa a carcaça. Radiador, FreshWell, dutos, grelhas e MaxxFan seguem a montagem atualizada da pasta Térmica e Fluidos.</p>
       </section>
     </div>
 
@@ -674,27 +683,28 @@ const CORES = { cama:'#e9e3d6', banho:'#dfe6ea', gel:'#b9c6ce', piso:'#a99a86', 
 const DETALHES = {"modulos": [{"lado": 1, "nome": "baixo", "frente": [0.1477, 0.68, 0.8641], "eixo": [0.7944, 0.0, -0.6074], "r": 0.042, "comp": 0.05}, {"lado": 1, "nome": "alto", "frente": [0.148, 0.82, 0.8641], "eixo": [0.7944, 0.0, -0.6074], "r": 0.042, "comp": 0.05}, {"lado": -1, "nome": "baixo", "frente": [0.1477, -0.68, 0.8641], "eixo": [0.7944, 0.0, -0.6074], "r": 0.042, "comp": 0.05}, {"lado": -1, "nome": "alto", "frente": [0.148, -0.82, 0.8641], "eixo": [0.7944, 0.0, -0.6074], "r": 0.042, "comp": 0.05}], "retro": [{"lado": 1, "parede": 1.1017, "base": [[1.585, 1.705], [1.43, 1.53]], "braco": [[1.62, 1.67], [1.462, 1.498], 0.115], "pod": [[1.55, 1.7], [1.435, 1.525], 0.075]}, {"lado": -1, "parede": 1.1017, "base": [[1.585, 1.705], [1.43, 1.53]], "braco": [[1.62, 1.67], [1.462, 1.498], 0.115], "pod": [[1.55, 1.7], [1.435, 1.525], 0.075]}], "limp": [{"lamina": [[0.4087, 0.22, 1.2285], [0.4087, 0.33, 1.2287], [0.4087, 0.44, 1.2289], [0.4087, 0.55, 1.2291], [0.4087, 0.66, 1.2293], [0.4087, 0.77, 1.2295], [0.4087, 0.88, 1.2296]], "pivo": [0.272, 0.55, 1.0702]}, {"lamina": [[0.4087, -0.63, 1.2287], [0.4087, -0.52, 1.2285], [0.4087, -0.41, 1.2283], [0.4087, -0.3, 1.2282], [0.4087, -0.19, 1.2282], [0.4087, -0.08, 1.2282], [0.4087, 0.03, 1.2283]], "pivo": [0.272, -0.3, 1.0702]}], "normal_vidro": [-0.7073, 0.0, 0.707]};
 
 const COMPONENTES = [
-  {"id": "bat", "grupo": "eletrico", "nome": "Bateria de tração 128 kWh (LFP 128S1P)", "s": [2.0, 3.6], "x": [-0.65, 0.65], "h": [0.03, 0.29], "nota": "1,6 × 1,3 × 0,26 m, ~860 kg com caixa. No piso duplo, centrada a 2,8 m da frente."},
+  {"id": "bat", "grupo": "eletrico", "nome": "Bateria de tração 203,6 kWh NCM (764 células, 2 placas frias)", "s": [2.0, 3.6], "x": [-0.65, 0.65], "h": [0.03, 0.29], "nota": "1,60 × 1,30 × 0,26 m no piso duplo, centrada a 2,8 m da frente. 764 células pouch equivalentes à LG E65D (3,67 V; 692 kg) em duas camadas, cada uma sobre uma placa fria de alumínio de 1250 × 1560 × 6 mm (120 canais, 5 L/min por placa, 19,4 kg) com gap filler de 1,5 mm. Resfriada pelo mesmo radiador do motor, sem chiller: acima de 35 °C de ambiente o BMS limita a carga rápida (55 kW a 40 °C)."},
   {"id": "hv", "grupo": "eletrico", "nome": "Caixa de alta tensão + chave de serviço", "s": [3.65, 3.95], "x": [0.35, 0.75], "h": [0.05, 0.25], "nota": "Contatores, fusíveis e pré-carga. Acesso por alçapão no piso."},
-  {"id": "inv", "grupo": "eletrico", "nome": "Inversor de tração", "s": [5.5, 5.8], "x": [-0.2, 0.2], "h": [0.33, 0.48], "nota": "~0,4 × 0,3 × 0,15 m, junto ao motor."},
-  {"id": "baia", "grupo": "eletrico", "nome": "Baía técnica (carregador 11 kW, DC-DC, MPPT, inversor 3 kVA, bateria 12 V)", "s": [5.7, 6.35], "x": [0.05, 0.9], "h": [0.52, 0.78], "nota": "Debaixo da cama, com tampa pelo lado esquerdo. Recebe os cabos que descem do teto."},
-  {"id": "ccs", "grupo": "eletrico", "nome": "Tomada de carga CCS2", "s": [6.0, 6.18], "x": [0.92, 0.99], "h": [0.95, 1.1], "nota": "Lado esquerdo, atrás de uma tampinha, perto da baía técnica."},
+  {"id": "inv", "grupo": "eletrico", "nome": "Inversor de tração Cascadia CM350SiC", "s": [5.5, 5.8], "x": [-0.2, 0.2], "h": [0.33, 0.48], "nota": "~0,4 × 0,3 × 0,15 m, junto ao motor. Refrigerado a líquido (entrada do fluido ≤ 60 °C). A corrente contínua fica limitada em ≈ 400 A por causa dos cabos de fase (com 500 A o cabo passa de 180 °C)."},
+  {"id": "baia", "grupo": "eletrico", "nome": "Baía técnica (carregador 11 kW CA, DC-DC, conversor solar BrightLoop DCHV, inversor 3 kVA, bateria 12 V)", "s": [5.7, 6.35], "x": [0.05, 0.9], "h": [0.52, 0.78], "nota": "Debaixo da cama, com tampa pelo lado esquerdo. Recebe os cabos que descem do teto. O conversor solar BrightLoop DCHV (97 %) é refrigerado a líquido no mesmo circuito do motor."},
+  {"id": "ccs", "grupo": "eletrico", "nome": "Tomada de carga CCS2 (11 kW CA · 80 kW CC)", "s": [6.0, 6.18], "x": [0.92, 0.99], "h": [0.95, 1.1], "nota": "Lado esquerdo, atrás de uma tampinha, perto da baía técnica. A carga de 80 kW em CC vai direto para a bateria; acima de 35 °C de ambiente o BMS reduz a potência."},
   {"id": "agua", "grupo": "agua", "nome": "Água limpa (~100 L)", "s": [3.98, 4.48], "x": [-1.0, -0.1], "h": [0.04, 0.28], "nota": "0,50 × 0,90 × 0,24 m. No piso duplo, à frente do eixo traseiro e dentro do isolamento."},
   {"id": "cinza", "grupo": "agua", "nome": "Água cinza (~80 L)", "s": [3.98, 4.48], "x": [0.1, 0.85], "h": [0.04, 0.28], "nota": "0,50 × 0,75 × 0,24 m, ao lado da água limpa."},
   {"id": "boiler", "grupo": "agua", "nome": "Boiler + bomba d'água", "s": [2.78, 3.18], "x": [0.62, 1.0], "h": [0.33, 0.75], "nota": "Dentro do gabinete da cozinha, perto da pia e do banheiro."},
-  {"id": "rad", "grupo": "agua", "nome": "Radiador + chiller da bateria", "s": [0.18, 0.3], "x": [-0.32, 0.32], "h": [0.38, 0.78], "nota": "Na frente, com tomada de ar no bico."},
-  {"id": "ac", "grupo": "agua", "nome": "Ar-condicionado / bomba de calor", "s": [0.32, 0.68], "x": [-0.62, -0.02], "h": [0.12, 0.52], "nota": "Debaixo do painel, lado do passageiro. O teto fica livre para o solar."},
-  {"id": "motor", "grupo": "mecanico", "nome": "Motor + redução 15:1 + diferencial", "s": [4.85, 5.35], "x": [-0.25, 0.25], "h": [0.165, 0.665], "nota": "~0,5 × 0,5 × 0,5 m, ~120 kg. Assenta no fundo, que sobe a partir de 4,75 m; fica ~0,2 m acima do centro da roda, então os semieixos trabalham inclinados."},
-  {"id": "direcao", "grupo": "mecanico", "nome": "Caixa de direção + freios", "s": [0.95, 1.1], "x": [-0.55, 0.55], "h": [0.15, 0.3], "nota": "Junto ao eixo dianteiro (1,2 m da frente)."},
+  {"id": "rad", "grupo": "agua", "nome": "Radiador sob medida + 2 ventiladores SPAL VA18 de 16″", "s": [0.15, 0.34], "x": [-0.44, 0.44], "h": [0.33, 0.755], "nota": "Módulo de 880 × 175 × 420 mm projetado para o motorhome (item 35): núcleo de alumínio brasado 800 × 400 × 66 mm, fluxo cruzado em 4 passes, UA = 622 W/K, rejeita 15,6 kW. Ventiladores aspirantes, 5.470 m³/h juntos. Um só circuito resfria motor, inversor, conversor solar e bateria (sem chiller): bomba Pierburg CWA 150, bomba da bateria Rheinmetall CWP 50, válvula de 3 vias, reservatório de 1 L, 16 m de mangueira e 19,8 L de etilenoglicol 50 %."},
+  {"id": "ac", "grupo": "agua", "nome": "Climatização: 2 × Dometic FreshWell 3000 + dutos", "s": [0.32, 0.948], "x": [-0.41, 0.41], "h": [0.04, 0.73], "nota": "No lugar da antiga caixa do ar-condicionado, sob o painel. Cada unidade: 628 × 400 × 286 mm, 21 kg, 990 W em 230 V, 2,7 kW de frio e 3,0 kW de calor (COP 2,73). Os dutos de insuflamento sobem até o painel; o condensador troca ar pelo fundo (2 grelhas) e o condensado sai por um dreno no fundo. Com as películas 3M, a carga de frio cai de 4,5 para 3,5 kW. Com o cooktop ligado junto, a demanda passa de 4,3 kW, acima do inversor de 3 kVA."},
+  {"id": "motor", "grupo": "mecanico", "nome": "Motor Cascadia SS-320-180 + redutor 8:1 com diferencial", "s": [4.85, 5.35], "x": [-0.25, 0.25], "h": [0.165, 0.665], "nota": "Volume do STL mantido (0,5 × 0,5 × 0,5 m); a peça passou de 15:1 para 8:1. Redutor comercial a definir: hipótese de 450 × 350 × 300 mm, 60 kg e 2,5 L de Mobilube 1 SHC 75W-90. O motor é lubrificado e resfriado por ATF (≈ 4,6 L) com bomba auxiliar de óleo Cascadia; o controle reduz a potência para ≈ 60 kW se o óleo do redutor passar de 110 °C. Assenta no fundo, que sobe a partir de 4,75 m; os semieixos trabalham inclinados."},
+  {"id": "cabosFase", "grupo": "eletrico", "nome": "Cabos de fase U, V e W (Coroplast 9-2611, 70 mm²)", "s": [5.34, 5.52], "x": [-0.08, 0.08], "h": [0.4, 0.58], "forma": "cabos", "nota": "Blindados, Ø 18,2 mm, T180, afastados por presilhas (não em trevo). Ar a 60 °C no compartimento: 128,5 °C no condutor no pior caso, em trevo (limite 180 °C); 279,7 A eficazes. O de 50 mm² fica no limite. Blindagem aterrada nas duas pontas."},
+  {"id": "direcao", "grupo": "mecanico", "nome": "Caixa de direção + freios", "s": [0.95, 1.1], "x": [-0.55, 0.55], "h": [0.15, 0.3], "nota": "Junto ao eixo dianteiro (1,2 m da frente). Disco de referência Iveco Daily 70C15 (Ø 306 × 28 mm, ventilado, ferro fundido). No cálculo térmico toda a frenagem vai para o atrito, sem regeneração: 223 °C no fim da frenagem de 30 para 10 m/s."},
   {"id": "estepe", "grupo": "mecanico", "nome": "Estepe Ø0,78 m (ou kit de reparo)", "s": [5.66, 6.44], "x": [-0.84, -0.06], "h": [0.555, 0.775], "forma": "roda", "nota": "Deitado debaixo da cama, lado direito. Se trocar por kit de reparo, a baía técnica cresce."},
   {"id": "portaE", "grupo": "aberturas", "nome": "Porta do motorista", "s": [1.755, 2.55], "x": [1.063, 1.093], "h": [0.21, 1.99], "forma": "porta", "furo": "frenteE", "nota": "Lado esquerdo do carro. Ocupa o vão do STL com o mesmo contorno; vidro na metade de cima."},
   {"id": "portaD", "grupo": "aberturas", "nome": "Porta do passageiro", "s": [1.755, 2.55], "x": [-1.093, -1.063], "h": [0.21, 1.99], "forma": "porta", "furo": "frenteD", "nota": "Lado direito do carro. Ocupa o vão do STL com o mesmo contorno; vidro na metade de cima."},
-  {"id": "portaCasa", "grupo": "aberturas", "nome": "Porta de entrada do motorhome", "s": [2.705, 3.7], "x": [-1.085, -1.055], "h": [0.26, 2.04], "forma": "porta", "furo": "casa", "vidroH": 1.4, "dobradica": "tras", "nota": "Lado direito, logo atrás da porta do passageiro. Soleira a 0,26 m, quase no nível do piso (0,30 m). Abre de frente para a cozinha."},
-  {"id": "janela", "grupo": "aberturas", "nome": "Janela da sala (2 folhas)", "s": [3.805, 4.8], "x": [-1.075, -1.045], "h": [0.91, 1.89], "forma": "janela", "furo": "janela", "nota": "Lado direito, sobre a mesa da sala. Duas folhas separadas por um montante de 4,5 cm, como no STL."},
+  {"id": "portaCasa", "grupo": "aberturas", "nome": "Porta de entrada do motorhome", "s": [2.705, 3.7], "x": [-1.085, -1.055], "h": [0.26, 2.04], "forma": "porta", "furo": "casa", "vidroH": 1.4, "pelicula": "CR30", "dobradica": "tras", "nota": "Lado direito, logo atrás da porta do passageiro. Soleira a 0,26 m, quase no nível do piso (0,30 m). Abre de frente para a cozinha."},
+  {"id": "janela", "grupo": "aberturas", "nome": "Janela da sala (2 folhas)", "s": [3.805, 4.8], "x": [-1.075, -1.045], "h": [0.91, 1.89], "forma": "janela", "furo": "janela", "pelicula": "CR30", "nota": "Lado direito, sobre a mesa da sala. Duas folhas separadas por um montante de 4,5 cm, como no STL."},
   {"id": "farolE", "grupo": "detalhes", "nome": "Farol esquerdo (LED: baixo, alto e seta)", "s": [0.03, 0.3], "x": [0.52, 1.0], "h": [0.78, 1.01], "forma": "malha", "nota": "Fecha o vão do farol que já existe no STL. Lente 6 mm recuada da superfície, dois projetores e seta âmbar em diagonal. Centro a ≈ 1,08 m do solo."},
   {"id": "farolD", "grupo": "detalhes", "nome": "Farol direito (LED: baixo, alto e seta)", "s": [0.03, 0.3], "x": [-1.0, -0.52], "h": [0.78, 1.01], "forma": "malha", "nota": "Fecha o vão do farol que já existe no STL. Lente 6 mm recuada da superfície, dois projetores e seta âmbar em diagonal."},
   {"id": "drl", "grupo": "detalhes", "nome": "Faixa de luz diurna (DRL)", "s": [0.19, 0.24], "x": [-1.0, 1.0], "h": [0.965, 0.995], "forma": "malha", "nota": "Ocupa a fenda de 3 cm que cruza o nariz e liga os dois faróis, como no conceito A."},
-  {"id": "grade", "grupo": "detalhes", "nome": "Tomada de ar do radiador", "s": [0.0, 0.02], "x": [-0.42, 0.42], "h": [0.42, 0.7], "forma": "malha", "nota": "Na face vertical do nariz, bem na frente do radiador. No CAD ainda é superfície fechada: precisa do recorte para o ar passar."},
+  {"id": "grade", "grupo": "detalhes", "nome": "Tomada de ar do radiador (840 × 280 mm)", "s": [0.0, 0.02], "x": [-0.42, 0.42], "h": [0.42, 0.7], "forma": "malha", "nota": "Na face vertical do nariz, bem na frente do radiador. Atende até 33 °C de ambiente; aumentar a altura daria mais margem. No CAD ainda é superfície fechada: precisa do recorte para o ar passar."},
   {"id": "placaD", "grupo": "detalhes", "nome": "Placa dianteira (Mercosul 400 × 130 mm)", "s": [0.14, 0.21], "x": [-0.2, 0.2], "h": [0.165, 0.295], "forma": "malha", "nota": "Abaixo do ressalto de 3 cm que o nariz tem a 0,30 m do fundo."},
   {"id": "retroE", "grupo": "detalhes", "nome": "Retrovisor câmera do motorista", "s": [1.55, 1.71], "x": [1.1, 1.29], "h": [1.43, 1.53], "forma": "retro", "nota": "Câmera compacta no pilar, logo à frente da porta. É a única peça que passa da lateral: 19 cm para fora, contra ~25 cm de um espelho comum."},
   {"id": "retroD", "grupo": "detalhes", "nome": "Retrovisor câmera do passageiro", "s": [1.55, 1.71], "x": [-1.29, -1.1], "h": [1.43, 1.53], "forma": "retro", "nota": "Câmera compacta no pilar, logo à frente da porta do passageiro."},
@@ -715,6 +725,9 @@ const COMPONENTES = [
   {"id": "calha", "grupo": "detalhes", "nome": "Calhas de chuva do teto", "s": [1.98, 6.62], "x": [-1.12, 1.12], "h": [1.90, 2.17], "forma": "malha", "nota": "Seguem a aresta do teto, 4,5 cm abaixo dela. Ficam abaixo das gavetas solares (2,215 m)."},
   {"id": "calhaJ", "grupo": "detalhes", "nome": "Pingadeira sobre a janela da sala", "s": [3.76, 4.85], "x": [-1.10, -1.06], "h": [1.93, 1.95], "forma": "malha"},
   {"id": "toldo", "grupo": "detalhes", "nome": "Toldo retrátil em cassete (3,1 m)", "s": [2.765, 5.935], "x": [-1.20, -1.07], "h": [2.055, 2.155], "forma": "malha", "nota": "Proposta. Lado direito, logo acima da porta de entrada (topo a 2,04 m). Caixa de 10 × 10 cm; abre uns 2,5 m. Fica abaixo das gavetas solares, que passam a 2,215 m."},
+  {"id": "maxxfan", "grupo": "detalhes", "nome": "Exaustor de teto MaxxFan Deluxe", "s": [6.37, 6.79], "x": [-0.295, 0.295], "h": [1.95, 2.14], "forma": "maxxfan", "nota": "589 × 421 × 128 mm, 5,4 kg, 12 V e 30 W, com comando remoto. Furo de 356 × 356 mm no teto traseiro, sobre a cama e atrás do painel solar. Traz 15 L/s de ar externo para dois ocupantes e renova o ar antes de ligar o ar-condicionado. No STL o furo ainda não foi aberto."},
+  {"id": "grelhaAr", "grupo": "detalhes", "nome": "Grelha de entrada de ar externo", "s": [3.83, 4.13], "x": [-1.1, -1.07], "h": [0.4, 0.52], "forma": "grelhaAr", "nota": "300 × 120 mm, passiva com filtro, na lateral direita abaixo da janela da sala. Entrada do ar de ventilação que o MaxxFan puxa."},
+  {"id": "grelhaCond", "grupo": "detalhes", "nome": "Grelhas do condensador do ar-condicionado", "s": [0.33, 0.91], "x": [-0.32, 0.32], "h": [-0.008, 0.0], "forma": "grelhaCond", "nota": "Duas por unidade FreshWell, no fundo da carroceria sob o painel: o condensador toma e devolve ar por baixo do carro."},
   {"id": "labio", "grupo": "detalhes", "nome": "Lábio do para-choque dianteiro", "s": [0.24, 0.42], "x": [-0.98, 0.98], "h": [-0.012, 0.012], "forma": "malha", "nota": "Avança 5 cm além do nariz, rente ao fundo. Vão livre continua ≈ 0,18 m."},
   {"id": "entradas", "grupo": "detalhes", "nome": "Entradas de ar dos cantos (cortina de ar)", "s": [0.10, 0.26], "x": [-0.90, 0.90], "h": [0.12, 0.35], "forma": "malha", "nota": "Uma de cada lado no para-choque, com 3 aletas. Jogam ar pela frente das rodas."},
   {"id": "aletas", "grupo": "detalhes", "nome": "Aletas da tomada de ar do radiador", "s": [-0.02, 0.07], "x": [-0.40, 0.40], "h": [0.46, 0.67], "forma": "malha"},
@@ -1266,6 +1279,64 @@ BUILD.acab=c=>{ const m=MI.macio(), cr=MI.creme(), al=MI.alu(), o=[];
   o.push(rb(4.66,4.8,-0.47,-0.45,0.042,0.78,cr,0.006), rb(4.8,5.0,-0.47,-0.45,0.075,0.78,cr,0.006), rb(5.0,5.2,-0.47,-0.45,0.117,0.78,cr,0.006), rb(4.648,4.666,-0.99,-0.47,0.04,0.30,cr,0.006), rb(5.10,5.20,-1.03,-0.47,0.708,0.745,cr,0.008));
   return o; };
 BUILD.arm_tras=c=>armario(6.62,6.93,-0.80,0.80,1.50,1.86,{portas:3,frenteS:6.62});
+/* =================== TÉRMICA (itens 11, 30 a 35) =================== */
+/* radiador sob medida: núcleo 800 × 400 × 66 mm com caixas laterais, defletor e 2 ventiladores SPAL de 16″ aspirantes */
+BUILD.rad=c=>{ const al=MI.alu(), pr=MI.preto(), o=[];
+  const nucleo=new THREE.MeshStandardMaterial({color:'#8d969b',roughness:0.55,metalness:0.7,clippingPlanes:[clip]});
+  o.push(rb(0.160,0.226,-0.40,0.40,0.345,0.745,nucleo,0.004));                                         // núcleo
+  for(const x of [-0.42,0.42]) o.push(rb(0.155,0.232,x-0.02,x+0.02,0.335,0.755,pr,0.008));            // caixas do fluxo cruzado
+  o.push(rb(0.226,0.236,-0.41,0.41,0.345,0.745,pr,0.004));                                            // defletor
+  for(const x of [-0.205,0.205]){
+    const anel=new THREE.Mesh(new THREE.TorusGeometry(0.188,0.012,8,40),pr); anel.rotation.y=Math.PI/2; anel.position.copy(W(0.252,x,0.545)); o.push(anel);
+    for(let k=0;k<7;k++){ const p=new THREE.Mesh(new RoundedBoxGeometry(0.012,0.16,0.07,1,0.004),pr); const a=k*2*Math.PI/7;
+      p.position.copy(W(0.25,x+Math.cos(a)*0.095,0.545+Math.sin(a)*0.095)); p.rotation.x=-a; p.rotation.z=0.35; o.push(p); }
+    const motor=cil(0,0,0,0.075,0.055,al); motor.geometry.rotateZ(Math.PI/2); motor.position.copy(W(0.30,x,0.545)); o.push(motor);
+    for(const a of [0.6,2.6,4.6]){ const br=rb(0.255,0.265,x-0.005,x+0.005,0.545,0.735,pr,0.002); br.geometry.translate(0,-0.095,0); br.rotation.x=a; br.position.copy(W(0.26,x,0.545)); o.push(br); } }
+  return o; };
+/* 2 × Dometic FreshWell 3000 lado a lado sob o painel, com os dutos de insuflamento subindo até ele */
+BUILD.ac=c=>{ const o=[], al=MI.alu(), pr=MI.preto();
+  const caixa=new THREE.MeshPhysicalMaterial({color:'#e7e9e8',roughness:0.45,clearcoat:0.3,clippingPlanes:[clip]});
+  for(const [a,b] of [[-0.41,-0.01],[0.01,0.41]]){ const xm=(a+b)/2;
+    o.push(rb(0.32,0.948,a,b,0.04,0.326,caixa,0.03));
+    o.push(rb(0.335,0.40,a+0.04,b-0.04,0.318,0.328,pr,0.004));                                      // saída do insuflamento (frente)
+    for(let k=0;k<6;k++) o.push(rb(0.95,0.952,a+0.05,b-0.05,0.09+k*0.035,0.105+k*0.035,pr,0.002));  // grelha de retorno (trás)
+    o.push(rb(0.77,0.90,xm-0.06,xm+0.06,0.326,0.73,al,0.03)); }                                      // duto até o painel
+  return o; };
+/* bateria: duas camadas de células, cada uma sobre uma placa fria de alumínio; bandeja e tampa da caixa */
+BUILD.bat=c=>{ const pr=MI.preto(), al=MI.alu();
+  const cel=new THREE.MeshStandardMaterial({color:'#d7a13a',roughness:0.6,clippingPlanes:[clip]});
+  return [ rb(2.0,3.6,-0.65,0.65,0.03,0.036,pr,0.004),
+    rb(2.02,3.58,-0.625,0.625,0.036,0.042,al,0.002), rb(2.03,3.57,-0.615,0.615,0.0435,0.151,cel,0.008),
+    rb(2.02,3.58,-0.625,0.625,0.152,0.158,al,0.002), rb(2.03,3.57,-0.615,0.615,0.1595,0.267,cel,0.008),
+    rb(2.0,3.6,-0.65,0.65,0.268,0.29,pr,0.006) ]; };
+/* cabos de fase: três cabos laranja de alta tensão, afastados por presilhas */
+BUILD.cabos=c=>{ const m=new THREE.MeshStandardMaterial({color:'#e8731c',roughness:0.55,clippingPlanes:[clip]}), o=[];
+  for(const x of [-0.06,0,0.06]){
+    const cv=new THREE.CatmullRomCurve3([W(5.50,x,0.44),W(5.47,x,0.50),W(5.41,x,0.54),W(5.35,x,0.55)]);
+    o.push(new THREE.Mesh(new THREE.TubeGeometry(cv,16,0.0091,10,false),m)); }
+  for(const s0 of [5.44]) o.push(rb(s0,s0+0.02,-0.09,0.09,0.515,0.535,MI.preto(),0.004));            // presilha
+  return o; };
+/* MaxxFan no teto traseiro, inclinado com o teto; moldura interna de 356 × 356 mm no forro */
+BUILD.maxxfan=c=>{ const sm=6.58, hm=roofH(sm), ang=Math.atan2(roofH(sm+0.05)-roofH(sm-0.05),0.1);
+  const g=new THREE.Group(); g.position.copy(W(sm,0,hm)); g.rotation.z=ang;
+  const pr=MI.preto(), br=MI.branco();
+  const tampa=new THREE.MeshPhysicalMaterial({color:'#20262a',roughness:0.25,clearcoat:0.6,envMap:envTex,clippingPlanes:[clip]});
+  const L=(ds,dy,dx,y0,mat,r)=>{ const m=new THREE.Mesh(new RoundedBoxGeometry(ds,dy,dx,3,r),mat); m.position.set(0,y0+dy/2,0); return m; };
+  g.add(L(0.421,0.03,0.589,0.0,pr,0.012), L(0.40,0.085,0.56,0.028,tampa,0.035), L(0.36,0.012,0.50,0.11,tampa,0.006));
+  for(let k=0;k<4;k++){ const f=new THREE.Mesh(new THREE.BoxGeometry(0.008,0.05,0.52),pr); f.position.set(-0.15+k*0.1,0.06,0); g.add(f); }
+  g.add(L(0.40,0.012,0.40,-0.05,br,0.004));                                                            // moldura interna no forro
+  return [g]; };
+/* grelha de entrada de ar na lateral direita, com aletas */
+BUILD.grelhaAr=c=>{ const xw=wallX(3.98), pr=MI.preto(), o=[rb(3.83,4.13,-(xw+0.006),-(xw-0.004),0.40,0.52,pr,0.006)];
+  for(let k=0;k<5;k++){ const h=0.415+k*0.022; const a=rb(3.845,4.115,-(xw+0.012),-(xw+0.004),h,h+0.008,MI.macio2(),0.002); a.rotation.x=0.5; o.push(a); }
+  return o; };
+/* grelhas do condensador no fundo, sob as duas unidades */
+BUILD.grelhaCond=c=>{ const pr=MI.preto(), o=[];
+  for(const xm of [-0.21,0.21]) for(const [a,b] of [[0.36,0.50],[0.76,0.90]]){
+    o.push(rb(a,b,xm-0.15,xm+0.15,FUNDO_GRELHA-0.006,FUNDO_GRELHA,pr,0.004));
+    for(let k=0;k<5;k++){ const ss=a+0.015+k*0.026; o.push(rb(ss,ss+0.01,xm-0.135,xm+0.135,FUNDO_GRELHA-0.01,FUNDO_GRELHA-0.006,MI.macio2(),0.002)); } }
+  return o; };
+const FUNDO_GRELHA=0.0;
 
 function wallX(s){ const P=PAREDE; if(s<=P[0][0]) return P[0][1];
   for(let i=1;i<P.length;i++) if(s<=P[i][0]){const [a,xa]=P[i-1],[b,xb]=P[i];return xa+(xb-xa)*(s-a)/(b-a);} return P[P.length-1][1]; }
@@ -1273,7 +1344,11 @@ function rrect(s0,s1,h0,h1,r){ const sh=new THREE.Shape(); const X=s=>s-3.5, Y=h
   sh.moveTo(X(s0+r),Y(h0)); sh.lineTo(X(s1-r),Y(h0)); sh.quadraticCurveTo(X(s1),Y(h0),X(s1),Y(h0+r));
   sh.lineTo(X(s1),Y(h1-r)); sh.quadraticCurveTo(X(s1),Y(h1),X(s1-r),Y(h1)); sh.lineTo(X(s0+r),Y(h1));
   sh.quadraticCurveTo(X(s0),Y(h1),X(s0),Y(h1-r)); sh.lineTo(X(s0),Y(h0+r)); sh.quadraticCurveTo(X(s0),Y(h0),X(s0+r),Y(h0)); return sh; }
-const vidroMat = new THREE.MeshPhysicalMaterial({color:'#16232b',roughness:0.04,metalness:0.2,envMap:envTex,envMapIntensity:1.3,transparent:true,opacity:0.85,side:THREE.DoubleSide,clippingPlanes:[clip]});
+/* películas 3M Crystalline por dentro do vidro: CR 70 nas portas da cabine (78 % de luz, acima dos 70 % da CONTRAN 960/2022)
+   e CR 30 na porta de entrada e na janela da sala (35 % de luz, mais privacidade) */
+const vidroMat = new THREE.MeshPhysicalMaterial({color:'#1b2a33',roughness:0.04,metalness:0.2,envMap:envTex,envMapIntensity:1.3,transparent:true,opacity:0.8,side:THREE.DoubleSide,clippingPlanes:[clip]});
+const vidroMat30 = new THREE.MeshPhysicalMaterial({color:'#090d10',roughness:0.04,metalness:0.25,envMap:envTex,envMapIntensity:1.4,transparent:true,opacity:0.93,side:THREE.DoubleSide,clippingPlanes:[clip]});
+const vidroDe = c => c.pelicula==='CR30' ? vidroMat30 : vidroMat;
 const portaMats = [];
 function fazPorta(c,mat){
   const lado = Math.sign(c.x[0]+c.x[1]); const g=[]; const P=FUROS[c.furo];
@@ -1291,7 +1366,7 @@ function fazPorta(c,mat){
   const gap=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(out.map(v=>new THREE.Vector3(v.x,v.y,lado*(xw+0.003)))),
     new THREE.LineBasicMaterial({color:'#07090a',transparent:true,opacity:0.9,clippingPlanes:[clip]}));
   g.push(gap);
-  const v=new THREE.Mesh(new THREE.ShapeGeometry(new THREE.Shape(jan.map(([s,h])=>new THREE.Vector2(s-3.5,h+VAO)))),vidroMat);
+  const v=new THREE.Mesh(new THREE.ShapeGeometry(new THREE.Shape(jan.map(([s,h])=>new THREE.Vector2(s-3.5,h+VAO)))),vidroDe(c));
   v.position.z = lado*(xw-0.015); g.push(v);
   const mac=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.028,0.012),matPretoBri);
   mac.position.copy(W(c.dobradica==='tras'?c.s[0]+0.16:c.s[1]-0.16,lado*(xw+0.004),1.06)); g.push(mac);
@@ -1387,7 +1462,7 @@ function fazJanela(c){
     const quadro=new THREE.Shape(v2); quadro.holes.push(new THREE.Path(ins2.map(([s,h])=>new THREE.Vector2(s-3.5,h+VAO)).reverse()));
     const f=new THREE.Mesh(new THREE.ExtrudeGeometry(quadro,{depth:0.03,bevelEnabled:false,curveSegments:2}),mold);
     f.position.z = lado>0? xw-0.03 : -xw; g.push(f);
-    const vid=new THREE.Mesh(new THREE.ShapeGeometry(new THREE.Shape(ins2.map(([s,h])=>new THREE.Vector2(s-3.5,h+VAO)))),vidroMat);
+    const vid=new THREE.Mesh(new THREE.ShapeGeometry(new THREE.Shape(ins2.map(([s,h])=>new THREE.Vector2(s-3.5,h+VAO)))),vidroDe(c));
     vid.position.z=lado*(xw-0.015); g.push(vid);
   }
   return g;
@@ -1452,7 +1527,7 @@ for(const c of COMPONENTES){
   for(const p of parts){ p.userData.comp=c; g.add(p); pickables.push(p); if(!['volante','janela','limp','malha'].includes(c.forma)&&false) edges.push(addEdges(p)); }
   layers[c.grupo].add(g);
   const meshes=[]; g.traverse(o=>{ if(o.isMesh&&!parts.includes(o)){ o.userData.comp=c; pickables.push(o); } if(o.isMesh) meshes.push(o); });
-  const mats=[...new Set(meshes.flatMap(p=>Array.isArray(p.material)?p.material:[p.material]))].filter(m=>m&&m!==vidroMat&&m!==fitaMat);
+  const mats=[...new Set(meshes.flatMap(p=>Array.isArray(p.material)?p.material:[p.material]))].filter(m=>m&&m!==vidroMat&&m!==vidroMat30&&m!==fitaMat);
   compObj[c.id]={c,g,mat,mats,edges,center:W((s0+s1)/2,(x0+x1)/2,(h0+h1)/2)};
   for(const pm of MODELOS_PEND) if(!pm.comp) pm.comp=c.id;
 }
@@ -1928,7 +2003,7 @@ const PROPS=[
   ['wicker_basket_01',null, 4.40, -0.86, 0.456, 0.15, 0.85,'mesa'],
   ['rubber_duck_toy',null, 4.09, 0.95, 1.070, 2.6, 0.30,'banho'],
   ['hanging_picture_frame_01',null, 5.92, 0.965, 1.44, 3.1416, 0.42,'cama'],
-  ['alarm_clock_01',null, 6.72, 0.05, 1.861, -1.6, 0.6,'arm_tras'],
+  ['alarm_clock_01',null, 6.70, -0.45, 1.861, -1.6, 0.5,'arm_tras'],
 ];
 async function carregaProps(){
   const ld=new GLTFLoader(), cache={};
@@ -2246,7 +2321,7 @@ function aplicaCfg(salvar=true){
 function linhasResumo(){
   const p=PINTURAS.find(q=>q.id===CFG.pintura);
   return [
-    ['Motorhome Solar · 7,00 m · 128 kWh', PRECO_BASE],
+    ['Motorhome Solar · 7,00 m · 203,6 kWh', PRECO_BASE],
     [`Pintura ${p.nome} (${p.tipo})`, PRECO_PINT[p.tipo]],
     [OPC.teto[CFG.teto].nome, precoDe('teto',CFG.teto)],
     [OPC.roda[CFG.roda].nome+' aro 20″', precoDe('roda',CFG.roda)],
