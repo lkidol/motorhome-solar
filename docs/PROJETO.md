@@ -32,21 +32,24 @@
 
 ## Massa e planilha
 
-| Cenário | Massa |
-|---|---|
-| Vazio | 4.174 kg (antes 3.940) |
-| Em ordem de marcha | 4.269 kg (antes 4.035) |
-| Carregado (2 pessoas, bagagem) | 4.688 kg (antes 4.454) |
-| PBT proposto | 5.000 kg |
+Fonte: planilha do Google "Inventário de Massas — Motorhome Solar" (exportada em `plan/Inventario_de_Massas_Motorhome_Solar.xlsx`). `mec/massa.py` lê a exportação e chega aos mesmos números da aba Resumo.
 
-- `mec/massa.py` agora usa os valores do inventário da Elétrica para bateria (764 células NCM de 0,906 kg + caixa/BMS de 200 kg), motor (149 kg) e inversor (15 kg), e inclui o redutor 8:1 (60 kg, hipótese), placas frias, gap filler, radiador, ventiladores, bombas, fluido, mangueiras, óleos, 2 FreshWell e MaxxFan. As caixas de roda passaram a sanduíche (101,8 kg em vez de 71,4). Centro de gravidade a 0,79 m do solo; eixo traseiro com 2.713 kg no carregado.
-- Planilha (`plan/atualiza.py`): Mecânica 2.141 kg, Elétrica 1.439 kg, Térmica 145 kg, Hidráulica 28 kg, Interiores 548 kg e Outros 561 kg; total 4.861 kg (antes 4.729). A Térmica foi detalhada item a item conforme o inventário térmico.
-- `mec/estrut.py`: com o pack de 940 kg, a longarina chega a 33 MPa (82 MPa com fator 2,5) e 5,8 mm de flecha.
+| Cenário | Massa | CG do solo | Eixo dianteiro / traseiro |
+|---|---|---|---|
+| Vazio | 4.225 kg | 0,854 m | 1.783 / 2.442 kg |
+| Em ordem de marcha | 4.320 kg | 0,855 m | 1.843 / 2.477 kg |
+| Carregado de projeto | 4.738 kg | 0,850 m | 1.921 / 2.817 kg |
+| PBT proposto | 5.000 kg | | margem de 262 kg |
+
+- Por subárea: Mecânica 2.080 kg, Elétrica 1.354 kg, Térmica 154 kg, Hidráulica 26 kg, Interiores 548 kg, Acessórios externos 63 kg e Carga útil 514 kg.
+- A Térmica foi detalhada conforme o inventário térmico (itens 11 e 30 a 35): 2 FreshWell, radiador, ventiladores, bombas, placas frias, gap filler, fluido, mangueiras, MaxxFan e óleos. As caixas de roda passaram para a parede sanduíche.
+- Ainda a acertar (aba Pendências): a linha do motor continua com 202 kg do conjunto anterior, e a caixa do pack (143,2 kg) ainda é a do pack LFP, que incluía uma placa fria.
+- `mec/estrut.py`: com o pack de 883 kg (células, caixa, placas frias e gap filler), a longarina chega a 31 MPa (77 MPa com fator 2,5) e 5,4 mm de flecha.
 - Isolamento térmico está zerado na planilha porque entra na casca (≈41 kg).
 - Ocupantes: 2 × 75 kg no cenário carregado.
 - Boiler de 10 L fica no site, não na planilha.
 
 ## Próximos passos
 
-1. Fazer no STL os ajustes pendentes da Térmica (lista acima) e regenerar a planilha com `python3 plan/atualiza.py`.
+1. Fazer no STL os ajustes pendentes da Térmica (lista acima). Depois de mudar a planilha do Google, exportar o xlsx para `plan/` e rodar `python3 mec/massa.py`.
 2. Renderização final em Cycles (ver `docs/RENDER_BLENDER.md`), se o vídeo for refeito no Blender.

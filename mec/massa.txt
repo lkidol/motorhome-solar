@@ -1,14 +1,10 @@
-geo {'A_portaE': np.float64(1.328), 'A_portaD': np.float64(1.328), 'A_casa': np.float64(1.747), 'Av_E': np.float64(0.476), 'Av_D': np.float64(0.476), 'Av_casa': np.float64(0.478), 'A_jan': np.float64(0.907)}
-kg/m2 11.54 esp 30.0 Aext 50.97
-Carroceria               857.3
-Aberturas                130.1
-Chassi                   412.1
-Rodas e suspensão        519.0
-Elétrico e tração       1326.0
-Água e térmico           124.8
-Interior                 541.9
-Solar e externos         262.9
-vazio {'m': np.float64(4174.038), 's': np.float64(3.439), 'x': np.float64(0.017), 'h': np.float64(0.605), 'hsolo': np.float64(0.795), 'Rf': np.float64(1837.402), 'Rr': np.float64(2336.637), 'pf': np.float64(0.44), 'Ixx': np.float64(2939.824), 'Iyy': np.float64(12719.95), 'Izz': np.float64(12371.239), 'SSF': np.float64(1.07)}
-om {'m': np.float64(4269.038), 's': np.float64(3.424), 'x': np.float64(0.024), 'h': np.float64(0.608), 'hsolo': np.float64(0.798), 'Rf': np.float64(1895.877), 'Rr': np.float64(2373.162), 'pf': np.float64(0.444), 'Ixx': np.float64(2982.755), 'Iyy': np.float64(12837.439), 'Izz': np.float64(12502.279), 'SSF': np.float64(1.065)}
-proj {'m': np.float64(4688.038), 's': np.float64(3.515), 'x': np.float64(0.019), 'h': np.float64(0.604), 'hsolo': np.float64(0.794), 'Rf': np.float64(1974.794), 'Rr': np.float64(2713.244), 'pf': np.float64(0.421), 'Ixx': np.float64(3141.26), 'Iyy': np.float64(14039.566), 'Izz': np.float64(13738.436), 'SSF': np.float64(1.07)}
-carcaça 588.5 quadro 149.0 caixas 101.8 long 136.0 trav 46.6
+Mecânica                2080.3
+Elétrica                1354.2
+Térmica                  153.6
+Hidráulica                26.0
+Interiores               548.0
+Acessórios externos       62.5
+Carga útil               513.5
+vazio {'m': 4224.538, 's': 3.512, 'x': 0.017, 'h': 0.664, 'hsolo': 0.854, 'Rf': 1782.842, 'Rr': 2441.695, 'pf': 0.422, 'Ixx': 3647.538, 'Iyy': 14108.255, 'Izz': 13553.098, 'SSF': 0.995}
+om {'m': 4319.538, 's': 3.493, 'x': 0.023, 'h': 0.665, 'hsolo': 0.855, 'Rf': 1843.005, 'Rr': 2476.533, 'pf': 0.427, 'Ixx': 3691.979, 'Iyy': 14252.46, 'Izz': 13712.674, 'SSF': 0.994}
+proj {'m': 4738.038, 's': 3.578, 'x': 0.014, 'h': 0.66, 'hsolo': 0.85, 'Rf': 1921.269, 'Rr': 2816.769, 'pf': 0.405, 'Ixx': 3909.604, 'Iyy': 15511.887, 'Izz': 15031.732, 'SSF': 1.0}

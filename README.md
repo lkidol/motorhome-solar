@@ -13,7 +13,7 @@ Entrega: 02/12/2026.
 | `site/modelos/` | Modelos GLB do interior (banco da cabine, banqueta da sala, volante, vaso, barra e ducha do chuveiro), carregados pelo configurador |
 | `modelos/scripts/` | Scripts de otimização dos GLB (gltf-transform/meshopt) |
 | `mec/` | Cálculo de massa e estrutura (`massa.json`, `massa.txt`, `estrut.*`, `casca.*`) |
-| `plan/` | Planilha `Inventario_de_Massas_Motorhome_Solar.xlsx` e o script `atualiza.py` que a regenera |
+| `plan/` | `Inventario_de_Massas_Motorhome_Solar.xlsx`: exportação da planilha oficial do Google (Inventário de Massas — Motorhome Solar). `atualiza.py` só gera a versão antiga, com outro nome |
 | `geo/` | Geometria da carroceria e do traçado do LED (scripts e dados) |
 | `teste/` | Scripts de teste visual e de verificação do interior (Playwright) |
 | `ferramentas/` | Patches usados nas versões do site e geração de relevos |
@@ -23,9 +23,9 @@ Entrega: 02/12/2026.
 
 **Site (local e deploy):** a pasta `site/` é um site estático autocontido. Para rodar localmente, execute `python -m http.server` dentro de `site/` e acesse `http://localhost:8000/`. O deploy em produção publica `./site` automaticamente no Cloudflare Workers Static Assets conforme configurado em `wrangler.jsonc` (e `site/.assetsignore`). Para gerar o build offline legado do esquemático, confira os scripts e históricos em `site/`.
 
-**Planilha:** `python3 plan/atualiza.py` reconstrói a aba Materiais a partir de `plan/original.xlsx`.
+**Planilha:** a fonte é a planilha do Google. Depois de mudá-la, baixe como .xlsx (Arquivo → Fazer download → Microsoft Excel) e substitua `plan/Inventario_de_Massas_Motorhome_Solar.xlsx`.
 
-**Massas:** `mec/massa.py` gera `mec/massa.json` a partir de `mec/casca.json`.
+**Massas:** `python3 mec/massa.py` lê a aba Materiais do xlsx e refaz os cenários da aba Resumo em `mec/massa.json`; `python3 mec/estrut.py` usa esse arquivo para as longarinas.
 
 ## Créditos dos modelos 3D
 

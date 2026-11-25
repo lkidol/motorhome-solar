@@ -1,3 +1,9 @@
+"""LEGADO: gera a planilha antiga (aba Materiais simples) a partir de original.xlsx.
+
+A planilha oficial agora é a "Inventário de Massas — Motorhome Solar" do Google; o arquivo
+Inventario_de_Massas_Motorhome_Solar.xlsx desta pasta é uma exportação dela. Este script grava em
+outro nome para não sobrescrever a exportação.
+"""
 import openpyxl, copy, pathlib
 AQUI=pathlib.Path(__file__).resolve().parent
 from openpyxl.worksheet.datavalidation import DataValidation
@@ -154,4 +160,4 @@ ref=[('Dimensões da carcaça (comp. × larg. × alt.)','7,00 × 2,29 × 2,20 m'
 for i,(a,b,c) in enumerate(ref):
     r=16+i
     for col,v in zip('ABC',(a,b,c)): rs[f'{col}{r}']=v; rs[f'{col}{r}']._style=copy.copy(n)
-wb.save(AQUI/'Inventario_de_Massas_Motorhome_Solar.xlsx')
+wb.save(AQUI/'Inventario_de_Massas_legado.xlsx')

@@ -2,12 +2,12 @@ import json, pathlib, numpy as np
 AQUI=pathlib.Path(__file__).resolve().parent
 D=json.load(open(AQUI/'massa.json')); g=9.81
 itens=D['itens']+D['var']
-nao_susp=lambda i: i['sub']=='Rodas e suspensão' and ('Roda + pneu' in i['nome'] or 'Cubo' in i['nome'])
+nao_susp=lambda i: i['naoSusp']   # coluna "Não suspensa" da planilha
 s=np.linspace(0,7,701); ds=s[1]-s[0]
 q=np.zeros_like(s)  # kg/m sprung
 for i in itens:
     if nao_susp(i): continue
-    m=i['m']*(0.5 if 'Suspensão' in i['nome'] else 1)
+    m=i['m']   # a planilha já separa a parte suspensa da não suspensa
     a,b=max(0,i['s']-i['ds']/2),min(7,i['s']+i['ds']/2)
     mask=(s>=a)&(s<=b)
     if mask.sum()==0: mask=np.abs(s-i['s'])==np.abs(s-i['s']).min()
@@ -38,8 +38,9 @@ res=dict(Msus=Msus,Rf=Rf/g,Rr=Rr/g,Msag=Msag,Mhog=Mhog,s_Msag=float(s[np.argmax(
          dist=[dict(est=f'{a:.1f}–{a+0.5:.1f}',kg=round(m,1)) for a,m in zip(estac,dist)])
 m=D['cen']['proj']['m']; hc=D['cen']['proj']['hsolo']; L=4.0; tr=1.70
 res['frenagem_dF']=m*0.8*g*hc/L/g; res['lateral_dF']=m*0.6*g*hc/tr/g
-# pack completo: células, caixa/BMS, placas frias e gap filler (itens no piso duplo em s = 2,8 m)
-m_bat=sum(i['m'] for i in D['itens'] if i['sub']=='Elétrico e tração' and abs(i['s']-2.8)<1e-6)
+# pack completo: células, caixa/BMS, placas frias e gap filler
+BAT=('Células da bateria','Caixa do pack','Placas frias','gap filler')
+m_bat=sum(i['m'] for i in D['itens'] if any(k in i['nome'] for k in BAT))
 res['m_bat']=m_bat; res['bat_long']=m_bat*20*g/1e3; res['bat_lat']=m_bat*8*g/1e3
 # drawers
 md=4.42*6.5; lev=(1.03-0.65+1.4)-1.04
