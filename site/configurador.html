@@ -785,7 +785,13 @@ const css = n=>getComputedStyle(document.documentElement).getPropertyValue(n).tr
 
 const vp = document.getElementById('vp');
 const renderer = new THREE.WebGLRenderer({antialias:true,alpha:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio,matchMedia('(max-width:820px)').matches?1.5:2));
+renderer.setPixelRatio(Math.min(devicePixelRatio,(matchMedia('(max-width:820px)').matches||new URLSearchParams(location.search).has('vitrine'))?1.5:2));
+/* desenho sob demanda: o laço só redesenha quando algo muda (câmera, portas, luzes piscando, carregamentos, toques).
+   Parado, a página não gasta GPU, o que deixa a rolagem do site lisa. */
+let acordadoAte=0;
+function acorda(ms=1200){ acordadoAte=Math.max(acordadoAte,performance.now()+ms); }
+for(const ev of ['pointerdown','pointermove','pointerup','wheel','keydown','keyup','resize','message','click','touchstart','touchmove']) addEventListener(ev,()=>acorda(),{passive:true,capture:true});
+THREE.DefaultLoadingManager.onProgress=()=>acorda(800);
 renderer.localClippingEnabled = true;
 vp.prepend(renderer.domElement);
 const scene = new THREE.Scene();
@@ -1905,6 +1911,7 @@ function preset(id){
   if(id==='p-ext'){ setOpacity(100); setCut(250); numerosEl.checked=false; setView('3d',new THREE.Vector3(0.2,1.15,0),new THREE.Vector3(-7.9,2.6,-6.4)); }
   else numerosEl.checked=true;
   if(id==='p-geral'){ setOpacity(30); setCut(250); setView('3d'); }
+  if(id==='p-interior'||id==='p-camp') garanteProps();
   if(id==='p-interior'){ setOpacity(100); setCut(195); setLayer('vidro',false); setView('3d',new THREE.Vector3(0.3,0.9,0),new THREE.Vector3(-4.2,8.6,-6.2)); }
   if(id==='p-tecnico'){ setOpacity(12); setCut(250); setLayer('interior',false); setLayer('cabine',false); setLayer('solar',false); setView('3d'); }
   if(id==='p-camp'){ setOpacity(100); setCut(250); numerosEl.checked=false; aberturaAlvo=1; setNoite(true);
@@ -1931,12 +1938,16 @@ function loop(now){
   requestAnimationFrame(loop);
   if(!palcoVisivel){ tAnt=null; return; }
   const dt=tAnt===null?0:Math.max(0,Math.min(0.05,(now-tAnt)/1000)); tAnt=now;
+  const moviaAntes=!!anim||Object.values(ABRE).some(a=>a.t!==a.alvo)||Math.abs(abertura-aberturaAlvo)>1e-3||LIMP.ang>0||EST.limp;
   if(!FP.on) stepAnim(now);
   animaInteracoes(now,dt); aplicaLuzes(now); if(FP.on) andaFP(dt);
   if(Math.abs(abertura-aberturaAlvo)>1e-3){ abertura+= (aberturaAlvo-abertura)*(reduz?1:1-Math.exp(-dt*4.2)); if(Math.abs(abertura-aberturaAlvo)<0.002)abertura=aberturaAlvo; setAbertura(abertura); document.getElementById('abre').value=Math.round(abertura*100); }
   if(renderer.shadowMap.enabled && !renderer.shadowMap.autoUpdate){ const mexe=Object.values(ABRE).some(a=>a.t!==a.alvo)||Math.abs(abertura-aberturaAlvo)>1e-3||LIMP.ang>0||EST.limp;
     if(mexe) sombraSuja=Math.max(sombraSuja,3); if(sombraSuja>0){ renderer.shadowMap.needsUpdate=true; sombraSuja--; } }
-  enquadra(); if(!FP.on) controls.update(); if(COMPOSER) COMPOSER.render(); else renderer.render(scene,camera); if(!FP.on){ updateLabels(); calcOclusao(now); updateTags(); }
+  enquadra(); const camMudou=!FP.on && controls.update();
+  const piscando=EST.setaE||EST.setaD||EST.alerta;
+  if(!(camMudou||moviaAntes||FP.on||controls.autoRotate||piscando||sombraSuja>0||renderer.shadowMap.needsUpdate||now<acordadoAte)) return;
+  if(COMPOSER) COMPOSER.render(); else renderer.render(scene,camera); if(!FP.on){ updateLabels(); calcOclusao(now); updateTags(); }
 }
 /* =================== INTERAÇÕES: portas, luzes, noite, toldo, limpadores, entrar =================== */
 const dtClock={t:performance.now()};
@@ -2006,11 +2017,11 @@ const PROPS=[
   ['alarm_clock_01',null, 6.70, -0.45, 1.861, -1.6, 0.5,'arm_tras'],
 ];
 async function carregaProps(){
-  const ld=new GLTFLoader(), cache={};
-  for(const [nome] of PROPS) cache[nome]??=ld.loadAsync(`props/${nome}/${nome}.json`).catch(e=>{ console.warn('objeto',nome,e); return null; });   /* baixa todos em paralelo */
+  const ld=new GLTFLoader().setMeshoptDecoder(MeshoptDecoder), cache={};   /* GLB com malha comprimida (meshopt) e texturas de 512 px embutidas */
+  for(const [nome] of PROPS) cache[nome]??=ld.loadAsync(`props/${nome}/${nome}.glb`).catch(e=>{ console.warn('objeto',nome,e); return null; });   /* baixa todos em paralelo */
   for(const [nome,no,s,x,h,ry,esc,comp] of PROPS){
     try{
-      if(!cache[nome]) cache[nome]=ld.loadAsync(`props/${nome}/${nome}.json`);
+      if(!cache[nome]) cache[nome]=ld.loadAsync(`props/${nome}/${nome}.glb`);
       const gl=await cache[nome]; if(!gl) continue;
       let src=no? gl.scene.getObjectByName(no) : gl.scene; if(!src) continue;
       const obj=src.clone(true); obj.position.set(0,0,0); obj.updateMatrixWorld(true);
@@ -2025,7 +2036,11 @@ async function carregaProps(){
     }catch(e){ console.warn('objeto',nome,e); }
   }
 }
-window.__PROPS_PRONTOS = carregaProps().then(()=>{ sombraSuja=Math.max(sombraSuja,30); });
+/* Os objetos decorativos (frutas, panela, planta...) só aparecem por dentro. A vitrine embutida no site só os baixa
+   quando alguém olha o interior; o configurador, logo depois que o carro aparece. */
+let _props=null;
+function garanteProps(){ return _props ??= carregaProps().then(()=>{ sombraSuja=Math.max(sombraSuja,30); acorda(); }); }
+Object.defineProperty(window,'__PROPS_PRONTOS',{get:garanteProps,configurable:true});
 
 /* ---- o que abre: portas (dobradiça vertical), janela (basculante), toldo ---- */
 const ABRE={}; const PIVOS={};
@@ -2143,7 +2158,7 @@ function vaiPara(id,direto){ if(FP.on&&!direto){ comVeu(()=>vaiPara(id,true)); r
   if(id==='banho'&&ABRE.banho&&ABRE.banho.alvo<0.5) abre('banho',true);
   fpEl.querySelectorAll('[data-lugar]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lugar===id)); }
 function entrar(){
-  if(FP.on) return; if(selId) select(null);
+  if(FP.on) return; garanteProps(); if(selId) select(null);
   setOpacity(100); setCut(250); Object.keys(GRUPOS).forEach(k=>setLayer(k,true)); numerosEl.checked=false;
   abre('portaCasa',true);
   setView('3d',W(3.2,-0.5,1.6),W(3.0,-4.2,1.75));
@@ -2707,7 +2722,7 @@ function montaVitrine(){
   }));
   dock.querySelector('[data-vn=noite]').addEventListener('click',()=>{ setNoite(!EST.noite); Object.assign(EST,{interna:EST.noite,drl:true,posicao:EST.noite,farol:EST.noite?'baixo':'off',toldoLuz:EST.noite&&ABRE.toldo.alvo>0.5}); sync(); });
   /* LEDs internos: de dia a câmera vai para um ângulo que mostra o interior pela janela e pela porta aberta */
-  dock.querySelector('[data-vn=leds]').addEventListener('click',()=>{ EST.interna=!EST.interna;
+  dock.querySelector('[data-vn=leds]').addEventListener('click',()=>{ EST.interna=!EST.interna; if(EST.interna) garanteProps();
     if(EST.interna && !FP.on && !EST.noite){ abre('portaCasa',true); setView('3d',V(0.4,1.3,-1.0),V(3.6,2.0,-6.4)); }
     sync(); });
   dock.querySelector('[data-vn=gav]').addEventListener('click',()=>{ aberturaAlvo=aberturaAlvo>0.5?0:1; if(!FP.on) setView('3d',V(0,1.6,0),V(-8.6,8.2,-10.5)); sync(); });
@@ -2723,7 +2738,7 @@ addEventListener('message',e=>{
   if(!VITRINE || window.parent===window || e.source!==window.parent || e.origin!==location.origin) return;
   const d=e.data; if(!d) return;
   if(typeof d.pintura==='string'&&PINTURAS.some(p=>p.id===d.pintura)){ CFG.pintura=d.pintura; aplicaCfg(false); }
-  if(typeof d.leds==='boolean'){ EST.interna=d.leds; syncUI(); } });
+  if(typeof d.leds==='boolean'){ EST.interna=d.leds; if(d.leds) garanteProps(); syncUI(); } acorda(); });
 
 /* ---------- modo técnico ---------- */
 const tecBtn=document.getElementById('tec-btn');
@@ -2746,7 +2761,9 @@ function validaCfg(){
 }
 validaCfg(); aplicaCfg(false); irPara(0,false);
 window.__MODELOS_PRONTOS = carregaModelos();
-carregaMalha().then(()=>{ vp.classList.add('pronto'); aplicaCfg(false);
+window.__MODELOS_PRONTOS.then(()=>acorda());
+carregaMalha().then(()=>{ vp.classList.add('pronto'); aplicaCfg(false); acorda(2000);
+  if(!VITRINE && !SHOT) setTimeout(garanteProps,1500);
   if(SHOT) fazShot(SHOT); else if(PARAMS.has('filme')) montaFilme(); else if(VITRINE) montaVitrine(); else if(PARAMS.has('tecnico')) setTec(true); else preset('p-ext'); });
 </script>
 </body>

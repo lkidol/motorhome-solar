@@ -11,6 +11,7 @@ Entrega: 02/12/2026.
 | `docs/` | Estado do projeto, decisões e roteiro de render no Blender |
 | `site/` | Portal do produto e configurador 3D (`index.html`, `configurador.html`, `img/`, `tex/`, `props/`, `modelos/`, JSONs de malha), além de ferramentas de build (`build.py`, `main.js`, `debug.js`, `modelos.json`) e versões anteriores |
 | `site/video/` | Vídeo do topo da página (`heroi.webm`, `heroi.mp4` e o pôster `heroi.jpg`) |
+| `site/props/` | Objetos decorativos do interior (Poly Haven, CC0) em GLB com malha comprimida (meshopt) e texturas de 512 px embutidas. Só baixam quando alguém olha o interior |
 | `site/modelos/` | Modelos GLB do interior (banco da cabine, banqueta da sala, volante, vaso, barra e ducha do chuveiro), carregados pelo configurador |
 | `modelos/scripts/` | Scripts de otimização dos GLB (gltf-transform/meshopt) |
 | `mec/` | Cálculo de massa e estrutura (`massa.json`, `massa.txt`, `estrut.*`, `casca.*`) |
@@ -23,6 +24,8 @@ Entrega: 02/12/2026.
 ## Como rodar
 
 **Site (local e deploy):** a pasta `site/` é um site estático autocontido. Para rodar localmente, execute `python -m http.server` dentro de `site/` e acesse `http://localhost:8000/`. O deploy em produção publica `./site` automaticamente no Cloudflare Workers Static Assets conforme configurado em `wrangler.jsonc` (e `site/.assetsignore`). Para gerar o build offline legado do esquemático, confira os scripts e históricos em `site/`.
+
+**Desempenho:** a página inicial abre com cerca de 2 MB (vídeo, pôster e fotos visíveis). O 3D embutido só começa a baixar quando a seção dele se aproxima da tela, os objetos do interior só quando alguém entra no carro, e o 3D só redesenha quando algo muda. Ao trocar texturas, mantenha as de `site/tex/` em até 1024 px e as dos objetos em 512 px.
 
 **Planilha:** a fonte é a planilha do Google. Depois de mudá-la, baixe como .xlsx (Arquivo → Fazer download → Microsoft Excel) e substitua `plan/Inventario_de_Massas_Motorhome_Solar.xlsx`.
 
